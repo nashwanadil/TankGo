@@ -39,14 +39,15 @@ const Map<String, List<String>> _s = {
 
 /// Language display entries: code, endonym, flag. Extra English variants map to 'en'.
 const languages = <(String, String, String)>[
-  ('ar', 'العربية', '🇸🇦'), ('fa', 'فارسی', '🇮🇷'), ('ku', 'کوردی (کرمانجی)', '☀️'),
-  ('bg', 'Български', '🇧🇬'), ('cs', 'Čeština', '🇨🇿'), ('da', 'Dansk', '🇩🇰'), ('de', 'Deutsch', '🇩🇪'),
-  ('el', 'Ελληνικά', '🇬🇷'), ('en', 'English', '🇬🇧'), ('en', 'English (US)', '🇺🇸'), ('en', 'English (AU)', '🇦🇺'),
-  ('es', 'Español', '🇪🇸'), ('et', 'Eesti', '🇪🇪'), ('fi', 'Suomi', '🇫🇮'), ('fr', 'Français', '🇫🇷'),
-  ('ga', 'Gaeilge', '🇮🇪'), ('hr', 'Hrvatski', '🇭🇷'), ('hu', 'Magyar', '🇭🇺'), ('it', 'Italiano', '🇮🇹'),
-  ('lt', 'Lietuvių', '🇱🇹'), ('lv', 'Latviešu', '🇱🇻'), ('mt', 'Malti', '🇲🇹'), ('nl', 'Nederlands', '🇳🇱'),
-  ('pl', 'Polski', '🇵🇱'), ('pt', 'Português', '🇵🇹'), ('ro', 'Română', '🇷🇴'), ('sk', 'Slovenčina', '🇸🇰'),
-  ('sl', 'Slovenščina', '🇸🇮'), ('sv', 'Svenska', '🇸🇪'),
+  ('cs', 'Čeština', '🇨🇿'), ('da', 'Dansk', '🇩🇰'), ('de', 'Deutsch', '🇩🇪'), ('et', 'Eesti', '🇪🇪'),
+  ('en', 'English', '🇬🇧'), ('en', 'English (US)', '🇺🇸'), ('en', 'English (AU)', '🇦🇺'), ('es', 'Español', '🇪🇸'),
+  ('fr', 'Français', '🇫🇷'), ('ga', 'Gaeilge', '🇮🇪'), ('hr', 'Hrvatski', '🇭🇷'), ('it', 'Italiano', '🇮🇹'),
+  ('lv', 'Latviešu', '🇱🇻'), ('lt', 'Lietuvių', '🇱🇹'), ('hu', 'Magyar', '🇭🇺'), ('mt', 'Malti', '🇲🇹'),
+  ('nl', 'Nederlands', '🇳🇱'), ('pl', 'Polski', '🇵🇱'), ('pt', 'Português', '🇵🇹'), ('ro', 'Română', '🇷🇴'),
+  ('sk', 'Slovenčina', '🇸🇰'), ('sl', 'Slovenščina', '🇸🇮'), ('fi', 'Suomi', '🇫🇮'), ('sv', 'Svenska', '🇸🇪'),
+  // Non-Latin scripts last.
+  ('el', 'Ελληνικά', '🇬🇷'), ('bg', 'Български', '🇧🇬'), ('ar', 'العربية', '🇸🇦'), ('fa', 'فارسی', '🇮🇷'),
+  ('ku', 'کوردی (کرمانجی)', '☀️'),
 ];
 
 final supportedLangs = _s.keys.toList();

@@ -112,7 +112,7 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             tooltip: tx(context, 'compare'),
-            icon: const Icon(Icons.compare_arrows),
+            icon: const Icon(Icons.public),
             onPressed: () async {
               final all = (await _latest).value;
               if (all == null || !context.mounted) return;
@@ -121,7 +121,7 @@ class _HomePageState extends State<HomePage> {
           ),
           IconButton(
             tooltip: tx(context, 'trip'),
-            icon: const Icon(Icons.route_outlined),
+            icon: const Icon(Icons.map_outlined),
             onPressed: () async {
               final all = (await _latest).value;
               if (all == null || !context.mounted) return;
@@ -129,7 +129,7 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.settings_outlined),
+            icon: const Icon(Icons.tune),
             onPressed: () => Navigator.push(context, MaterialPageRoute<void>(builder: (_) => SettingsPage(settings: widget.settings))),
           ),
         ],

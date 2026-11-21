@@ -19,14 +19,18 @@ class SettingsPage extends StatelessWidget {
           body: ListView(padding: const EdgeInsets.all(16), children: [
             Text(tr(context, 'language'), style: Theme.of(context).textTheme.titleSmall),
             const SizedBox(height: 6),
-            Wrap(spacing: 8, runSpacing: 8, children: [
-              for (final (code, name, flag) in languages.where((l) => !l.$2.startsWith('English (')))
-                ChoiceChip(
-                  label: Text('$flag $name'),
-                  selected: settings.lang == code,
-                  onSelected: (_) => settings.setLang(code),
-                ),
-            ]),
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              childAspectRatio: 3.4,
+              children: [
+                for (final (code, name, flag) in languages.where((l) => !l.$2.startsWith('English (')))
+                  _LangTile(flag: flag, name: name, selected: settings.lang == code, onTap: () => settings.setLang(code)),
+              ],
+            ),
             const SizedBox(height: 20),
             Text(tr(context, 'country'), style: Theme.of(context).textTheme.titleSmall),
             Card(
@@ -58,6 +62,38 @@ class SettingsPage extends StatelessWidget {
           ]),
         );
       },
+    );
+  }
+}
+
+class _LangTile extends StatelessWidget {
+  const _LangTile({required this.flag, required this.name, required this.selected, required this.onTap});
+  final String flag, name;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Material(
+      color: selected ? cs.primaryContainer : Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: selected ? cs.primary : Theme.of(context).dividerColor, width: selected ? 2 : 1),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Row(children: [
+            Text(flag, style: const TextStyle(fontSize: 20)),
+            const SizedBox(width: 8),
+            Expanded(child: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: selected ? FontWeight.w700 : FontWeight.w500))),
+            if (selected) Icon(Icons.check, size: 18, color: cs.primary),
+          ]),
+        ),
+      ),
     );
   }
 }
