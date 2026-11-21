@@ -27,7 +27,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0
 .langs{display:flex;gap:6px}.langs button{background:var(--glass);border:1px solid var(--line);color:var(--cream);border-radius:999px;padding:7px 14px;font:600 14px "Readex Pro",sans-serif;cursor:pointer;min-width:44px}
 .langs button.on{background:var(--gold);color:var(--ink);border-color:var(--gold)}
 .hero{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center;padding:40px 0 70px}
-h1{font-size:clamp(34px,5.4vw,62px);line-height:1.1;margin:0 0 18px;color:#fff;letter-spacing:-1px;font-weight:700}
+h1{font-size:clamp(32px,4.9vw,56px);line-height:1.1;margin:0 0 18px;color:#fff;letter-spacing:-1px;font-weight:700}
 h1 em{font-style:normal;background:linear-gradient(90deg,var(--gold),var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent}
 .lead{font-size:clamp(16px,1.8vw,19px);opacity:.9;max-width:560px}
 .cheap{margin:26px 0;display:inline-flex;align-items:center;gap:14px;background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:12px 18px;backdrop-filter:blur(6px)}
@@ -68,7 +68,7 @@ h2{font-size:clamp(26px,3.4vw,40px);margin:0 0 8px;color:#fff}
 .name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
 .bar{position:absolute;inset:auto 0 -3px 0;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--gold),var(--red));transform-origin:left;transform:scaleX(0);transition:transform .9s cubic-bezier(.2,.8,.2,1)}
 [dir=rtl] .bar{transform-origin:right}
-.price{font-weight:900;text-align:end;font-variant-numeric:tabular-nums}
+.price{font-weight:900;text-align:end;font-variant-numeric:tabular-nums}.price .pro,.srow .pro{margin:0}
 .delta{font-size:12px;font-weight:800;text-align:end}.up{color:var(--red)}.down{color:var(--green)}.flat{opacity:.6}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
 label{display:block;font-size:13px;font-weight:700;opacity:.8;margin:0 0 6px}
@@ -172,6 +172,8 @@ ar:{h1:'أسعار الوقود في <em>أوروبا كلها</em>، في جي�
  foot:'© 2026 TankGo · Yarnaz Lab · <a href="privacy.html">الخصوصية</a> · الأسعار متوسطات وطنية وقد تكون قديمة بعدة أيام.'}};
 const FUEL={en:{e95:'Petrol 95',diesel:'Diesel',lpg:'LPG'},de:{e95:'Benzin 95',diesel:'Diesel',lpg:'LPG'},ar:{e95:'بنزين 95',diesel:'ديزل',lpg:'غاز LPG'}};
 const NB={AT:['DE','CZ','SK','HU','SI','IT'],BE:['NL','DE','LU','FR'],BG:['RO','GR'],HR:['SI','HU'],CY:[],CZ:['DE','AT','SK','PL'],DK:['DE','SE'],EE:['LV','FI'],FI:['SE','EE'],FR:['BE','LU','DE','IT','ES'],DE:['DK','NL','BE','LU','FR','CZ','AT','PL'],GR:['BG'],HU:['AT','SK','RO','HR','SI'],IE:[],IT:['FR','AT','SI'],LV:['EE','LT'],LT:['LV','PL'],LU:['BE','DE','FR'],MT:['IT'],NL:['BE','DE'],PL:['DE','CZ','SK','LT'],PT:['ES'],RO:['BG','HU'],SK:['CZ','AT','PL','HU'],SI:['AT','IT','HR','HU'],ES:['PT','FR'],SE:['DK','FI']};
+const PREM=new Set(['FR','DE','IT','ES','AT','HR','GR','PT','NL']);
+const PRO='<span class="pro">PREMIUM</span>';
 const ICONS=['M3 12h4l3-8 4 16 3-8h4','M4 19V5m0 14h16M8 15l3-4 3 2 4-6','M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-9 9h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18','M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Zm0 0v14m6-12v14','M3 17l6-6 4 4 8-8m0 0h-5m5 0v5','M4 5h16M9 3v2c0 6-3 10-5 12m5-6c1.5 3 4 5.5 7 7M14 21l4-9 4 9m-7-2h6'];
 let L='en',D=null,S=null,fuel='e95';
 const $=id=>document.getElementById(id);
@@ -193,9 +195,10 @@ function render(){if(!D)return;
  const rows=eu().sort((a,b)=>a[1].prices[fuel]-b[1].prices[fuel]);if(!rows.length)return;
  const lo=rows[0][1].prices[fuel],hi=rows[rows.length-1][1].prices[fuel],home=$('home').value||guessHome();
  $('rows').innerHTML=rows.map(([c,e],i)=>{const p=e.prices[fuel],pv=e.prev?.[fuel],d=pv==null?0:p-pv,cls=Math.abs(d)<.0005?'flat':d>0?'up':'down';
-  return `<div class="row ${c===home?'me':''}"><span class="rank">${i+1}</span><span class="cc">${c}</span><span class="name">${region(c)}<i class="bar" data-w="${(hi===lo?1:.15+.85*(p-lo)/(hi-lo)).toFixed(3)}"></i></span><span class="price">${eur(p)}</span><span class="delta ${cls}">${pv==null?'':(cls==='flat'?'→':(d>0?'▲ +':'▼ ')+nf(d*100,1))}</span></div>`}).join('');
+  const lk=PREM.has(c)&&c!==home;
+  return `<div class="row ${c===home?'me':''}"><span class="rank">${i+1}</span><span class="cc">${c}</span><span class="name">${region(c)}<i class="bar" data-w="${lk?0:(hi===lo?1:.15+.85*(p-lo)/(hi-lo)).toFixed(3)}"></i></span><span class="price">${lk?PRO:eur(p)}</span><span class="delta ${cls}">${lk||pv==null?'':(cls==='flat'?'→':(d>0?'▲ +':'▼ ')+nf(d*100,1))}</span></div>`}).join('');
  requestAnimationFrame(()=>document.querySelectorAll('.bar').forEach(b=>b.style.transform=`scaleX(${b.dataset.w})`));
- const ch=eu().sort((a,b)=>a[1].prices.e95-b[1].prices.e95)[0];
+ const ch=eu().filter(([c])=>!PREM.has(c)).sort((a,b)=>a[1].prices.e95-b[1].prices.e95)[0];
  if(ch){$('cheapV').textContent=`${region(ch[0])} · ${eur(ch[1].prices.e95)}`}
  const dates=rows.map(r=>r[1].date).sort();$('asof').textContent=`${T[L].asof} ${fdate(dates[dates.length-1])}`;
  // home select
@@ -203,8 +206,8 @@ function render(){if(!D)return;
  border();phone()}
 function border(){const home=$('home').value,lit=+$('litres').value||0,hp=D[home]?.prices[fuel];if(hp==null)return;
  const list=(NB[home]||[]).filter(c=>D[c]?.prices[fuel]!=null).map(c=>[c,(hp-D[c].prices[fuel])*lit]).sort((a,b)=>b[1]-a[1]);
- $('save').innerHTML=list.map(([c,s])=>`<div class="srow"><span><span class="cc" style="display:inline-block;width:38px;margin-inline-end:10px">${c}</span>${region(c)} · ${eur(D[c].prices[fuel])}</span><b class="${s>=0?'pos':'neg'}">${Math.abs(s)<.005?T[L].same:(s>0?'+':'−')+eur(Math.abs(s),2)}</b></div>`).join('')||`<div class="srow">–</div>`;
- const best=list[0];$('bestV').textContent=best&&best[1]>0?`${eur(best[1],2)} · ${region(best[0])}`:'–'}
+ $('save').innerHTML=list.map(([c,s])=>{const lk=PREM.has(c);return `<div class="srow"><span><span class="cc" style="display:inline-block;width:38px;margin-inline-end:10px">${c}</span>${region(c)}${lk?'':' · '+eur(D[c].prices[fuel])}</span>${lk?PRO:`<b class="${s>=0?'pos':'neg'}">${Math.abs(s)<.005?T[L].same:(s>0?'+':'−')+eur(Math.abs(s),2)}</b>`}</div>`}).join('')||`<div class="srow">–</div>`;
+ const best=list.filter(([c])=>!PREM.has(c))[0];$('bestV').textContent=best&&best[1]>0?`${eur(best[1],2)} · ${region(best[0])}`:'–'}
 async function phone(){const home=$('home').value||'DE',e=D[home];if(!e)return;
  $('phCC').textContent=home;$('phName').textContent=region(home);$('phFuel').textContent=FUEL[L][fuel].toUpperCase();
  const p=e.prices[fuel];$('phPrice').textContent=p==null?'–':'\u2066'+nf(p)+' € /L\u2069';
