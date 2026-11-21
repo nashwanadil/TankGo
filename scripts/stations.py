@@ -16,20 +16,42 @@ def log(*a):
     print(*a, flush=True)
 
 
+def _ctx():
+    import ssl
+    c = ssl.create_default_context()
+    c.set_ciphers("DEFAULT:@SECLEVEL=0")
+    c.options |= getattr(ssl, "OP_LEGACY_SERVER_CONNECT", 0x4)
+    return c
+
+
+def _curl(url, accept, timeout):
+    import subprocess
+    r = subprocess.run(["curl", "-sS", "-L", "--compressed", "--connect-timeout", "30",
+                        "--max-time", str(timeout), "-A", UA, "-H", "Accept: " + accept,
+                        "-H", "Accept-Language: it-IT,it;q=0.9,en;q=0.8", url],
+                       capture_output=True, timeout=timeout + 10)
+    if r.returncode != 0 or not r.stdout:
+        raise RuntimeError(f"curl rc={r.returncode}: {r.stderr.decode(errors='replace')[:200]}")
+    return r.stdout
+
+
 def fetch(url, accept="*/*", timeout=120, retries=3):
     err = None
     for i in range(retries):
-        try:
-            req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": accept})
-            with urllib.request.urlopen(req, timeout=timeout) as r:
-                data = r.read()
-            if r.headers.get("Content-Encoding") == "gzip":
-                data = gzip.decompress(data)
-            return data
-        except Exception as e:
-            err = e
-            log(f"  fetch {url} attempt {i+1}/{retries} failed: {e}")
-            time.sleep(5 * (i + 1))
+        for how in ("urllib", "curl"):
+            try:
+                if how == "curl":
+                    return _curl(url, accept, timeout)
+                req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": accept})
+                with urllib.request.urlopen(req, timeout=timeout, context=_ctx()) as r:
+                    data = r.read()
+                if r.headers.get("Content-Encoding") == "gzip":
+                    data = gzip.decompress(data)
+                return data
+            except Exception as e:
+                err = e
+                log(f"  fetch {url} [{how}] attempt {i+1}/{retries} failed: {e}")
+        time.sleep(3 * (i + 1))
     raise err
 
 
@@ -100,7 +122,7 @@ def fr():
 def es():
     url = ("https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/"
            "PreciosCarburantes/EstacionesTerrestres/")
-    d = json.loads(fetch(url, accept="application/json", timeout=300, retries=4).decode("utf-8-sig"))
+    d = json.loads(fetch(url, accept="application/json", timeout=240, retries=3).decode("utf-8-sig"))
     try:
         date = datetime.strptime(d.get("Fecha", "")[:10], "%d/%m/%Y").strftime("%Y-%m-%d")
     except ValueError:
@@ -118,7 +140,7 @@ def es():
 
 
 def it_rows(url):
-    raw = fetch(url, timeout=180)
+    raw = fetch(url, timeout=60, retries=2)
     try:
         text = raw.decode("utf-8-sig")
     except UnicodeDecodeError:
