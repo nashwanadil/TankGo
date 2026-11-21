@@ -38,13 +38,14 @@ class _ComparePageState extends State<ComparePage> {
     final homePrice = rows.where((r) => r.$1 == widget.home).map((r) => r.$2).firstOrNull;
     final liters = double.tryParse(_l.text.replaceAll(',', '.')) ?? 0;
     final near = neighbours[widget.home] ?? const <String>[];
-    final freeSet = {widget.home, ...(near.isEmpty ? rows.take(3).map((r) => r.$1) : near)};
+    final nearSet = {widget.home, ...(near.isEmpty ? rows.take(4).map((r) => r.$1) : near)};
     final premium = widget.premium;
     return ListenableBuilder(
       listenable: premium,
       builder: (context, _) {
         final full = premium.isPremium;
-        final shown = full ? rows : rows.where((r) => freeSet.contains(r.$1)).toList();
+        final shown = full ? rows : rows.where((r) => nearSet.contains(r.$1)).toList();
+        bool locked(String cc) => !full && cc != widget.home && premiumCountries.contains(cc);
         return Scaffold(
           appBar: AppBar(title: Text(tx(context, 'compare'))),
           body: ListView(padding: const EdgeInsets.all(16), children: [
@@ -69,8 +70,19 @@ class _ComparePageState extends State<ComparePage> {
               Builder(builder: (context) {
                 final c = countryByCode(r.$1)!;
                 final isHome = r.$1 == widget.home;
+                if (locked(r.$1)) {
+                  return Card(
+                    child: ListTile(
+                      leading: Text(c.flag, style: const TextStyle(fontSize: 26)),
+                      title: Text(c.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      subtitle: Text(tx(context, 'premium')),
+                      trailing: const Icon(Icons.lock, color: Color(0xFFE0B860)),
+                      onTap: () => showPaywall(context, premium),
+                    ),
+                  );
+                }
                 final diff = homePrice == null ? null : (homePrice - r.$2) * liters;
-                final cheapest = rows.first.$1 == r.$1;
+                final cheapest = full && rows.first.$1 == r.$1;
                 return Card(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),

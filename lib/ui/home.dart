@@ -240,7 +240,23 @@ class _HomePageState extends State<HomePage> {
             : [BoxShadow(color: const Color(0xFF8F2A39).withValues(alpha: touching ? 0.55 : 0.3), blurRadius: 28, offset: const Offset(0, 10))],
       ),
       child: Column(children: [
-        Text(fuelName(c, _fuel).toUpperCase(), style: const TextStyle(color: gold, fontWeight: FontWeight.w800, fontSize: 15, letterSpacing: 1.6)),
+        PopupMenuButton<String>(
+          tooltip: '',
+          initialValue: _fuel,
+          onSelected: (f) => setState(() {
+            _fuel = f;
+            _touch = null;
+            _pin = null;
+          }),
+          itemBuilder: (_) => [for (final f in fuelOrder.where(e.prices.containsKey)) PopupMenuItem(value: f, child: Text(fuelName(c, f)))],
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              Text(fuelName(c, _fuel).toUpperCase(), style: const TextStyle(color: gold, fontWeight: FontWeight.w800, fontSize: 15, letterSpacing: 1.6)),
+              const Icon(Icons.arrow_drop_down, color: gold),
+            ]),
+          ),
+        ),
         const SizedBox(height: 8),
         FittedBox(
           fit: BoxFit.scaleDown,
@@ -269,11 +285,15 @@ class _HomePageState extends State<HomePage> {
         if (_pin != null)
           Padding(
             padding: const EdgeInsets.only(top: 10),
-            child: ActionChip(
-              avatar: const Icon(Icons.update, size: 18, color: cream),
-              label: Text(tr(c, 'today'), style: const TextStyle(color: cream, fontWeight: FontWeight.w700)),
-              backgroundColor: Colors.transparent,
-              side: const BorderSide(color: cream),
+            child: OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: cream,
+                backgroundColor: Colors.black.withValues(alpha: 0.18),
+                side: const BorderSide(color: cream),
+                shape: const StadiumBorder(),
+              ),
+              icon: const Icon(Icons.update, size: 18),
+              label: Text(tr(c, 'today'), style: const TextStyle(fontWeight: FontWeight.w700)),
               onPressed: () => setState(() => _pin = null),
             ),
           ),

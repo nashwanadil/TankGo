@@ -54,6 +54,13 @@ const neighbours = <String, List<String>>{
   'SE': ['DK', 'FI'],
 };
 
+/// Popular, high-traffic destinations: their prices are Premium in the comparison.
+/// Less-visited countries stay free so the free view is useful but incomplete.
+const premiumCountries = {'FR', 'DE', 'IT', 'ES', 'AT', 'HR', 'GR', 'PT', 'NL'};
+
+/// Example route shown to free users in the trip planner (classic summer drive).
+const demoRoute = [Leg('DE', 300), Leg('AT', 350), Leg('SI', 150), Leg('HR', 400)];
+
 /// Approximate short-stay road-charge (vignette) cost in EUR for a passenger car.
 /// Indicative only; the app tells users to verify (values from 2025).
 const vignetteEur = <String, double>{
