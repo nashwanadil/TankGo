@@ -99,7 +99,7 @@ button,select,input{font-family:inherit}
 <div class="wrap">
   <nav>
     <a class="logo" href="#"><svg viewBox="0 0 512 512" aria-hidden="true">  <defs>    <linearGradient id="lgd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6dc98"/><stop offset=".55" stop-color="#e0b860"/><stop offset="1" stop-color="#c4943a"/></linearGradient>    <linearGradient id="lwn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8f2a39"/><stop offset="1" stop-color="#5a1526"/></linearGradient>  </defs>  <circle cx="256" cy="256" r="244" fill="url(#lgd)"/>  <circle cx="256" cy="256" r="222" fill="none" stroke="#6b1a2e" stroke-opacity=".22" stroke-width="5"/>  <path d="M318 196h20a20 20 0 0 1 20 20v104a17 17 0 0 0 34 0V198l-30-36" fill="none" stroke="#6b1a2e" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>  <rect x="160" y="118" width="164" height="262" rx="26" fill="url(#lwn)"/>  <rect x="138" y="366" width="208" height="34" rx="17" fill="#6b1a2e"/>  <rect x="184" y="146" width="116" height="88" rx="12" fill="#f6dc98"/>  <polyline points="198,214 226,186 250,202 284,164" fill="none" stroke="#6b1a2e" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>  <circle cx="284" cy="164" r="10" fill="#6b1a2e"/>  <rect x="200" y="262" width="84" height="12" rx="6" fill="#e0b860" opacity=".55"/></svg><span>Tank<b>Go</b></span></a>
-    <div class="langs"><button data-l="en">EN</button><button data-l="de">DE</button><button data-l="ar">عربي</button></div>
+    <div class="langs"><button data-l="en">EN</button><button data-l="de">DE</button></div>
   </nav>
 
   <header class="hero">
@@ -225,7 +225,7 @@ document.addEventListener('click',e=>{const l=e.target.closest('.langs button');
 $('home').addEventListener('change',()=>render());$('litres').addEventListener('input',border);
 const io=new IntersectionObserver(es=>es.forEach(x=>x.isIntersecting&&x.target.classList.add('in')),{threshold:.12});document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 let saved=null;try{saved=localStorage.getItem('tg_lang')}catch(e){}
-const nl=(navigator.language||'en').slice(0,2);setLang(saved||(['de','ar'].includes(nl)?nl:'en'));
+const nl=(navigator.language||'en').slice(0,2);setLang(nl==='ar'?'ar':(saved==='de'||saved==='en'?saved:(nl==='de'?'de':'en')));
 fetch('v1/latest.json').then(r=>r.json()).then(j=>{D=j.countries;render();$('home').value=guessHome();render()}).catch(()=>{$('cheapV').textContent='–'});
 fetch('v1/signal.json').then(r=>r.ok?r.json():null).then(j=>{S=j;outlook()}).catch(()=>{});
 </script>
