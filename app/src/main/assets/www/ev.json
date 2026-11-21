@@ -1,0 +1,42 @@
+{
+  "asOf": "2026-11-18",
+  "sources": [
+    "https://www.overstappen.nl/nieuws/elektrische-auto-laden-kost-bij-duurste-paal-van-nederland-97-euro-meer-per-lading/",
+    "https://www.anwb.nl/auto/nieuws/2026/februari/gemiddelde-laadkosten-per-gemeente-in-2025",
+    "https://tapelectric.app/blog/cost-to-charge-an-electric-car-netherlands/"
+  ],
+  "items": [
+    {
+      "id": "home",
+      "price": 0.38,
+      "label": {"de": "Zu Hause (variabler Stromtarif)", "nl": "Thuis (variabel stroomtarief)", "en": "Home (variable tariff)"},
+      "extra": {"de": "Ø Lieferpreis inkl. Steuern", "nl": "Gem. leveringstarief incl. belastingen", "en": "Avg. supply rate incl. taxes"}
+    },
+    {
+      "id": "public",
+      "price": 0.48,
+      "min": 0.38,
+      "max": 0.80,
+      "label": {"de": "Öffentliche Ladesäule (AC)", "nl": "Publieke laadpaal (AC)", "en": "Public charger (AC)"},
+      "extra": {"de": "Landesdurchschnitt laut ANWB", "nl": "Landelijk gemiddelde volgens ANWB", "en": "National average (ANWB)"}
+    },
+    {
+      "id": "fast",
+      "price": 0.61,
+      "min": 0.59,
+      "max": 0.79,
+      "label": {"de": "Schnelllader (DC > 50 kW)", "nl": "Snellader (DC > 50 kW)", "en": "Fast charger (DC > 50 kW)"}
+    },
+    {
+      "id": "fastned",
+      "price": 0.69,
+      "label": {"de": "Fastned (Ad-hoc)", "nl": "Fastned (ad hoc)", "en": "Fastned (ad hoc)"},
+      "extra": {"de": "Mit Gold-Abo: 0,49 €/kWh + 11,99 €/Monat", "nl": "Met Gold-abonnement: € 0,49/kWh + € 11,99/maand", "en": "With Gold plan: €0.49/kWh + €11.99/month"}
+    },
+    {
+      "id": "tesla",
+      "label": {"de": "Tesla Supercharger", "nl": "Tesla Supercharger", "en": "Tesla Supercharger"},
+      "extra": {"de": "Preis je Standort und Uhrzeit – siehe Tesla-App", "nl": "Prijs per locatie en tijdstip – zie Tesla-app", "en": "Varies by site and time – see Tesla app"}
+    }
+  ]
+}

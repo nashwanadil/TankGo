@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Tankpreise NL</title>
+<style>
+:root{
+  --bg:#f4f6fa;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#e2e8f0;
+  --accent:#d97706;--up:#dc2626;--down:#16a34a;
+  --e95:#2563eb;--diesel:#d97706;--lpg:#0d9488;--ev:#7c3aed;
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#0f172a;--card:#1e293b;--text:#f1f5f9;--muted:#94a3b8;--line:#334155;
+    --accent:#f59e0b;--up:#f87171;--down:#4ade80;--e95:#60a5fa;--diesel:#fbbf24;--lpg:#2dd4bf;--ev:#a78bfa}
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);
+  font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:720px;margin:0 auto;padding:12px 16px calc(24px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0 12px}
+h1{font-size:20px;margin:0}
+h2{font-size:16px;margin:0 0 10px}
+.sub{color:var(--muted);font-size:13px}
+.seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:2px}
+.seg button{border:0;background:none;color:var(--muted);font:600 13px system-ui;padding:6px 10px;border-radius:8px}
+.seg button.on{background:var(--accent);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:480px){.grid{gap:8px}.card.price{padding:10px}.price .val{font-size:20px}.price .val small{display:none}.price .name{font-size:13px}.chg{font-size:11px}.chg .vp{display:none}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.price{display:flex;flex-direction:column;gap:2px;cursor:pointer;border-left:4px solid var(--c)}
+.price.sel{outline:2px solid var(--c)}
+.price .name{font-weight:600}
+.price .val{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums}
+.price .val small{font-size:14px;font-weight:500;color:var(--muted)}
+.chg{font-size:13px;font-variant-numeric:tabular-nums}
+.chg.up{color:var(--up)}.chg.down{color:var(--down)}.chg.flat{color:var(--muted)}
+section{margin-top:14px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+svg{display:block;width:100%;height:auto}
+.stats{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:6px}
+.stats b{color:var(--text);font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:8px 4px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:600}
+td.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:600}
+tr:last-child td{border-bottom:0}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+input{font:16px system-ui;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text);width:100%}
+.calc{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;align-items:end}
+.note{font-size:12px;color:var(--muted);margin-top:8px}
+.banner{background:var(--accent);color:#fff;border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:10px;display:none}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:8px;padding:6px 10px;font:600 13px system-ui}
+footer{margin-top:18px;font-size:12px;color:var(--muted);text-align:center}
+footer a{color:var(--muted)}
+.skel{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1 data-i="title"></h1>
+      <div class="sub" id="asof"></div>
+    </div>
+    <div class="seg" id="lang">
+      <button data-l="de">DE</button><button data-l="nl">NL</button><button data-l="en">EN</button>
+    </div>
+  </header>
+
+  <div class="banner" id="banner"></div>
+
+  <div class="grid" id="cards"></div>
+
+  <section class="card">
+    <div class="row">
+      <h2 id="chartTitle"></h2>
+      <div class="seg" id="range">
+        <button data-r="30">30T</button><button data-r="90">90T</button><button data-r="365">1J</button>
+      </div>
+    </div>
+    <div id="chart" class="skel"></div>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <section class="card">
+    <h2 data-i="calcTitle"></h2>
+    <div class="calc">
+      <label><span data-i="distance"></span><input id="km" type="number" inputmode="decimal" min="0" value="100"></label>
+      <label><span data-i="consFuel"></span><input id="lp100" type="number" inputmode="decimal" min="0" step="0.1" value="6.5"></label>
+      <label><span data-i="consLpg"></span><input id="lpg100" type="number" inputmode="decimal" min="0" step="0.1" value="8.5"></label>
+      <label><span data-i="consEv"></span><input id="kwh100" type="number" inputmode="decimal" min="0" step="0.1" value="17"></label>
+    </div>
+    <table style="margin-top:10px"><tbody id="calcOut"></tbody></table>
+  </section>
+
+  <section class="card">
+    <h2 data-i="evTitle"></h2>
+    <table>
+      <thead><tr><th data-i="evType"></th><th style="text-align:right" data-i="evPrice"></th></tr></thead>
+      <tbody id="evBody"></tbody>
+    </table>
+    <div class="note" id="evNote"></div>
+  </section>
+
+  <footer>
+    <div id="srcNote"></div>
+    <div style="margin-top:6px"><button class="btn" id="reload" data-i="reload"></button></div>
+  </footer>
+</div>
+
+<script>
+"use strict";
+const I18N = {
+  de:{title:"Tankpreise Niederlande",e95:"Benzin Euro 95",diesel:"Diesel",lpg:"Autogas (LPG)",perL:"€/L",
+    asof:"Stand: {d}",vsPrev:"ggü. Vortag",trend:"Preisverlauf: {f}",min:"Tief",max:"Hoch",avg:"Ø",
+    r30:"30T",r90:"90T",r365:"1J",calcTitle:"Kostenrechner",distance:"Strecke (km)",consFuel:"Verbrauch Benzin/Diesel (L/100 km)",
+    consLpg:"Verbrauch LPG (L/100 km)",consEv:"Verbrauch E-Auto (kWh/100 km)",evTitle:"Strompreise E-Auto (Richtwerte)",
+    evType:"Ladeart",evPrice:"€/kWh",evNote:"Richtwerte, Stand {d}. Tatsächliche Preise je nach Anbieter, Gemeinde und Tarif – bitte in der Lade-App prüfen.",
+    src:"Kraftstoff: Landesdurchschnitt der Zapfsäulenpreise inkl. Steuern, Quelle CBS (CC BY 4.0). Veröffentlichung mit einigen Tagen Verzögerung.",
+    reload:"Aktualisieren",offline:"Keine Verbindung – zeige gespeicherte Daten vom {d}.",error:"Daten konnten nicht geladen werden.",
+    loading:"Lade Daten …",evHome:"E-Auto, Laden zu Hause",evPublic:"E-Auto, öffentliche Ladesäule",evFast:"E-Auto, Schnelllader"},
+  nl:{title:"Brandstofprijzen Nederland",e95:"Benzine Euro 95",diesel:"Diesel",lpg:"Autogas (LPG)",perL:"€/L",
+    asof:"Peildatum: {d}",vsPrev:"t.o.v. vorige dag",trend:"Prijsverloop: {f}",min:"Laag",max:"Hoog",avg:"Gem.",
+    r30:"30D",r90:"90D",r365:"1J",calcTitle:"Kostencalculator",distance:"Afstand (km)",consFuel:"Verbruik benzine/diesel (L/100 km)",
+    consLpg:"Verbruik LPG (L/100 km)",consEv:"Verbruik EV (kWh/100 km)",evTitle:"Stroomprijzen elektrische auto (indicatief)",
+    evType:"Soort laden",evPrice:"€/kWh",evNote:"Indicatieve prijzen, stand {d}. Werkelijke prijzen verschillen per aanbieder, gemeente en abonnement – controleer de laad-app.",
+    src:"Brandstof: landelijk gemiddelde pompprijs incl. accijns en btw, bron CBS (CC BY 4.0). Publicatie met enkele dagen vertraging.",
+    reload:"Vernieuwen",offline:"Geen verbinding – opgeslagen gegevens van {d}.",error:"Gegevens konden niet worden geladen.",
+    loading:"Gegevens laden …",evHome:"EV, thuis laden",evPublic:"EV, publieke laadpaal",evFast:"EV, snellader"},
+  en:{title:"Fuel prices Netherlands",e95:"Petrol Euro 95",diesel:"Diesel",lpg:"Autogas (LPG)",perL:"€/L",
+    asof:"As of: {d}",vsPrev:"vs. previous day",trend:"Price trend: {f}",min:"Low",max:"High",avg:"Avg",
+    r30:"30D",r90:"90D",r365:"1Y",calcTitle:"Cost calculator",distance:"Distance (km)",consFuel:"Consumption petrol/diesel (L/100 km)",
+    consLpg:"Consumption LPG (L/100 km)",consEv:"Consumption EV (kWh/100 km)",evTitle:"EV charging prices (indicative)",
+    evType:"Charging type",evPrice:"€/kWh",evNote:"Indicative prices as of {d}. Actual prices vary by operator, municipality and plan – check your charging app.",
+    src:"Fuel: national average pump price incl. taxes, source CBS (CC BY 4.0). Published with a delay of a few days.",
+    reload:"Refresh",offline:"Offline – showing saved data from {d}.",error:"Could not load data.",
+    loading:"Loading data …",evHome:"EV, home charging",evPublic:"EV, public charger",evFast:"EV, fast charger"}
+};
+const LOCALE = {de:"de-DE",nl:"nl-NL",en:"en-GB"};
+const FUELS = [
+  {k:"e95",f:"BenzineEuro95_1",c:"var(--e95)"},
+  {k:"diesel",f:"Diesel_2",c:"var(--diesel)"},
+  {k:"lpg",f:"Lpg_3",c:"var(--lpg)"}
+];
+const CACHE_KEY="cbs80416_v1";
+const API="https://opendata.cbs.nl/ODataApi/odata/80416ned/TypedDataSet";
+
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+let lang = store.get("lang") || (()=>{const n=(navigator.language||"de").slice(0,2);return I18N[n]?n:"de"})();
+let sel = store.get("fuel") || "e95";
+let range = store.get("range") || 90;
+let rows = [];     // [{d:Date,key:"YYYYMMDD",e95,diesel,lpg}]
+let ev = null;
+
+const $=s=>document.querySelector(s);
+const t=(k,p={})=>(I18N[lang][k]||k).replace(/\{(\w+)\}/g,(_,x)=>p[x]??"");
+const nf=(v,d=3)=>new Intl.NumberFormat(LOCALE[lang],{minimumFractionDigits:d,maximumFractionDigits:d}).format(v);
+const eur=v=>new Intl.NumberFormat(LOCALE[lang],{style:"currency",currency:"EUR"}).format(v);
+const fd=(d,o={day:"2-digit",month:"2-digit",year:"numeric"})=>new Intl.DateTimeFormat(LOCALE[lang],o).format(d);
+const parseKey=k=>new Date(+k.slice(0,4),+k.slice(4,6)-1,+k.slice(6,8));
+const keyOf=d=>d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function normalize(v){
+  return v.filter(r=>/^\d{8}$/.test(r.Perioden) && r.BenzineEuro95_1>0)
+    .map(r=>({key:r.Perioden,d:parseKey(r.Perioden),e95:r.BenzineEuro95_1,diesel:r.Diesel_2,lpg:r.Lpg_3}))
+    .sort((a,b)=>a.key<b.key?-1:1);
+}
+
+async function fetchCBS(){
+  const from=new Date();from.setDate(from.getDate()-400);
+  const url=`${API}?$filter=${encodeURIComponent(`Perioden ge '${keyOf(from)}'`)}&$select=Perioden,BenzineEuro95_1,Diesel_2,Lpg_3&$format=json`;
+  const ctl=new AbortController();const to=setTimeout(()=>ctl.abort(),20000);
+  try{
+    const r=await fetch(url,{signal:ctl.signal});
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const j=await r.json();
+    return j.value;
+  } finally { clearTimeout(to); }
+}
+
+async function load(force){
+  const cached=store.get(CACHE_KEY);
+  if(cached){rows=normalize(cached.v);render();}
+  else $("#chart").textContent=t("loading");
+  const fresh = cached && (Date.now()-cached.ts < 3*3600e3);
+  if(fresh && !force){ hideBanner(); return; }
+  try{
+    const v=await fetchCBS();
+    store.set(CACHE_KEY,{ts:Date.now(),v});
+    rows=normalize(v); hideBanner(); render();
+  }catch(e){
+    if(cached) showBanner(t("offline",{d:fd(new Date(cached.ts),{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}));
+    else { showBanner(t("error")); $("#chart").textContent=""; }
+  }
+}
+function showBanner(m){const b=$("#banner");b.textContent=m;b.style.display="block"}
+function hideBanner(){$("#banner").style.display="none"}
+
+async function loadEV(){
+  try{ const r=await fetch("ev.json"); ev=await r.json(); }catch(e){ ev=null; }
+  renderEV(); renderCalc();
+}
+
+function render(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll("[data-i]").forEach(el=>el.textContent=t(el.dataset.i));
+  document.querySelectorAll("#lang button").forEach(b=>b.classList.toggle("on",b.dataset.l===lang));
+  document.querySelectorAll("#range button").forEach(b=>{b.classList.toggle("on",+b.dataset.r===range);b.textContent=t("r"+b.dataset.r)});
+  $("#srcNote").textContent=t("src");
+  renderCards(); renderChart(); renderEV(); renderCalc();
+}
+
+function renderCards(){
+  const last=rows[rows.length-1], prev=rows[rows.length-2];
+  $("#asof").textContent = last ? t("asof",{d:fd(last.d,{weekday:"short",day:"2-digit",month:"long",year:"numeric"})}) : "";
+  $("#cards").innerHTML = FUELS.map(F=>{
+    const v=last?.[F.k], p=prev?.[F.k];
+    let chg="";
+    if(v!=null && p!=null){
+      const d=v-p, cls=Math.abs(d)<0.0005?"flat":d>0?"up":"down", arrow=cls==="flat"?"→":d>0?"▲":"▼";
+      chg=`<span class="chg ${cls}">${arrow} ${d>0?"+":""}${nf(d*100,1)} ct <span class="vp">${t("vsPrev")}</span></span>`;
+    }
+    return `<div class="card price${sel===F.k?" sel":""}" style="--c:${F.c}" data-f="${F.k}">
+      <span class="name">${t(F.k)}</span>
+      <span class="val">${v!=null?nf(v):"–"} <small>${t("perL")}</small></span>${chg}</div>`;
+  }).join("");
+  document.querySelectorAll(".price").forEach(el=>el.onclick=()=>{sel=el.dataset.f;store.set("fuel",sel);renderCards();renderChart();});
+}
+
+function renderChart(){
+  const F=FUELS.find(x=>x.k===sel);
+  $("#chartTitle").textContent=t("trend",{f:t(sel)});
+  if(!rows.length) return;
+  const cut=new Date(rows[rows.length-1].d); cut.setDate(cut.getDate()-range);
+  const pts=rows.filter(r=>r.d>=cut && r[sel]>0);
+  if(pts.length<2){$("#chart").textContent="";return;}
+  const W=Math.max(300,Math.round($("#chart").clientWidth||640)),H=Math.round(Math.min(260,Math.max(190,W*0.5))),L=44,R=8,T=12,B=26;
+  const vals=pts.map(p=>p[sel]);
+  let lo=Math.min(...vals),hi=Math.max(...vals);const pad=Math.max((hi-lo)*0.1,0.01);lo-=pad;hi+=pad;
+  const x0=pts[0].d.getTime(),x1=pts[pts.length-1].d.getTime();
+  const X=d=>L+(d.getTime()-x0)/(x1-x0)*(W-L-R), Y=v=>T+(hi-v)/(hi-lo)*(H-T-B);
+  const path=pts.map((p,i)=>(i?"L":"M")+X(p.d).toFixed(1)+","+Y(p[sel]).toFixed(1)).join("");
+  const area=path+`L${X(pts[pts.length-1].d).toFixed(1)},${H-B}L${L},${H-B}Z`;
+  let grid="";
+  for(let i=0;i<=4;i++){const v=lo+(hi-lo)*i/4,y=Y(v);
+    grid+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${L-6}" y="${y+4}" text-anchor="end" font-size="11" fill="var(--muted)">${nf(v,2)}</text>`;}
+  let xl="";const n=4;
+  for(let i=0;i<=n;i++){const p=pts[Math.round((pts.length-1)*i/n)];
+    xl+=`<text x="${X(p.d)}" y="${H-8}" text-anchor="${i===0?"start":i===n?"end":"middle"}" font-size="11" fill="var(--muted)">${fd(p.d,range>200?{month:"short",year:"2-digit"}:{day:"2-digit",month:"2-digit"})}</text>`;}
+  const lp=pts[pts.length-1];
+  $("#chart").className="";
+  $("#chart").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("trend",{f:t(sel)}))}">
+    <defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${F.c}" stop-opacity=".25"/><stop offset="1" stop-color="${F.c}" stop-opacity="0"/></linearGradient></defs>
+    ${grid}<path d="${area}" fill="url(#g)"/><path d="${path}" fill="none" stroke="${F.c}" stroke-width="2.2" stroke-linejoin="round"/>
+    <circle cx="${X(lp.d)}" cy="${Y(lp[sel])}" r="4" fill="${F.c}"/>${xl}
+    <line id="hx" y1="${T}" y2="${H-B}" stroke="var(--muted)" stroke-dasharray="3 3" visibility="hidden"/>
+    <rect x="${L}" y="${T}" width="${W-L-R}" height="${H-T-B}" fill="transparent" id="hit"/>
+  </svg>`;
+  const mn=Math.min(...vals),mx=Math.max(...vals),av=vals.reduce((a,b)=>a+b,0)/vals.length;
+  const base=`<span>${t("min")} <b>${nf(mn)}</b></span><span>${t("max")} <b>${nf(mx)}</b></span><span>${t("avg")} <b>${nf(av)}</b></span>`;
+  $("#stats").innerHTML=base;
+  const svg=$("#chart svg"),hit=$("#hit"),hx=$("#hx");
+  const move=ev=>{
+    const r=svg.getBoundingClientRect(),cx=((ev.touches?ev.touches[0].clientX:ev.clientX)-r.left)/r.width*W;
+    let best=pts[0];for(const p of pts) if(Math.abs(X(p.d)-cx)<Math.abs(X(best.d)-cx)) best=p;
+    hx.setAttribute("x1",X(best.d));hx.setAttribute("x2",X(best.d));hx.setAttribute("visibility","visible");
+    $("#stats").innerHTML=`<span><b>${fd(best.d)}</b>: <b>${nf(best[sel])}</b> ${t("perL")}</span>`;
+  };
+  const leave=()=>{hx.setAttribute("visibility","hidden");$("#stats").innerHTML=base;};
+  hit.addEventListener("mousemove",move);hit.addEventListener("touchmove",move,{passive:true});
+  hit.addEventListener("touchstart",move,{passive:true});
+  hit.addEventListener("mouseleave",leave);hit.addEventListener("touchend",leave);
+}
+
+function evLabel(it){return it.label?.[lang]||it.label?.en||it.id}
+function renderEV(){
+  if(!ev){$("#evBody").innerHTML="";$("#evNote").textContent="";return;}
+  $("#evBody").innerHTML=ev.items.map(it=>{
+    const price = it.price!=null ? nf(it.price,2) : "";
+    const rng = it.min!=null&&it.max!=null ? `${nf(it.min,2)}–${nf(it.max,2)}` : "";
+    const val = price && rng ? `${price}<div class="sub">${rng}</div>` : (price||rng||"–");
+    const extra = it.extra?.[lang]||it.extra?.en;
+    return `<tr><td>${esc(evLabel(it))}${extra?`<div class="sub">${esc(extra)}</div>`:""}</td><td class="num">${val}</td></tr>`;
+  }).join("");
+  $("#evNote").textContent=t("evNote",{d:fd(new Date(ev.asOf))});
+}
+
+function renderCalc(){
+  const last=rows[rows.length-1];
+  const num=id=>Math.max(0,parseFloat($(id).value.replace(",","."))||0);
+  const km=num("#km"),lp=num("#lp100"),lg=num("#lpg100"),kw=num("#kwh100");
+  const out=[];
+  if(last){
+    out.push([t("e95"),last.e95*lp*km/100]);
+    out.push([t("diesel"),last.diesel*lp*km/100]);
+    out.push([t("lpg"),last.lpg*lg*km/100]);
+  }
+  if(ev){
+    const g=id=>ev.items.find(i=>i.id===id)?.price;
+    [["home","evHome"],["public","evPublic"],["fast","evFast"]].forEach(([id,k])=>{const p=g(id); if(p!=null) out.push([t(k),p*kw*km/100]);});
+  }
+  $("#calcOut").innerHTML=out.map(([n,v])=>`<tr><td>${esc(n)}</td><td class="num">${eur(v)}</td></tr>`).join("");
+}
+
+document.querySelectorAll("#lang button").forEach(b=>b.onclick=()=>{lang=b.dataset.l;store.set("lang",lang);render();});
+document.querySelectorAll("#range button").forEach(b=>b.onclick=()=>{range=+b.dataset.r;store.set("range",range);render();});
+["#km","#lp100","#lpg100","#kwh100"].forEach(id=>$(id).addEventListener("input",renderCalc));
+$("#reload").onclick=()=>load(true);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden) load(false);});
+let rz;window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(renderChart,150);});
+
+render(); load(false); loadEV();
+</script>
+</body>
+</html>
