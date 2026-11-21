@@ -187,7 +187,7 @@ function setLang(l){L=l;document.documentElement.lang=l;document.documentElement
  document.querySelectorAll('[data-t]').forEach(el=>el.innerHTML=T[l][el.dataset.t]);
  document.querySelectorAll('.langs button').forEach(b=>b.classList.toggle('on',b.dataset.l===l));
  $('foot').innerHTML=T[l].foot;
- $('feats').innerHTML=T[l].feats.map(([h,p,pro],i)=>`<div class="feat"><div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${ICONS[i]}"/></svg></div><h3>${h}${pro?'<span class="pro">PREMIUM</span>':''}</h3><p>${p}</p></div>`).join('');
+ $('feats').innerHTML=[0,1,2,3,5,4].map(i=>[...T[l].feats[i],i]).map(([h,p,pro,i])=>`<div class="feat"><div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${ICONS[i]}"/></svg></div><h3>${h}${pro?'<span class="pro">PREMIUM</span>':''}</h3><p>${p}</p></div>`).join('');
  $('fuelSeg').innerHTML=['e95','diesel','lpg'].map(f=>`<button data-f="${f}" class="${f===fuel?'on':''}">${FUEL[l][f]}</button>`).join('');
  try{localStorage.setItem('tg_lang',l)}catch(e){}
  render()}
