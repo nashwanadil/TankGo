@@ -39,6 +39,10 @@ ThemeData _theme(Brightness b) {
     colorScheme: scheme,
     useMaterial3: true,
     scaffoldBackgroundColor: scheme.surface,
+    appBarTheme: AppBarTheme(
+      iconTheme: IconThemeData(color: dark ? gold : brand),
+      actionsIconTheme: IconThemeData(color: dark ? gold : brand),
+    ),
     cardTheme: CardThemeData(
       elevation: 0,
       margin: const EdgeInsets.symmetric(vertical: 4),

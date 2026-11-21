@@ -168,13 +168,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _release(Entry e) {
-    final t = _touch!;
-    setState(() {
-      _touch = null;
-      _pin = t.$1 == e.date ? null : t;
-      _pulse = true;
-    });
+  void _glow() {
+    setState(() => _pulse = true);
     Future<void>.delayed(const Duration(milliseconds: 700), () {
       if (mounted) setState(() => _pulse = false);
     });
@@ -209,6 +204,7 @@ class _HomePageState extends State<HomePage> {
       _touch = null;
       _pin = pt.$1 == ser.points.last.$1 && e.date == pt.$1 ? null : pt;
     });
+    _glow();
   }
 
   Widget _hero(BuildContext c, Entry e, String lang) {
@@ -430,11 +426,34 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   lineTouchData: LineTouchData(
-                    touchTooltipData: LineTouchTooltipData(getTooltipItems: (spots) => [for (final _ in spots) null]),
+                    getTouchLineStart: (_, _) => -double.infinity,
+                    getTouchLineEnd: (_, _) => double.infinity,
+                    getTouchedSpotIndicator: (bar, idx) => [
+                      for (final _ in idx)
+                        TouchedSpotIndicatorData(
+                          FlLine(color: col, strokeWidth: 1.5, dashArray: const [4, 3]),
+                          FlDotData(getDotPainter: (_, _, _, _) => FlDotCirclePainter(radius: 5, color: col, strokeWidth: 2, strokeColor: Colors.white)),
+                        ),
+                    ],
+                    touchTooltipData: LineTouchTooltipData(
+                      showOnTopOfTheChartBoxArea: true,
+                      fitInsideHorizontally: true,
+                      tooltipMargin: 0,
+                      tooltipBorderRadius: BorderRadius.circular(10),
+                      getTooltipColor: (_) => col,
+                      getTooltipItems: (spots) => [
+                        for (final sp in spots)
+                          LineTooltipItem(
+                            '${fmtMoney(sp.y, ser.currency, lang)}\n',
+                            TextStyle(color: Theme.of(c).brightness == Brightness.dark ? const Color(0xFF2A1D17) : Colors.white, fontWeight: FontWeight.w800, fontSize: 13),
+                            children: [TextSpan(text: fmtDate(pts[sp.spotIndex].$1, lang), style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11))],
+                          ),
+                      ],
+                    ),
                     touchCallback: (event, resp) {
                       final spots = resp?.lineBarSpots;
                       if (!event.isInterestedForInteractions || spots == null || spots.isEmpty) {
-                        if (_touch != null) _release(e);
+                        if (_touch != null) setState(() => _touch = null);
                         return;
                       }
                       final pt = pts[spots.first.spotIndex];
