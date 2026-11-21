@@ -19,6 +19,7 @@ FREE
 • Petrol 95, diesel and LPG prices for every country, with the date of every price
 • Price chart for the last month – touch it to see the price of any day
 • Compare your country with its neighbours: what a full tank costs next door
+• Cheapest fuel stations near you with real station prices – France, Spain and Italy (more countries to follow)
 • Cost calculator for any distance
 • 27 languages, including Arabic, Persian and Kurdish
 • Light and dark theme, works offline
@@ -31,9 +32,9 @@ PREMIUM
 
 Premium is available as a yearly subscription, a one-time lifetime purchase, or a one-month trip pass that does not renew.
 
-Prices are national averages from official sources: the EU Weekly Oil Bulletin, CBS (Netherlands) and the U.S. EIA. They are not individual station prices and can be several days old, so the update date is always shown next to each price. The price outlook is an indication, not a forecast.
+Prices are national averages from official sources: the EU Weekly Oil Bulletin, CBS (Netherlands) and the U.S. EIA. The nearby-stations list shows individual station prices for France, Spain and Italy as reported by the stations. Prices can be several days old, so the update date is always shown next to each price. The price outlook is an indication, not a forecast.
 
-No ads, no accounts, no tracking.
+No ads, no accounts, no tracking. Your approximate location is used only on your device to find nearby stations and is never sent or stored.
 
 
 ## de-DE
@@ -50,6 +51,7 @@ KOSTENLOS
 • Preise für Benzin 95, Diesel und LPG je Land, mit Datum zu jedem Preis
 • Preisverlauf des letzten Monats – Diagramm berühren und den Preis jedes Tages sehen
 • Ihr Land mit den Nachbarländern vergleichen: was eine Tankfüllung nebenan kostet
+• Günstigste Tankstellen in deiner Nähe mit echten Stationspreisen – Frankreich, Spanien und Italien (weitere Länder folgen)
 • Kostenrechner für jede Strecke
 • 27 Sprachen, auch Arabisch, Persisch und Kurdisch
 • Helles und dunkles Design, funktioniert offline
@@ -62,9 +64,9 @@ PREMIUM
 
 Premium gibt es als Jahresabo, als einmaligen Kauf für immer oder als Reisepass für einen Monat ohne Verlängerung.
 
-Die Preise sind nationale Durchschnittswerte aus offiziellen Quellen: Weekly Oil Bulletin der EU, CBS (Niederlande) und U.S. EIA. Es sind keine Preise einzelner Tankstellen und sie können mehrere Tage alt sein – daher steht das Datum immer neben jedem Preis. Der Preisausblick ist ein Richtwert, keine Prognose.
+Die Preise sind nationale Durchschnittswerte aus offiziellen Quellen: Weekly Oil Bulletin der EU, CBS (Niederlande) und U.S. EIA. Die Liste in deiner Nähe zeigt Preise einzelner Tankstellen in Frankreich, Spanien und Italien, wie von den Tankstellen gemeldet. Preise können mehrere Tage alt sein – daher steht das Datum immer neben jedem Preis. Der Preisausblick ist ein Richtwert, keine Prognose.
 
-Keine Werbung, keine Konten, kein Tracking.
+Keine Werbung, keine Konten, kein Tracking. Dein ungefährer Standort wird nur auf deinem Gerät genutzt, um Tankstellen zu finden – er wird nie gesendet oder gespeichert.
 
 
 ## ar
@@ -81,6 +83,7 @@ Keine Werbung, keine Konten, kein Tracking.
 • أسعار البنزين 95 والديزل وغاز LPG لكل دولة، مع تاريخ كل سعر
 • مخطط أسعار الشهر الأخير، المسه لترى سعر أي يوم
 • قارن بلدك بجيرانه: كم يكلّف الخزان الممتلئ في البلد المجاور
+• أرخص محطات الوقود القريبة منك بأسعار المحطات الفعلية – فرنسا وإسبانيا وإيطاليا (ودول أخرى قريبًا)
 • حاسبة تكلفة لأي مسافة
 • 27 لغة، منها العربية والفارسية والكردية
 • مظهر فاتح وداكن، ويعمل دون إنترنت
@@ -93,9 +96,9 @@ Premium
 
 يتوفر Premium باشتراك سنوي، أو بشراء واحد مدى الحياة، أو بتذكرة رحلة لشهر واحد لا تتجدد.
 
-الأسعار متوسطات وطنية من مصادر رسمية: النشرة الأسبوعية للنفط في الاتحاد الأوروبي، وCBS (هولندا)، وEIA الأمريكية. ليست أسعار محطات بعينها، وقد تكون قديمة بعدة أيام، لذلك يظهر تاريخ التحديث بجانب كل سعر دائمًا. توقع الأسعار مؤشر وليس تنبؤًا مؤكدًا.
+الأسعار متوسطات وطنية من مصادر رسمية: النشرة الأسبوعية للنفط في الاتحاد الأوروبي، وCBS (هولندا)، وEIA الأمريكية. أما قائمة المحطات القريبة فتعرض أسعار محطات بعينها في فرنسا وإسبانيا وإيطاليا كما تبلّغ عنها المحطات. وقد تكون الأسعار قديمة بعدة أيام، لذلك يظهر تاريخ التحديث بجانب كل سعر دائمًا. توقع الأسعار مؤشر وليس تنبؤًا مؤكدًا.
 
-بلا إعلانات، وبلا حسابات، وبلا تتبّع.
+بلا إعلانات، وبلا حسابات، وبلا تتبّع. يُستخدم موقعك التقريبي على جهازك فقط للعثور على المحطات القريبة، ولا يُرسَل ولا يُخزَّن أبدًا.
 
 
 ## In-app products (Monetize → Products)
@@ -110,6 +113,7 @@ Premium
 
 - Does your app collect or share any of the required user data types? **No.**
 - Is all user data encrypted in transit? **Yes** (HTTPS only).
+- Location: the app requests **approximate (coarse) location** only (`ACCESS_COARSE_LOCATION`), used on the device to filter downloaded station lists. It is never transmitted or stored, so it is **not collected** – answer No. Do not declare precise/background location. Station files are static downloads containing no user data.
 - Can users request data deletion? **Not applicable** – no data is collected (settings stay on the device).
 - Purchases are processed by Google Play; the app receives no payment or personal data.
 

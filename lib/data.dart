@@ -1,7 +1,12 @@
 import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:flutter/foundation.dart' show compute;
 
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'stations.dart';
 
 const dataBase = String.fromEnvironment('DATA_BASE', defaultValue: 'https://tankgo.nashwanadil.com');
 const galToL = 3.78541;
@@ -88,5 +93,30 @@ class Api {
       }
     }
     return {for (final e in out.entries) e.key: Series(j['currency'], j['unit'], e.value..sort((a, b) => a.$1.compareTo(b.$1)))};
+  }
+
+  final _stationCache = <String, StationFile>{};
+
+  /// Station list per country (whole file; callers filter on the device). Throws on network/parse errors.
+  /// Big files are parsed in an isolate; results are kept in memory only.
+  Future<StationFile> stations(String cc, {bool refresh = false}) async {
+    if (!refresh && _stationCache[cc] != null) return _stationCache[cc]!;
+    final r = await client.get(Uri.parse('$dataBase/v1/stations/$cc.json')).timeout(const Duration(seconds: 60));
+    if (r.statusCode != 200) throw Exception('HTTP ${r.statusCode}');
+    final bytes = r.bodyBytes;
+    final f = bytes.length > 200000 ? await compute<Uint8List, StationFile>(parseStationFile, bytes) : parseStationFile(bytes);
+    return _stationCache[cc] = f;
+  }
+
+  /// Country codes that currently have station data, or null if the index cannot be read.
+  Future<Set<String>?> stationIndex() async {
+    try {
+      final r = await client.get(Uri.parse('$dataBase/v1/stations/index.json')).timeout(const Duration(seconds: 15));
+      if (r.statusCode != 200) return null;
+      final c = (jsonDecode(utf8.decode(r.bodyBytes)) as Map)['countries'] as Map?;
+      return c?.keys.cast<String>().toSet();
+    } catch (_) {
+      return null;
+    }
   }
 }

@@ -15,6 +15,7 @@ import 'paywall.dart';
 import 'trip_page.dart';
 import 'fmt.dart';
 import 'settings_page.dart';
+import 'stations_page.dart';
 
 const _fuelDark = {'e95': gold, 'diesel': fuelDieselDark, 'lpg': fuelLpgDark};
 const _fuelLight = {'e95': fuelE95Light, 'diesel': fuelDieselLight, 'lpg': positive};
@@ -179,6 +180,7 @@ class _HomePageState extends State<HomePage> {
                 _hero(context, entry, lang),
                 const SizedBox(height: 8),
                 _tiles(context, entry, lang),
+                _stationsCard(context),
                 const SizedBox(height: 8),
                 _chartCard(context, cc, entry, lang),
                 _outlook(context, lang),
@@ -592,6 +594,23 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
       ],
+    );
+  }
+
+  Widget _stationsCard(BuildContext c) {
+    return Card(
+      key: const ValueKey('stNear'),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(rCard),
+        side: const BorderSide(color: gold, width: 2),
+      ),
+      child: ListTile(
+        leading: const Icon(Icons.local_gas_station, color: gold, size: 30),
+        title: Text(tx(c, 'stNear'), style: const TextStyle(fontWeight: FontWeight.w700)),
+        subtitle: Text(tx(c, 'stCovered')),
+        trailing: Icon(Icons.chevron_right, color: Theme.of(c).colorScheme.onSurface),
+        onTap: () => Navigator.push(c, MaterialPageRoute<void>(builder: (_) => StationsPage(api: widget.api, settings: widget.settings, fuel: _fuel))),
+      ),
     );
   }
 
