@@ -94,19 +94,28 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: ActionChip(
-          avatar: Text(country.flag, style: const TextStyle(fontSize: 20)),
-          label: Text(country.name),
-          onPressed: () async {
-            final v = await pickCountry(context);
-            if (v != null && v != cc) {
-              await widget.settings.setCountry(v);
-              setState(() {
-                _hist = null;
-                _pin = null;
-              });
-            }
-          },
+        titleSpacing: 12,
+        title: Row(
+          children: [
+            Flexible(
+              child: ActionChip(
+                avatar: Text(country.flag, style: const TextStyle(fontSize: 20)),
+                label: Text(country.name, overflow: TextOverflow.ellipsis),
+                onPressed: () async {
+                  final v = await pickCountry(context);
+                  if (v != null && v != cc) {
+                    await widget.settings.setCountry(v);
+                    setState(() {
+                      _hist = null;
+                      _pin = null;
+                    });
+                  }
+                },
+              ),
+            ),
+            const SizedBox(width: 6),
+            _langMenu(context, lang),
+          ],
         ),
         actions: [
           IconButton(
@@ -436,6 +445,69 @@ class _HomePageState extends State<HomePage> {
             textAlign: TextAlign.center,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _langMenu(BuildContext context, String lang) {
+    final cs = Theme.of(context).colorScheme;
+    final items = languages.where((l) => !l.$2.startsWith('English ('));
+    return PopupMenuButton<String>(
+      tooltip: tr(context, 'language'),
+      initialValue: lang,
+      color: brandDark,
+      elevation: 4,
+      position: PopupMenuPosition.under,
+      offset: const Offset(0, 6),
+      constraints: const BoxConstraints(minWidth: 230, maxHeight: 440),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(rElement),
+        side: BorderSide(color: gold.withValues(alpha: 0.6)),
+      ),
+      onSelected: widget.settings.setLang,
+      itemBuilder: (_) => [
+        for (final (code, name, flag) in items)
+          PopupMenuItem(
+            value: code,
+            height: 46,
+            child: Row(
+              children: [
+                Text(flag, style: const TextStyle(fontSize: 20)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    name,
+                    style: TextStyle(color: code == lang ? gold : cream, fontWeight: code == lang ? FontWeight.w800 : FontWeight.w500),
+                  ),
+                ),
+                Text(
+                  code.toUpperCase(),
+                  style: TextStyle(color: cream.withValues(alpha: 0.55), fontSize: 12, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(width: 8),
+                Icon(Icons.check, size: 18, color: code == lang ? gold : Colors.transparent),
+              ],
+            ),
+          ),
+      ],
+      child: Container(
+        height: 40,
+        padding: const EdgeInsetsDirectional.fromSTEB(12, 0, 6, 0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(rElement),
+          border: Border.all(color: Theme.of(context).dividerColor),
+          color: Theme.of(context).cardTheme.color,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              lang.toUpperCase(),
+              style: TextStyle(fontWeight: FontWeight.w800, color: cs.primary, fontSize: 14),
+            ),
+            Icon(Icons.expand_more, size: 18, color: cs.primary),
+          ],
+        ),
       ),
     );
   }
