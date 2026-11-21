@@ -6,6 +6,7 @@ import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fuelprices/app.dart';
 import 'package:fuelprices/data.dart';
+import 'package:fuelprices/premium.dart';
 import 'package:fuelprices/settings.dart';
 
 final _latest = jsonEncode({
@@ -24,7 +25,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final api = Api(MockClient((r) async => http.Response(r.url.path.contains('history') ? _hist : _latest, 200)));
     final s = Settings(await SharedPreferences.getInstance());
-    await t.pumpWidget(TankGoApp(settings: s, api: api));
+    await t.pumpWidget(TankGoApp(settings: s, api: api, premium: Premium(await SharedPreferences.getInstance(), billing: false)));
     await t.pumpAndSettle();
     expect(find.text('Deutsch'), findsOneWidget);
     await t.ensureVisible(find.text('Deutsch'));
@@ -48,17 +49,17 @@ void main() {
     SharedPreferences.setMockInitialValues({'lang': 'en', 'country': 'US', 'noteSeen': true});
     final api = Api(MockClient((r) async => http.Response(r.url.path.contains('history') ? _hist : _latest, 200)));
     final s = Settings(await SharedPreferences.getInstance());
-    await t.pumpWidget(TankGoApp(settings: s, api: api));
+    await t.pumpWidget(TankGoApp(settings: s, api: api, premium: Premium(await SharedPreferences.getInstance(), billing: false)));
     await t.pumpAndSettle();
     expect(find.text('Please note'), findsNothing);
     expect(find.textContaining('\$3.000 /gal'), findsOneWidget);
   });
 
   testWidgets('calendar: pick a past date shows its price', (t) async {
-    SharedPreferences.setMockInitialValues({'lang': 'en', 'country': 'US', 'noteSeen': true});
+    SharedPreferences.setMockInitialValues({'lang': 'en', 'country': 'US', 'noteSeen': true, 'p_life': true});
     final api = Api(MockClient((r) async => http.Response(r.url.path.contains('history') ? _hist : _latest, 200)));
     final s = Settings(await SharedPreferences.getInstance());
-    await t.pumpWidget(TankGoApp(settings: s, api: api));
+    await t.pumpWidget(TankGoApp(settings: s, api: api, premium: Premium(await SharedPreferences.getInstance(), billing: false)));
     await t.pumpAndSettle();
     await t.tap(find.byIcon(Icons.event));
     await t.pumpAndSettle();
@@ -67,9 +68,24 @@ void main() {
     await t.tap(find.text('OK'));
     await t.pumpAndSettle();
     expect(find.textContaining('\$2.140 /gal'), findsOneWidget);
-    await t.tap(find.text('✕'));
+    await t.tap(find.text('Latest'));
     await t.pumpAndSettle();
     expect(find.textContaining('\$3.000 /gal'), findsOneWidget);
+  });
+
+  testWidgets('calendar: free user is sent to the paywall for dates older than 30 days', (t) async {
+    SharedPreferences.setMockInitialValues({'lang': 'en', 'country': 'US', 'noteSeen': true});
+    final api = Api(MockClient((r) async => http.Response(r.url.path.contains('history') ? _hist : _latest, 200)));
+    final s = Settings(await SharedPreferences.getInstance());
+    await t.pumpWidget(TankGoApp(settings: s, api: api, premium: Premium(await SharedPreferences.getInstance(), billing: false)));
+    await t.pumpAndSettle();
+    await t.tap(find.byIcon(Icons.event));
+    await t.pumpAndSettle();
+    await t.tap(find.text('15'));
+    await t.tap(find.text('OK'));
+    await t.pumpAndSettle();
+    expect(find.text('Unlock TankGo Premium'), findsOneWidget);
+    expect(find.textContaining('\$2.140 /gal'), findsNothing);
   });
 
   test('gallon conversion', () {

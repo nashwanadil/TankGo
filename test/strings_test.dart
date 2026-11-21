@@ -3,8 +3,8 @@ import 'package:fuelprices/countries.dart';
 import 'package:fuelprices/strings.dart';
 
 void main() {
-  test('24 languages, every key translated', () {
-    expect(allStrings.length, 24);
+  test('27 languages, every key translated', () {
+    expect(allStrings.length, 27);
     allStrings.forEach((lang, v) {
       expect(v.length, keys.length, reason: lang);
       expect(v.any((s) => s.trim().isEmpty), false, reason: lang);
@@ -29,3 +29,4 @@ void main() {
     expect(suggestCountry('XX', 'sv').code, 'SE');
   });
 }
+

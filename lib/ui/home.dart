@@ -2,10 +2,14 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:material_ui/material_ui.dart';
 import '../countries.dart';
 import '../data.dart';
+import '../premium.dart';
 import '../settings.dart';
 import '../strings.dart';
 import 'brand.dart';
+import 'compare_page.dart';
 import 'country_sheet.dart';
+import 'paywall.dart';
+import 'trip_page.dart';
 import 'fmt.dart';
 import 'settings_page.dart';
 
@@ -17,19 +21,21 @@ const fuelOrder = ['e95', 'diesel', 'lpg'];
 String fuelName(BuildContext c, String f) => f == 'lpg' ? 'LPG' : tr(c, f);
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.settings, required this.api});
+  const HomePage({super.key, required this.settings, required this.api, required this.premium});
   final Settings settings;
   final Api api;
+  final Premium premium;
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   late Future<Loaded<Map<String, Entry>>> _latest = widget.api.latest();
+  late final Future<Signal?> _signal = widget.api.signal();
   Future<Map<String, Series>>? _hist;
   String? _histCc;
   String _fuel = 'e95';
-  int _days = 365;
+  int _days = 30;
   (DateTime, double)? _touch;
   (DateTime, double)? _pin;
   bool _pulse = false;
@@ -39,6 +45,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    widget.premium.addListener(_onPremium);
+    if (widget.premium.isPremium) _days = 365;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!widget.settings.noteSeen && mounted) {
         await showDialog<void>(
@@ -55,8 +63,16 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _onPremium() {
+    if (!mounted) return;
+    setState(() {
+      if (!widget.premium.isPremium && _days > freeDays) _days = freeDays;
+    });
+  }
+
   @override
   void dispose() {
+    widget.premium.removeListener(_onPremium);
     _km.dispose();
     _cons.dispose();
     super.dispose();
@@ -95,6 +111,24 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           IconButton(
+            tooltip: tx(context, 'compare'),
+            icon: const Icon(Icons.compare_arrows),
+            onPressed: () async {
+              final all = (await _latest).value;
+              if (all == null || !context.mounted) return;
+              Navigator.push(context, MaterialPageRoute<void>(builder: (_) => ComparePage(entries: all, home: cc, premium: widget.premium, fuel: _fuel)));
+            },
+          ),
+          IconButton(
+            tooltip: tx(context, 'trip'),
+            icon: const Icon(Icons.route_outlined),
+            onPressed: () async {
+              final all = (await _latest).value;
+              if (all == null || !context.mounted) return;
+              Navigator.push(context, MaterialPageRoute<void>(builder: (_) => TripPage(entries: all, home: cc, premium: widget.premium)));
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.settings_outlined),
             onPressed: () => Navigator.push(context, MaterialPageRoute<void>(builder: (_) => SettingsPage(settings: widget.settings))),
           ),
@@ -123,6 +157,7 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 8),
               _tiles(context, entry, lang),
               const SizedBox(height: 8),
+              _outlook(context, lang),
               _chartCard(context, cc, entry, lang),
               const SizedBox(height: 8),
               _calcCard(context, entry, lang),
@@ -158,8 +193,13 @@ class _HomePageState extends State<HomePage> {
       firstDate: first,
       lastDate: last,
       initialEntryMode: DatePickerEntryMode.calendarOnly,
+      helpText: widget.premium.isPremium ? null : '👑 ${tx(context, 'calHelp')}',
     );
     if (d == null || !mounted) return;
+    if (!widget.premium.isPremium && d.isBefore(DateUtils.dateOnly(e.date).subtract(const Duration(days: freeDays)))) {
+      showPaywall(context, widget.premium);
+      return;
+    }
     var pt = ser.points.first;
     for (final p in ser.points) {
       if (p.$1.isAfter(d)) break;
@@ -243,6 +283,31 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _outlook(BuildContext c, String lang) {
+    return FutureBuilder<Signal?>(
+      future: _signal,
+      builder: (c, s) {
+        final sig = s.data;
+        if (sig == null) return const SizedBox();
+        final premium = widget.premium.isPremium;
+        final (icon, col, key) = switch (sig.direction) {
+          'up' => (Icons.trending_up, const Color(0xFFD9534F), 'outUp'),
+          'down' => (Icons.trending_down, const Color(0xFF2E8B6A), 'outDown'),
+          _ => (Icons.trending_flat, Theme.of(c).colorScheme.onSurface, 'outFlat'),
+        };
+        return Card(
+          child: ListTile(
+            leading: Icon(premium ? icon : Icons.lock, color: premium ? col : gold, size: 30),
+            title: Text('${tx(c, 'outlook')}${premium ? ': ${tx(c, key)}' : ''}', style: const TextStyle(fontWeight: FontWeight.w700)),
+            subtitle: premium ? Text(tx(c, 'outWhy').replaceFirst('{d}', '${sig.deltaCt > 0 ? '+' : ''}${fmtNum(sig.deltaCt, lang, 1)}')) : Text(tx(c, 'f4')),
+            trailing: premium ? null : Text(tx(c, 'unlock'), style: const TextStyle(fontWeight: FontWeight.w800)),
+            onTap: premium ? null : () => showPaywall(c, widget.premium),
+          ),
+        );
+      },
+    );
+  }
+
   Widget _tiles(BuildContext c, Entry e, String lang) {
     final fuels = fuelOrder.where(e.prices.containsKey).toList();
     return Row(children: [
@@ -290,10 +355,21 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(height: 8),
           Wrap(spacing: 8, children: [
             for (final (label, days) in const [('1W', 7), ('1M', 30), ('3M', 90), ('1Y', 365), ('2Y', 730)])
-              ChoiceChip(label: Text(label), selected: _days == days, onSelected: (_) => setState(() {
+              ChoiceChip(
+                avatar: !widget.premium.isPremium && days > freeDays ? const Icon(Icons.lock, size: 14) : null,
+                label: Text(label),
+                selected: _days == days,
+                onSelected: (_) {
+                  if (!widget.premium.isPremium && days > freeDays) {
+                    showPaywall(context, widget.premium);
+                    return;
+                  }
+                  setState(() {
                     _days = days;
                     _touch = null;
-                  })),
+                  });
+                },
+              ),
           ]),
           const SizedBox(height: 12),
           SizedBox(

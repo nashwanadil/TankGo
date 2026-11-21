@@ -27,6 +27,13 @@ class Series {
   Series(this.currency, this.unit, this.points);
 }
 
+/// Indicative price outlook derived from crude oil (Brent) and EUR/USD.
+class Signal {
+  final String direction; // up | down | flat
+  final double deltaCt; // crude cost change in ct/L over ~2 weeks
+  Signal(this.direction, this.deltaCt);
+}
+
 class Loaded<T> {
   final T? value;
   final bool offline;
@@ -61,6 +68,12 @@ class Api {
     final c = r.value?['countries'] as Map?;
     if (c == null) return Loaded(null, true);
     return Loaded({for (final e in c.entries) e.key as String: Entry.fromJson(e.value as Map)}, r.offline);
+  }
+
+  Future<Signal?> signal() async {
+    final j = (await _get('v1/signal.json', 'signal')).value;
+    if (j == null || j['direction'] == null) return null;
+    return Signal(j['direction'] as String, (j['delta_ct_l'] as num).toDouble());
   }
 
   /// History per fuel key for one country.
