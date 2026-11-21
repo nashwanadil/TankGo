@@ -66,16 +66,47 @@ class _TripPageState extends State<TripPage> {
           body: ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.info_outline, color: t.colorScheme.primary),
+                      const SizedBox(width: 10),
+                      Expanded(child: Text(tx(context, 'tripHow'))),
+                    ],
+                  ),
+                ),
+              ),
               if (demo)
                 Card(
                   color: const Color(0xFF6B1A2E),
-                  child: ListTile(
-                    leading: const Icon(Icons.workspace_premium, color: Color(0xFFE0B860)),
-                    title: Text(
-                      tx(context, 'tripDemo'),
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.workspace_premium, color: Color(0xFFE0B860)),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                tx(context, 'tripDemo'),
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        FilledButton(
+                          style: FilledButton.styleFrom(backgroundColor: const Color(0xFFE0B860), foregroundColor: const Color(0xFF2A1D17)),
+                          onPressed: () => showPaywall(context, widget.premium),
+                          child: Text(tx(context, 'unlock')),
+                        ),
+                      ],
                     ),
-                    trailing: FilledButton(onPressed: () => showPaywall(context, widget.premium), child: Text(tx(context, 'unlock'))),
                   ),
                 ),
               if (demo)

@@ -1,7 +1,10 @@
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoLocalizations, GlobalCupertinoLocalizations;
 import 'package:material_ui/material_ui.dart';
+
 import 'dart:ui' show PlatformDispatcher;
+
 import 'package:flutter_localizations/flutter_localizations.dart' hide GlobalMaterialLocalizations, GlobalCupertinoLocalizations;
+
 import 'data.dart';
 import 'premium.dart';
 import 'settings.dart';
@@ -95,10 +98,7 @@ class TankGoApp extends StatelessWidget {
             _Fb<WidgetsLocalizations>(GlobalWidgetsLocalizations.delegate),
             _Fb<CupertinoLocalizations>(GlobalCupertinoLocalizations.delegate),
           ],
-          builder: (c, child) => Directionality(
-            textDirection: const {'ar', 'fa', 'ku'}.contains(lang) ? TextDirection.rtl : TextDirection.ltr,
-            child: child!,
-          ),
+          builder: (c, child) => Directionality(textDirection: const {'ar', 'fa', 'ku'}.contains(lang) ? TextDirection.rtl : TextDirection.ltr, child: child!),
           home: settings.onboarded ? HomePage(settings: settings, api: api, premium: premium) : OnboardingPage(settings: settings),
         );
       },

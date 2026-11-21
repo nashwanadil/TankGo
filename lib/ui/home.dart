@@ -7,6 +7,7 @@ import '../premium.dart';
 import '../settings.dart';
 import '../strings.dart';
 import 'brand.dart';
+import 'calc_page.dart';
 import 'compare_page.dart';
 import 'country_sheet.dart';
 import 'paywall.dart';
@@ -41,8 +42,6 @@ class _HomePageState extends State<HomePage> {
   int? _touchIdx;
   (DateTime, double)? _pin;
   bool _pulse = false;
-  final _km = TextEditingController(text: '100');
-  final _cons = TextEditingController(text: '6.5');
 
   @override
   void initState() {
@@ -75,8 +74,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     widget.premium.removeListener(_onPremium);
-    _km.dispose();
-    _cons.dispose();
     super.dispose();
   }
 
@@ -113,17 +110,12 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           IconButton(
-            tooltip: tx(context, 'compare'),
-            icon: const Icon(Icons.public),
+            tooltip: tr(context, 'calc'),
+            icon: const Icon(Icons.calculate_outlined),
             onPressed: () async {
-              final all = (await _latest).value;
-              if (all == null || !context.mounted) return;
-              Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (_) => ComparePage(entries: all, home: cc, premium: widget.premium, fuel: _fuel),
-                ),
-              );
+              final e = (await _latest).value?[cc];
+              if (e == null || !context.mounted) return;
+              Navigator.push(context, MaterialPageRoute<void>(builder: (_) => CalcPage(entry: e)));
             },
           ),
           IconButton(
@@ -181,7 +173,7 @@ class _HomePageState extends State<HomePage> {
                 _outlook(context, lang),
                 _chartCard(context, cc, entry, lang),
                 const SizedBox(height: 8),
-                _calcCard(context, entry, lang),
+                _compareCard(context, snap.data!.value!, cc),
               ],
             );
           },
@@ -606,48 +598,28 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _calcCard(BuildContext c, Entry e, String lang) {
-    double num(TextEditingController t) => double.tryParse(t.text.replaceAll(',', '.')) ?? 0;
+  Widget _compareCard(BuildContext c, Map<String, Entry> all, String cc) {
+    if (all[cc]?.currency != 'EUR') return const SizedBox();
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(tr(c, 'calc'), style: Theme.of(c).textTheme.titleMedium),
+            Text('${tx(c, 'compare')} · ${fuelName(c, _fuel)}', style: Theme.of(c).textTheme.titleMedium),
             const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _km,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    decoration: InputDecoration(labelText: tr(c, 'distance'), border: const OutlineInputBorder()),
-                    onChanged: (_) => setState(() {}),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: TextField(
-                    controller: _cons,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    decoration: InputDecoration(labelText: tr(c, 'consumption'), border: const OutlineInputBorder()),
-                    onChanged: (_) => setState(() {}),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            for (final f in fuelOrder.where(e.prices.containsKey))
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Row(
-                  children: [
-                    Expanded(child: Text(fuelName(c, f))),
-                    Text(fmtMoney(e.perLitre(e.prices[f]!) * num(_cons) * num(_km) / 100, e.currency, lang, 2), style: const TextStyle(fontWeight: FontWeight.w700)),
-                  ],
+            CompareList(
+              entries: all,
+              home: cc,
+              premium: widget.premium,
+              fuel: _fuel,
+              onShowAll: () => Navigator.push(
+                c,
+                MaterialPageRoute<void>(
+                  builder: (_) => ComparePage(entries: all, home: cc, premium: widget.premium, fuel: _fuel),
                 ),
               ),
+            ),
           ],
         ),
       ),

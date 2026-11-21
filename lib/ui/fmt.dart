@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+
 import '../data.dart';
 
 String fmtNum(double v, String lang, [int d = 3]) {

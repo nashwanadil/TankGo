@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,10 +17,10 @@ const premiumDebug = bool.fromEnvironment('PREMIUM_DEBUG');
 
 /// Entitlement length per product; null = forever.
 Duration? entitlementFor(String id) => switch (id) {
-      idTrip => const Duration(days: 31),
-      idYear => const Duration(days: 366),
-      _ => null,
-    };
+  idTrip => const Duration(days: 31),
+  idYear => const Duration(days: 366),
+  _ => null,
+};
 
 /// Client-side entitlement store (no server validation) backed by Play Billing.
 class Premium extends ChangeNotifier {

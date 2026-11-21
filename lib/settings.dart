@@ -11,8 +11,22 @@ class Settings extends ChangeNotifier {
   bool get noteSeen => _p.getBool('noteSeen') ?? false;
   ThemeMode get theme => ThemeMode.values.firstWhere((m) => m.name == _p.getString('theme'), orElse: () => ThemeMode.system);
 
-  Future<void> setLang(String v) async { await _p.setString('lang', v); notifyListeners(); }
-  Future<void> setCountry(String v) async { await _p.setString('country', v); notifyListeners(); }
-  Future<void> setTheme(ThemeMode m) async { await _p.setString('theme', m.name); notifyListeners(); }
-  Future<void> setNoteSeen() async { await _p.setBool('noteSeen', true); }
+  Future<void> setLang(String v) async {
+    await _p.setString('lang', v);
+    notifyListeners();
+  }
+
+  Future<void> setCountry(String v) async {
+    await _p.setString('country', v);
+    notifyListeners();
+  }
+
+  Future<void> setTheme(ThemeMode m) async {
+    await _p.setString('theme', m.name);
+    notifyListeners();
+  }
+
+  Future<void> setNoteSeen() async {
+    await _p.setBool('noteSeen', true);
+  }
 }

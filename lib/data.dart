@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,8 +15,7 @@ class Entry {
 
   static Map<String, double> _m(Map v) => {for (final e in v.entries) e.key as String: (e.value as num).toDouble()};
 
-  factory Entry.fromJson(Map j) => Entry(DateTime.parse(j['date']), _m(j['prices']),
-      j['prev'] == null ? null : _m(j['prev']), j['currency'], j['unit'], j['frequency'], j['source']);
+  factory Entry.fromJson(Map j) => Entry(DateTime.parse(j['date']), _m(j['prices']), j['prev'] == null ? null : _m(j['prev']), j['currency'], j['unit'], j['frequency'], j['source']);
 
   /// Price per litre (converts US gallon prices).
   double perLitre(double v) => unit == 'gal' ? v / galToL : v;
@@ -87,8 +87,6 @@ class Api {
         out.putIfAbsent(f.key as String, () => []).add((d, (f.value as num).toDouble()));
       }
     }
-    return {
-      for (final e in out.entries) e.key: Series(j['currency'], j['unit'], e.value..sort((a, b) => a.$1.compareTo(b.$1)))
-    };
+    return {for (final e in out.entries) e.key: Series(j['currency'], j['unit'], e.value..sort((a, b) => a.$1.compareTo(b.$1)))};
   }
 }
