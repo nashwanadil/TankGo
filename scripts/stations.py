@@ -139,8 +139,8 @@ def es():
     return out, "Ministerio para la Transición Ecológica"
 
 
-def it_rows(url):
-    raw = fetch(url, timeout=60, retries=2)
+def it_rows(url, retries=2, timeout=60):
+    raw = fetch(url, timeout=timeout, retries=retries)
     try:
         text = raw.decode("utf-8-sig")
     except UnicodeDecodeError:
@@ -163,8 +163,19 @@ def it_date(s):
 
 
 def it():
-    base = "https://www.mimit.gov.it/images/exportCSV/"
-    reg = {r["idImpianto"].strip(): r for r in it_rows(base + "anagrafica_impianti_attivi.csv")}
+    bases = ["https://www.mimit.gov.it/images/exportCSV/", "http://www.mimit.gov.it/images/exportCSV/",
+             "https://www.mise.gov.it/images/exportCSV/", "http://www.mise.gov.it/images/exportCSV/"]
+    base = None
+    for b in bases:
+        try:
+            reg_rows = it_rows(b + "anagrafica_impianti_attivi.csv", retries=1, timeout=30)
+            base = b
+            break
+        except Exception as e:
+            log(f"  IT base {b} unusable: {e}")
+    if base is None:
+        raise RuntimeError("no reachable MIMIT host")
+    reg = {r["idImpianto"].strip(): r for r in reg_rows}
     best = {}  # id -> {fuel: {self_flag: min price}}, dates
     dates = {}
     fuels = {"Benzina": "e95", "Gasolio": "diesel", "GPL": "lpg"}
