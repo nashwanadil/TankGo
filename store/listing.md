@@ -1,6 +1,6 @@
 # TankGo – Play Store listing
 
-Privacy policy: https://nashwanadil.github.io/fuelprices/privacy.html
+Privacy policy: https://tankgo.nashwanadil.com/privacy.html
 
 
 ## en-US

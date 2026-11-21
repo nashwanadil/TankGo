@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-const dataBase = String.fromEnvironment('DATA_BASE', defaultValue: 'https://nashwanadil.github.io/fuelprices');
+const dataBase = String.fromEnvironment('DATA_BASE', defaultValue: 'https://tankgo.nashwanadil.com');
 const galToL = 3.78541;
 
 class Entry {
