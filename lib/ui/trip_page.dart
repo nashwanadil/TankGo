@@ -6,6 +6,7 @@ import '../premium.dart';
 import '../strings.dart';
 import '../trip.dart';
 import 'fmt.dart';
+import 'number_row.dart';
 import 'home.dart' show fuelName, fuelOrder;
 import 'paywall.dart';
 
@@ -128,6 +129,7 @@ class _TripPageState extends State<TripPage> {
                     Expanded(
                       child: TextField(
                         controller: _tank,
+                        onTap: () => selectAll(_tank),
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         decoration: InputDecoration(labelText: tx(context, 'tripTank'), border: const OutlineInputBorder()),
                         onChanged: (_) => setState(() {}),
@@ -137,6 +139,7 @@ class _TripPageState extends State<TripPage> {
                     Expanded(
                       child: TextField(
                         controller: _cons,
+                        onTap: () => selectAll(_cons),
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         decoration: InputDecoration(labelText: tx(context, 'tripCons'), border: const OutlineInputBorder()),
                         onChanged: (_) => setState(() {}),
@@ -172,6 +175,7 @@ class _TripPageState extends State<TripPage> {
                           flex: 2,
                           child: TextField(
                             controller: l.km,
+                            onTap: () => selectAll(l.km),
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
                             decoration: const InputDecoration(suffixText: 'km', border: OutlineInputBorder(), contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8)),
                             onChanged: (_) => setState(() {}),

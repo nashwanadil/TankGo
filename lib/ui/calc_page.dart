@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../data.dart';
 import '../strings.dart';
 import 'fmt.dart';
+import 'number_row.dart';
 import 'home.dart' show fuelColor, fuelName, fuelOrder;
 
 class CalcPage extends StatefulWidget {
@@ -34,20 +35,9 @@ class _CalcPageState extends State<CalcPage> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          TextField(
-            controller: _km,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: InputDecoration(labelText: tr(context, 'distance'), border: const OutlineInputBorder(), prefixIcon: const Icon(Icons.straighten)),
-            onChanged: (_) => setState(() {}),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _cons,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: InputDecoration(labelText: tr(context, 'consumption'), border: const OutlineInputBorder(), prefixIcon: const Icon(Icons.speed)),
-            onChanged: (_) => setState(() {}),
-          ),
-          const SizedBox(height: 12),
+          NumberRow(icon: Icons.straighten, label: tr(context, 'distance'), controller: _km, onChanged: (_) => setState(() {})),
+          NumberRow(icon: Icons.speed, label: tr(context, 'consumption'), controller: _cons, onChanged: (_) => setState(() {})),
+          const SizedBox(height: 8),
           for (final f in fuelOrder.where(e.prices.containsKey))
             Card(
               shape: RoundedRectangleBorder(

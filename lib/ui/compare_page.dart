@@ -7,6 +7,7 @@ import '../strings.dart';
 import '../trip.dart';
 import 'brand.dart';
 import 'fmt.dart';
+import 'number_row.dart';
 import 'home.dart' show fuelColor, fuelName, fuelOrder;
 import 'paywall.dart';
 
@@ -61,25 +62,7 @@ class _CompareListState extends State<CompareList> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Litres input styled like a list row.
-            Card(
-              shape: _shape(context, accent: gold),
-              child: ListTile(
-                leading: const Icon(Icons.local_gas_station, color: gold, size: 28),
-                title: Text(tx(context, 'cmpLiters'), style: const TextStyle(fontWeight: FontWeight.w600)),
-                trailing: SizedBox(
-                  width: 84,
-                  child: TextField(
-                    controller: _l,
-                    textAlign: TextAlign.end,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17),
-                    decoration: const InputDecoration(isDense: true, border: InputBorder.none, suffixText: ' L'),
-                    onChanged: (_) => setState(() {}),
-                  ),
-                ),
-              ),
-            ),
+            NumberRow(icon: Icons.local_gas_station, label: tx(context, 'cmpLiters'), controller: _l, suffix: ' L', color: gold, onChanged: (_) => setState(() {})),
             for (final r in shown)
               Builder(
                 builder: (context) {
