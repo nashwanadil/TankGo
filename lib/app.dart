@@ -47,6 +47,15 @@ ThemeData _theme(Brightness b) {
         side: BorderSide(color: dark ? const Color(0xFF4F3B2F) : const Color(0xFFE8DCD6)),
       ),
     ),
+    datePickerTheme: DatePickerThemeData(
+      backgroundColor: dark ? const Color(0xFF362720) : Colors.white,
+      surfaceTintColor: Colors.transparent,
+      headerBackgroundColor: dark ? const Color(0xFF6B1A2E) : brand,
+      headerForegroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      todayBorder: const BorderSide(color: gold, width: 1.5),
+      todayForegroundColor: WidgetStatePropertyAll(dark ? gold : brand),
+    ),
     chipTheme: ChipThemeData(
       selectedColor: scheme.primaryContainer,
       side: BorderSide(color: dark ? const Color(0xFF4F3B2F) : const Color(0xFFE0D2CC)),

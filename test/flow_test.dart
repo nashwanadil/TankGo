@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:material_ui/material_ui.dart' show TextField;
+import 'package:material_ui/material_ui.dart' show TextField, Icons, DatePickerDialog;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -51,6 +51,24 @@ void main() {
     await t.pumpWidget(TankGoApp(settings: s, api: api));
     await t.pumpAndSettle();
     expect(find.text('Please note'), findsNothing);
+    expect(find.textContaining('\$3.000 /gal'), findsOneWidget);
+  });
+
+  testWidgets('calendar: pick a past date shows its price', (t) async {
+    SharedPreferences.setMockInitialValues({'lang': 'en', 'country': 'US', 'noteSeen': true});
+    final api = Api(MockClient((r) async => http.Response(r.url.path.contains('history') ? _hist : _latest, 200)));
+    final s = Settings(await SharedPreferences.getInstance());
+    await t.pumpWidget(TankGoApp(settings: s, api: api));
+    await t.pumpAndSettle();
+    await t.tap(find.byIcon(Icons.event));
+    await t.pumpAndSettle();
+    expect(find.byType(DatePickerDialog), findsOneWidget);
+    await t.tap(find.text('15'));
+    await t.tap(find.text('OK'));
+    await t.pumpAndSettle();
+    expect(find.textContaining('\$2.140 /gal'), findsOneWidget);
+    await t.tap(find.text('✕'));
+    await t.pumpAndSettle();
     expect(find.textContaining('\$3.000 /gal'), findsOneWidget);
   });
 

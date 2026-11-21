@@ -31,6 +31,7 @@ class _HomePageState extends State<HomePage> {
   String _fuel = 'e95';
   int _days = 365;
   (DateTime, double)? _touch;
+  (DateTime, double)? _pin;
   final _km = TextEditingController(text: '100');
   final _cons = TextEditingController(text: '6.5');
 
@@ -64,6 +65,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _latest = widget.api.latest();
       _hist = null;
+      _pin = null;
     });
     await _latest;
   }
@@ -83,7 +85,10 @@ class _HomePageState extends State<HomePage> {
             final v = await pickCountry(context);
             if (v != null && v != cc) {
               await widget.settings.setCountry(v);
-              setState(() => _hist = null);
+              setState(() {
+                _hist = null;
+                _pin = null;
+              });
             }
           },
         ),
@@ -127,15 +132,42 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Future<void> _pickDate(Entry e) async {
+    final ser = (await _hist)?[_fuel];
+    if (ser == null || ser.points.isEmpty || !mounted) return;
+    final first = DateUtils.dateOnly(ser.points.first.$1), last = DateUtils.dateOnly(ser.points.last.$1);
+    var init = DateUtils.dateOnly(_pin?.$1 ?? e.date);
+    if (init.isBefore(first)) init = first;
+    if (init.isAfter(last)) init = last;
+    final d = await showDatePicker(
+      context: context,
+      initialDate: init,
+      firstDate: first,
+      lastDate: last,
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
+    );
+    if (d == null || !mounted) return;
+    var pt = ser.points.first;
+    for (final p in ser.points) {
+      if (p.$1.isAfter(d)) break;
+      pt = p;
+    }
+    setState(() {
+      _touch = null;
+      _pin = pt.$1 == ser.points.last.$1 && e.date == pt.$1 ? null : pt;
+    });
+  }
+
   Widget _hero(BuildContext c, Entry e, String lang) {
     if (!e.prices.containsKey(_fuel)) _fuel = fuelOrder.firstWhere(e.prices.containsKey);
     final touching = _touch != null;
-    final v = _touch?.$2 ?? e.prices[_fuel]!;
-    final date = _touch?.$1 ?? e.date;
-    final stale = !touching && DateTime.now().difference(e.date).inDays > 14;
+    final shown = _touch ?? _pin;
+    final v = shown?.$2 ?? e.prices[_fuel]!;
+    final date = shown?.$1 ?? e.date;
+    final stale = shown == null && DateTime.now().difference(e.date).inDays > 14;
     final p = e.prev?[_fuel];
     Widget? chg;
-    if (!touching && p != null) {
+    if (shown == null && p != null) {
       final d = e.prices[_fuel]! - p;
       final flat = d.abs() < 0.0005;
       final cc = flat ? const Color(0xFFF5ECE0) : (d > 0 ? const Color(0xFFFFB4AB) : const Color(0xFFA5E8C0));
@@ -149,7 +181,7 @@ class _HomePageState extends State<HomePage> {
       decoration: BoxDecoration(
         gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF9E2F42), Color(0xFF6B1A2E)]),
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: touching ? gold : gold.withValues(alpha: 0.35), width: touching ? 3 : 1.5),
+        border: Border.all(color: shown != null ? gold : gold.withValues(alpha: 0.35), width: shown != null ? 3 : 1.5),
         boxShadow: [BoxShadow(color: const Color(0xFF8F2A39).withValues(alpha: touching ? 0.55 : 0.3), blurRadius: 28, offset: const Offset(0, 10))],
       ),
       child: Column(children: [
@@ -162,15 +194,29 @@ class _HomePageState extends State<HomePage> {
         if (e.unit == 'gal') Text('≈ ${fmtMoney(e.perLitre(v), e.currency, lang)} /L', style: const TextStyle(color: cream)),
         if (chg != null) Padding(padding: const EdgeInsets.only(top: 4), child: chg),
         const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-          decoration: BoxDecoration(color: stale ? const Color(0xFFFFB4AB) : gold, borderRadius: BorderRadius.circular(14)),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Icon(stale ? Icons.warning_amber_rounded : Icons.event, size: 22, color: const Color(0xFF2A1D17)),
-            const SizedBox(width: 8),
-            Text(fmtDate(date, lang), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF2A1D17))),
-          ]),
+        Material(
+          color: stale ? const Color(0xFFFFB4AB) : gold,
+          borderRadius: BorderRadius.circular(14),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: () => _pickDate(e),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 9, 10, 9),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                Icon(stale ? Icons.warning_amber_rounded : Icons.event, size: 22, color: const Color(0xFF2A1D17)),
+                const SizedBox(width: 8),
+                Text(fmtDate(date, lang), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF2A1D17))),
+                const Icon(Icons.arrow_drop_down, color: Color(0xFF2A1D17)),
+              ]),
+            ),
+          ),
         ),
+        if (_pin != null)
+          TextButton.icon(
+            onPressed: () => setState(() => _pin = null),
+            icon: const Icon(Icons.close, size: 18, color: cream),
+            label: const Text('✕', style: TextStyle(color: cream)),
+          ),
         const SizedBox(height: 10),
         Text('${tr(c, e.frequency == 'daily' ? 'daily' : 'weekly')} · ${e.source}', style: const TextStyle(color: cream, fontSize: 12), textAlign: TextAlign.center),
       ]),
@@ -189,6 +235,7 @@ class _HomePageState extends State<HomePage> {
               onTap: () => setState(() {
                 _fuel = f;
                 _touch = null;
+                _pin = null;
               }),
               child: Card(
                 shape: RoundedRectangleBorder(
