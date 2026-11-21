@@ -89,6 +89,10 @@ class TankGoApp extends StatelessWidget {
             _Fb<WidgetsLocalizations>(GlobalWidgetsLocalizations.delegate),
             _Fb<CupertinoLocalizations>(GlobalCupertinoLocalizations.delegate),
           ],
+          builder: (c, child) => Directionality(
+            textDirection: const {'ar', 'fa', 'ku'}.contains(lang) ? TextDirection.rtl : TextDirection.ltr,
+            child: child!,
+          ),
           home: settings.onboarded ? HomePage(settings: settings, api: api) : OnboardingPage(settings: settings),
         );
       },

@@ -32,6 +32,7 @@ class _HomePageState extends State<HomePage> {
   int _days = 365;
   (DateTime, double)? _touch;
   (DateTime, double)? _pin;
+  bool _pulse = false;
   final _km = TextEditingController(text: '100');
   final _cons = TextEditingController(text: '6.5');
 
@@ -132,6 +133,18 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _release(Entry e) {
+    final t = _touch!;
+    setState(() {
+      _touch = null;
+      _pin = t.$1 == e.date ? null : t;
+      _pulse = true;
+    });
+    Future<void>.delayed(const Duration(milliseconds: 700), () {
+      if (mounted) setState(() => _pulse = false);
+    });
+  }
+
   Future<void> _pickDate(Entry e) async {
     final ser = (await _hist)?[_fuel];
     if (ser == null || ser.points.isEmpty || !mounted) return;
@@ -176,13 +189,15 @@ class _HomePageState extends State<HomePage> {
     }
     const cream = Color(0xFFF5ECE0);
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 150),
+      duration: const Duration(milliseconds: 250),
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF9E2F42), Color(0xFF6B1A2E)]),
         borderRadius: BorderRadius.circular(28),
         border: Border.all(color: shown != null ? gold : gold.withValues(alpha: 0.35), width: shown != null ? 3 : 1.5),
-        boxShadow: [BoxShadow(color: const Color(0xFF8F2A39).withValues(alpha: touching ? 0.55 : 0.3), blurRadius: 28, offset: const Offset(0, 10))],
+        boxShadow: _pulse
+            ? [BoxShadow(color: gold.withValues(alpha: 0.75), blurRadius: 40, spreadRadius: 6)]
+            : [BoxShadow(color: const Color(0xFF8F2A39).withValues(alpha: touching ? 0.55 : 0.3), blurRadius: 28, offset: const Offset(0, 10))],
       ),
       child: Column(children: [
         Text(fuelName(c, _fuel).toUpperCase(), style: const TextStyle(color: gold, fontWeight: FontWeight.w800, fontSize: 15, letterSpacing: 1.6)),
@@ -212,10 +227,15 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         if (_pin != null)
-          TextButton.icon(
-            onPressed: () => setState(() => _pin = null),
-            icon: const Icon(Icons.close, size: 18, color: cream),
-            label: const Text('✕', style: TextStyle(color: cream)),
+          Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: ActionChip(
+              avatar: const Icon(Icons.update, size: 18, color: cream),
+              label: Text(tr(c, 'today'), style: const TextStyle(color: cream, fontWeight: FontWeight.w700)),
+              backgroundColor: Colors.transparent,
+              side: const BorderSide(color: cream),
+              onPressed: () => setState(() => _pin = null),
+            ),
           ),
         const SizedBox(height: 10),
         Text('${tr(c, e.frequency == 'daily' ? 'daily' : 'weekly')} · ${e.source}', style: const TextStyle(color: cream, fontSize: 12), textAlign: TextAlign.center),
@@ -318,7 +338,7 @@ class _HomePageState extends State<HomePage> {
                     touchCallback: (event, resp) {
                       final spots = resp?.lineBarSpots;
                       if (!event.isInterestedForInteractions || spots == null || spots.isEmpty) {
-                        if (_touch != null) setState(() => _touch = null);
+                        if (_touch != null) _release(e);
                         return;
                       }
                       final pt = pts[spots.first.spotIndex];
