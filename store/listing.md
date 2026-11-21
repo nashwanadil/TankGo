@@ -2,7 +2,7 @@
 
 Privacy policy: https://tankgo.nashwanadil.com/privacy.html  
 Website: https://tankgo.nashwanadil.com  
-Category: Maps & Navigation · Contains ads: No · In-app purchases: Yes
+Category: Auto & Vehicles · Contains ads: No · In-app purchases: Yes
 
 
 ## en-US
