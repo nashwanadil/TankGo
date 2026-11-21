@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart' hide GlobalMat
 import 'data.dart';
 import 'settings.dart';
 import 'strings.dart';
+import 'ui/brand.dart';
 import 'ui/home.dart';
 import 'ui/onboarding.dart';
 
@@ -21,15 +22,35 @@ class _Fb<T> extends LocalizationsDelegate<T> {
 }
 
 ThemeData _theme(Brightness b) {
-  final scheme = ColorScheme.fromSeed(seedColor: const Color(0xFFF59E0B), brightness: b);
+  final dark = b == Brightness.dark;
+  final scheme = ColorScheme.fromSeed(seedColor: brand, brightness: b).copyWith(
+    primary: dark ? gold : brand,
+    onPrimary: dark ? const Color(0xFF2A1D17) : Colors.white,
+    primaryContainer: dark ? const Color(0xFF4A3226) : const Color(0xFFF3D9DC),
+    onPrimaryContainer: dark ? const Color(0xFFF5ECE0) : const Color(0xFF3B0C15),
+    surface: dark ? const Color(0xFF2A1D17) : const Color(0xFFF5F1F0),
+    surfaceContainerHighest: dark ? const Color(0xFF43312A) : const Color(0xFFEADFDB),
+    onSurface: dark ? const Color(0xFFF5ECE0) : const Color(0xFF2A1D17),
+    error: dark ? const Color(0xFFFF8A80) : const Color(0xFFB3261E),
+    errorContainer: dark ? const Color(0xFF5A2A2A) : const Color(0xFFF9DEDC),
+  );
   return ThemeData(
     colorScheme: scheme,
     useMaterial3: true,
-    scaffoldBackgroundColor: b == Brightness.dark ? const Color(0xFF0F172A) : const Color(0xFFF4F6FA),
+    scaffoldBackgroundColor: scheme.surface,
     cardTheme: CardThemeData(
       elevation: 0,
-      color: b == Brightness.dark ? const Color(0xFF1E293B) : Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      color: dark ? const Color(0xFF362720) : Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: BorderSide(color: dark ? const Color(0xFF4F3B2F) : const Color(0xFFE8DCD6)),
+      ),
+    ),
+    chipTheme: ChipThemeData(
+      selectedColor: scheme.primaryContainer,
+      side: BorderSide(color: dark ? const Color(0xFF4F3B2F) : const Color(0xFFE0D2CC)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
   );
 }

@@ -4,11 +4,14 @@ import '../countries.dart';
 import '../data.dart';
 import '../settings.dart';
 import '../strings.dart';
+import 'brand.dart';
 import 'country_sheet.dart';
 import 'fmt.dart';
 import 'settings_page.dart';
 
-const fuelColors = {'e95': Color(0xFF2563EB), 'diesel': Color(0xFFD97706), 'lpg': Color(0xFF0D9488)};
+const _fuelDark = {'e95': Color(0xFFE0B860), 'diesel': Color(0xFFE8808F), 'lpg': Color(0xFF7FC4A5)};
+const _fuelLight = {'e95': Color(0xFFB98A24), 'diesel': Color(0xFF9F2B3E), 'lpg': Color(0xFF2E8B6A)};
+Color fuelColor(BuildContext c, String f) => (Theme.of(c).brightness == Brightness.dark ? _fuelDark : _fuelLight)[f]!;
 const fuelOrder = ['e95', 'diesel', 'lpg'];
 
 String fuelName(BuildContext c, String f) => f == 'lpg' ? 'LPG' : tr(c, f);
@@ -26,7 +29,8 @@ class _HomePageState extends State<HomePage> {
   Future<Map<String, Series>>? _hist;
   String? _histCc;
   String _fuel = 'e95';
-  int _months = 12;
+  int _days = 365;
+  (DateTime, double)? _touch;
   final _km = TextEditingController(text: '100');
   final _cons = TextEditingController(text: '6.5');
 
@@ -109,9 +113,9 @@ class _HomePageState extends State<HomePage> {
             return ListView(padding: const EdgeInsets.fromLTRB(16, 0, 16, 32), children: [
               if (snap.data!.offline)
                 Card(color: Theme.of(context).colorScheme.errorContainer, child: Padding(padding: const EdgeInsets.all(12), child: Text(tr(context, 'offline')))),
-              _freshness(context, entry, lang),
+              _hero(context, entry, lang),
               const SizedBox(height: 8),
-              for (final f in fuelOrder.where(entry.prices.containsKey)) _priceCard(context, entry, f, lang),
+              _tiles(context, entry, lang),
               const SizedBox(height: 8),
               _chartCard(context, cc, entry, lang),
               const SizedBox(height: 8),
@@ -123,54 +127,87 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _freshness(BuildContext c, Entry e, String lang) {
-    final age = DateTime.now().difference(e.date).inDays;
-    final stale = age > 14;
-    final text = tr(c, 'updated').replaceAll('{d}', fmtDate(e.date, lang));
-    final freq = tr(c, e.frequency == 'daily' ? 'daily' : 'weekly');
-    return Card(
-      color: stale ? Theme.of(c).colorScheme.errorContainer : Theme.of(c).colorScheme.surfaceContainerHighest,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(children: [
-          Icon(stale ? Icons.warning_amber : Icons.update, size: 20),
-          const SizedBox(width: 10),
-          Expanded(child: Text('$text · $freq · ${e.source}', style: const TextStyle(fontWeight: FontWeight.w600))),
-        ]),
+  Widget _hero(BuildContext c, Entry e, String lang) {
+    if (!e.prices.containsKey(_fuel)) _fuel = fuelOrder.firstWhere(e.prices.containsKey);
+    final touching = _touch != null;
+    final v = _touch?.$2 ?? e.prices[_fuel]!;
+    final date = _touch?.$1 ?? e.date;
+    final stale = !touching && DateTime.now().difference(e.date).inDays > 14;
+    final p = e.prev?[_fuel];
+    Widget? chg;
+    if (!touching && p != null) {
+      final d = e.prices[_fuel]! - p;
+      final flat = d.abs() < 0.0005;
+      final cc = flat ? const Color(0xFFF5ECE0) : (d > 0 ? const Color(0xFFFFB4AB) : const Color(0xFFA5E8C0));
+      chg = Text('${flat ? '→' : d > 0 ? '▲' : '▼'} ${d > 0 ? '+' : ''}${fmtNum(d * 100, lang, 1)} ${e.currency == 'USD' ? 'c' : 'ct'}',
+          style: TextStyle(color: cc, fontWeight: FontWeight.w700, fontSize: 16));
+    }
+    const cream = Color(0xFFF5ECE0);
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF9E2F42), Color(0xFF6B1A2E)]),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: touching ? gold : gold.withValues(alpha: 0.35), width: touching ? 3 : 1.5),
+        boxShadow: [BoxShadow(color: const Color(0xFF8F2A39).withValues(alpha: touching ? 0.55 : 0.3), blurRadius: 28, offset: const Offset(0, 10))],
       ),
+      child: Column(children: [
+        Text(fuelName(c, _fuel).toUpperCase(), style: const TextStyle(color: gold, fontWeight: FontWeight.w800, fontSize: 15, letterSpacing: 1.6)),
+        const SizedBox(height: 8),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text('${fmtMoney(v, e.currency, lang)} ${unitLabel(e)}', style: const TextStyle(color: Colors.white, fontSize: 48, fontWeight: FontWeight.w800)),
+        ),
+        if (e.unit == 'gal') Text('≈ ${fmtMoney(e.perLitre(v), e.currency, lang)} /L', style: const TextStyle(color: cream)),
+        if (chg != null) Padding(padding: const EdgeInsets.only(top: 4), child: chg),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+          decoration: BoxDecoration(color: stale ? const Color(0xFFFFB4AB) : gold, borderRadius: BorderRadius.circular(14)),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            Icon(stale ? Icons.warning_amber_rounded : Icons.event, size: 22, color: const Color(0xFF2A1D17)),
+            const SizedBox(width: 8),
+            Text(fmtDate(date, lang), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF2A1D17))),
+          ]),
+        ),
+        const SizedBox(height: 10),
+        Text('${tr(c, e.frequency == 'daily' ? 'daily' : 'weekly')} · ${e.source}', style: const TextStyle(color: cream, fontSize: 12), textAlign: TextAlign.center),
+      ]),
     );
   }
 
-  Widget _priceCard(BuildContext c, Entry e, String f, String lang) {
-    final v = e.prices[f]!;
-    final p = e.prev?[f];
-    Widget? chg;
-    if (p != null) {
-      final d = v - p;
-      final flat = d.abs() < 0.0005;
-      final col = flat ? Theme.of(c).hintColor : (d > 0 ? Colors.red : Colors.green);
-      final cents = e.currency == 'USD' ? 'c' : 'ct';
-      chg = Text('${flat ? '→' : d > 0 ? '▲' : '▼'} ${d > 0 ? '+' : ''}${fmtNum(d * 100, lang, 1)} $cents',
-          style: TextStyle(color: col, fontWeight: FontWeight.w600));
-    }
-    return Card(
-      child: Container(
-        decoration: BoxDecoration(border: Border(left: BorderSide(color: fuelColors[f]!, width: 5)), borderRadius: BorderRadius.circular(16)),
-        padding: const EdgeInsets.all(14),
-        child: Row(children: [
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(fuelName(c, f), style: const TextStyle(fontWeight: FontWeight.w600)),
-              ?chg,
-            ]),
+  Widget _tiles(BuildContext c, Entry e, String lang) {
+    final fuels = fuelOrder.where(e.prices.containsKey).toList();
+    return Row(children: [
+      for (final f in fuels)
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 3),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () => setState(() {
+                _fuel = f;
+                _touch = null;
+              }),
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(color: _fuel == f ? fuelColor(c, f) : Theme.of(c).dividerColor.withValues(alpha: 0.4), width: _fuel == f ? 2 : 1),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+                  child: Column(children: [
+                    Text(fuelName(c, f), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 4),
+                    FittedBox(fit: BoxFit.scaleDown, child: Text(fmtMoney(e.prices[f]!, e.currency, lang), style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16))),
+                  ]),
+                ),
+              ),
+            ),
           ),
-          Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-            Text('${fmtMoney(v, e.currency, lang)} ${unitLabel(e)}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
-            if (e.unit == 'gal') Text('≈ ${fmtMoney(e.perLitre(v), e.currency, lang)} /L', style: Theme.of(c).textTheme.bodySmall),
-          ]),
-        ]),
-      ),
-    );
+        ),
+    ]);
   }
 
   Widget _chartCard(BuildContext c, String cc, Entry e, String lang) {
@@ -178,8 +215,6 @@ class _HomePageState extends State<HomePage> {
       _histCc = cc;
       _hist = widget.api.historyAll(cc);
     }
-    final fuels = fuelOrder.where(e.prices.containsKey).toList();
-    if (!fuels.contains(_fuel)) _fuel = fuels.first;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -187,9 +222,11 @@ class _HomePageState extends State<HomePage> {
           Text(tr(c, 'trend'), style: Theme.of(c).textTheme.titleMedium),
           const SizedBox(height: 8),
           Wrap(spacing: 8, children: [
-            for (final f in fuels) ChoiceChip(label: Text(fuelName(c, f)), selected: _fuel == f, onSelected: (_) => setState(() => _fuel = f)),
-            const SizedBox(width: 8),
-            for (final m in [3, 12, 24]) ChoiceChip(label: Text(m < 12 ? '${m}M' : '${m ~/ 12}Y'), selected: _months == m, onSelected: (_) => setState(() => _months = m)),
+            for (final (label, days) in const [('1W', 7), ('1M', 30), ('3M', 90), ('1Y', 365), ('2Y', 730)])
+              ChoiceChip(label: Text(label), selected: _days == days, onSelected: (_) => setState(() {
+                    _days = days;
+                    _touch = null;
+                  })),
           ]),
           const SizedBox(height: 12),
           SizedBox(
@@ -200,13 +237,13 @@ class _HomePageState extends State<HomePage> {
                 final ser = s.data?[_fuel];
                 if (ser == null || ser.points.length < 2) return const SizedBox();
                 final last = ser.points.last.$1;
-                final cut = DateTime(last.year, last.month - _months, last.day);
-                final pts = ser.points.where((p) => !p.$1.isBefore(cut)).toList();
-                if (pts.length < 2) return const SizedBox();
+                final cut = last.subtract(Duration(days: _days));
+                var pts = ser.points.where((p) => !p.$1.isBefore(cut)).toList();
+                if (pts.length < 2) pts = ser.points.sublist(ser.points.length - 2);
                 final vals = pts.map((p) => ser.unit == 'gal' ? p.$2 : p.$2).toList();
                 final lo = vals.reduce((a, b) => a < b ? a : b), hi = vals.reduce((a, b) => a > b ? a : b);
                 final pad = ((hi - lo) * 0.15).clamp(0.01, 10.0);
-                final col = fuelColors[_fuel]!;
+                final col = fuelColor(c, _fuel);
                 return LineChart(LineChartData(
                   minY: lo - pad,
                   maxY: hi + pad,
@@ -230,11 +267,16 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   lineTouchData: LineTouchData(
-                    touchTooltipData: LineTouchTooltipData(
-                      getTooltipItems: (spots) => [
-                        for (final t in spots) LineTooltipItem('${fmtDate(pts[t.spotIndex].$1, lang)}\n${fmtNum(t.y, lang)}', const TextStyle(fontWeight: FontWeight.w600)),
-                      ],
-                    ),
+                    touchTooltipData: LineTouchTooltipData(getTooltipItems: (spots) => [for (final _ in spots) null]),
+                    touchCallback: (event, resp) {
+                      final spots = resp?.lineBarSpots;
+                      if (!event.isInterestedForInteractions || spots == null || spots.isEmpty) {
+                        if (_touch != null) setState(() => _touch = null);
+                        return;
+                      }
+                      final pt = pts[spots.first.spotIndex];
+                      if (_touch != pt) setState(() => _touch = pt);
+                    },
                   ),
                   lineBarsData: [
                     LineChartBarData(

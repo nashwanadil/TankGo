@@ -38,7 +38,7 @@ void main() {
     expect(find.text('Hinweis'), findsOneWidget);
     await t.tap(find.text('Verstanden'));
     await t.pumpAndSettle();
-    expect(find.textContaining('2,151'), findsOneWidget);
+    expect(find.textContaining('2,151'), findsWidgets);
     expect(find.textContaining('CBS'), findsOneWidget);
     expect(s.noteSeen, true);
     expect(s.country, 'NL');
