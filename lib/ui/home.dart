@@ -196,13 +196,35 @@ class _HomePageState extends State<HomePage> {
     var init = DateUtils.dateOnly(_pin?.$1 ?? e.date);
     if (init.isBefore(first)) init = first;
     if (init.isAfter(last)) init = last;
-    final d = await showDatePicker(
+    final d = await showDialog<DateTime>(
       context: context,
-      initialDate: init,
-      firstDate: first,
-      lastDate: last,
-      initialEntryMode: DatePickerEntryMode.calendarOnly,
-      helpText: widget.premium.isPremium ? null : '👑 ${tx(context, 'calHelp')}',
+      builder: (c) => Dialog(
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (!widget.premium.isPremium)
+              Container(
+                color: brandDark,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Row(
+                  children: [
+                    const Icon(Icons.workspace_premium, color: gold, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        tx(c, 'calHelp'),
+                        style: const TextStyle(color: cream, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            CalendarDatePicker(initialDate: init, firstDate: first, lastDate: last, onDateChanged: (v) => Navigator.pop(c, v)),
+          ],
+        ),
+      ),
     );
     if (d == null || !mounted) return;
     if (!widget.premium.isPremium && d.isBefore(DateUtils.dateOnly(e.date).subtract(const Duration(days: freeDays)))) {
@@ -429,24 +451,39 @@ class _HomePageState extends State<HomePage> {
           children: [
             Text(tr(c, 'trend'), style: Theme.of(c).textTheme.titleMedium),
             const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
+            Row(
               children: [
                 for (final (label, days) in const [('1W', 7), ('1M', 30), ('3M', 90), ('1Y', 365), ('2Y', 730)])
-                  ChoiceChip(
-                    avatar: !widget.premium.isPremium && days > freeDays ? const Icon(Icons.lock, size: 14) : null,
-                    label: Text(label),
-                    selected: _days == days,
-                    onSelected: (_) {
-                      if (!widget.premium.isPremium && days > freeDays) {
-                        showPaywall(context, widget.premium);
-                        return;
-                      }
-                      setState(() {
-                        _days = days;
-                        _touch = null;
-                      });
-                    },
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      child: ChoiceChip(
+                        showCheckmark: false,
+                        visualDensity: VisualDensity.compact,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+                        labelPadding: EdgeInsets.zero,
+                        label: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (!widget.premium.isPremium && days > freeDays) const Padding(padding: EdgeInsetsDirectional.only(end: 2), child: Icon(Icons.lock, size: 12)),
+                            Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                          ],
+                        ),
+                        selected: _days == days,
+                        onSelected: (_) {
+                          if (!widget.premium.isPremium && days > freeDays) {
+                            showPaywall(context, widget.premium);
+                            return;
+                          }
+                          setState(() {
+                            _days = days;
+                            _touch = null;
+                          });
+                        },
+                      ),
+                    ),
                   ),
               ],
             ),

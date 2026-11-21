@@ -29,4 +29,3 @@ void main() {
     expect(suggestCountry('XX', 'sv').code, 'SE');
   });
 }
-

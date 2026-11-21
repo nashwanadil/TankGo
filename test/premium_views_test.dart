@@ -16,7 +16,11 @@ Future<Premium> _p(bool paid) async {
 
 void main() {
   testWidgets('free compare: popular neighbours locked, less-visited open', (t) async {
-    await t.pumpWidget(MaterialApp(home: ComparePage(entries: _all, home: 'DE', premium: await _p(false))));
+    await t.pumpWidget(
+      MaterialApp(
+        home: ComparePage(entries: _all, home: 'DE', premium: await _p(false)),
+      ),
+    );
     await t.pumpAndSettle();
     expect(find.textContaining('1,450'), findsNothing); // locale en -> '1.450'
     expect(find.textContaining('1.450'), findsOneWidget); // PL open
@@ -27,7 +31,11 @@ void main() {
   });
 
   testWidgets('free trip planner shows the demo route with a result', (t) async {
-    await t.pumpWidget(MaterialApp(home: TripPage(entries: _all, home: 'DE', premium: await _p(false))));
+    await t.pumpWidget(
+      MaterialApp(
+        home: TripPage(entries: _all, home: 'DE', premium: await _p(false)),
+      ),
+    );
     await t.pumpAndSettle();
     expect(find.text('Example route – unlock to plan your own trips'), findsOneWidget);
     expect(find.text('Fuel total'), findsOneWidget);

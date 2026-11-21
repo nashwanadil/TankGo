@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:material_ui/material_ui.dart' show TextField, Icons, DatePickerDialog;
+
+import 'package:material_ui/material_ui.dart' show TextField, Icons, CalendarDatePicker;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -11,13 +12,32 @@ import 'package:fuelprices/settings.dart';
 
 final _latest = jsonEncode({
   'countries': {
-    'NL': {'date': '2026-11-16', 'prices': {'e95': 2.151, 'diesel': 2.294, 'lpg': 1.028}, 'prev': {'e95': 2.148, 'diesel': 2.29, 'lpg': 1.011}, 'currency': 'EUR', 'unit': 'L', 'frequency': 'daily', 'source': 'CBS'},
-    'US': {'date': '2026-11-16', 'prices': {'e95': 3.0, 'diesel': 3.8}, 'prev': null, 'currency': 'USD', 'unit': 'gal', 'frequency': 'weekly', 'source': 'EIA'},
-  }
+    'NL': {
+      'date': '2026-11-16',
+      'prices': {'e95': 2.151, 'diesel': 2.294, 'lpg': 1.028},
+      'prev': {'e95': 2.148, 'diesel': 2.29, 'lpg': 1.011},
+      'currency': 'EUR',
+      'unit': 'L',
+      'frequency': 'daily',
+      'source': 'CBS',
+    },
+    'US': {
+      'date': '2026-11-16',
+      'prices': {'e95': 3.0, 'diesel': 3.8},
+      'prev': null,
+      'currency': 'USD',
+      'unit': 'gal',
+      'frequency': 'weekly',
+      'source': 'EIA',
+    },
+  },
 });
 final _hist = jsonEncode({
-  'currency': 'EUR', 'unit': 'L',
-  'points': {for (var i = 0; i < 30; i++) '2026-10-${(i + 1).toString().padLeft(2, '0')}': {'e95': 2.0 + i / 100}}
+  'currency': 'EUR',
+  'unit': 'L',
+  'points': {
+    for (var i = 0; i < 30; i++) '2026-10-${(i + 1).toString().padLeft(2, '0')}': {'e95': 2.0 + i / 100},
+  },
 });
 
 void main() {
@@ -63,9 +83,8 @@ void main() {
     await t.pumpAndSettle();
     await t.tap(find.byIcon(Icons.event));
     await t.pumpAndSettle();
-    expect(find.byType(DatePickerDialog), findsOneWidget);
+    expect(find.byType(CalendarDatePicker), findsOneWidget);
     await t.tap(find.text('15'));
-    await t.tap(find.text('OK'));
     await t.pumpAndSettle();
     expect(find.textContaining('\$2.140 /gal'), findsOneWidget);
     await t.tap(find.text('Latest'));
@@ -82,7 +101,6 @@ void main() {
     await t.tap(find.byIcon(Icons.event));
     await t.pumpAndSettle();
     await t.tap(find.text('15'));
-    await t.tap(find.text('OK'));
     await t.pumpAndSettle();
     expect(find.text('Unlock TankGo Premium'), findsOneWidget);
     expect(find.textContaining('\$2.140 /gal'), findsNothing);

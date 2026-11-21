@@ -3,12 +3,7 @@ import 'package:fuelprices/trip.dart';
 
 void main() {
   test('buys little before a cheaper country, fills up where cheapest', () {
-    final plan = planTrip(
-      [const Leg('DE', 300), const Leg('AT', 300), const Leg('SI', 300)],
-      {'DE': 2.0, 'AT': 1.8, 'SI': 1.6},
-      tank: 50,
-      consumption: 10,
-    )!;
+    final plan = planTrip([const Leg('DE', 300), const Leg('AT', 300), const Leg('SI', 300)], {'DE': 2.0, 'AT': 1.8, 'SI': 1.6}, tank: 50, consumption: 10)!;
     // need 30 L per leg; start full (50 L). DE: cheaper AT within reach -> buy 0 (have 50, need 30).
     expect(plan.stops[0].litres, 0);
     // Leaving DE with 20 L; AT: SI cheaper & reachable (need 30) -> goal 30, buy 10.
@@ -20,13 +15,7 @@ void main() {
   });
 
   test('fills the tank in the cheapest country when no cheaper one is in reach', () {
-    final plan = planTrip(
-      [const Leg('LU', 100), const Leg('DE', 600)],
-      {'LU': 1.5, 'DE': 1.9},
-      tank: 50,
-      consumption: 10,
-      startFull: false,
-    )!;
+    final plan = planTrip([const Leg('LU', 100), const Leg('DE', 600)], {'LU': 1.5, 'DE': 1.9}, tank: 50, consumption: 10, startFull: false)!;
     expect(plan.stops[0].litres, closeTo(50, 1e-9)); // full tank in cheap LU
     expect(plan.stops[1].litres, closeTo(60 - 40, 1e-9)); // need 60 total in DE leg, 40 left
   });
