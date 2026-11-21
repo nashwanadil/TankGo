@@ -10,6 +10,7 @@ import 'brand.dart';
 import 'calc_page.dart';
 import 'compare_page.dart';
 import 'country_sheet.dart';
+import 'lang_flag.dart';
 import 'paywall.dart';
 import 'trip_page.dart';
 import 'fmt.dart';
@@ -36,7 +37,7 @@ class _HomePageState extends State<HomePage> {
   late final Future<Signal?> _signal = widget.api.signal();
   Future<Map<String, Series>>? _hist;
   String? _histCc;
-  String _fuel = 'e95';
+  late String _fuel = widget.settings.fuel;
   int _days = 30;
   (DateTime, double)? _touch;
   int? _touchIdx;
@@ -179,8 +180,8 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 8),
                 _tiles(context, entry, lang),
                 const SizedBox(height: 8),
-                _outlook(context, lang),
                 _chartCard(context, cc, entry, lang),
+                _outlook(context, lang),
                 const SizedBox(height: 8),
                 _compareCard(context, snap.data!.value!, cc),
               ],
@@ -321,71 +322,82 @@ class _HomePageState extends State<HomePage> {
       ),
       child: Column(
         children: [
-          PopupMenuButton<String>(
-            tooltip: '',
-            initialValue: _fuel,
-            onSelected: (f) => setState(() {
-              _fuel = f;
-              _touch = null;
-              _pin = null;
-            }),
-            color: brandDark,
-            elevation: 4,
-            position: PopupMenuPosition.under,
-            offset: const Offset(0, 6),
-            shape: RoundedRectangleBorder(
+          Builder(
+            builder: (bc) => InkWell(
               borderRadius: BorderRadius.circular(rElement),
-              side: BorderSide(color: gold.withValues(alpha: 0.6)),
-            ),
-            itemBuilder: (_) => [
-              for (final f in fuelOrder.where(e.prices.containsKey))
-                PopupMenuItem(
-                  value: f,
-                  height: 52,
-                  child: SizedBox(
-                    width: 220,
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 10,
-                          height: 10,
-                          decoration: BoxDecoration(shape: BoxShape.circle, color: _fuelDark[f]),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            fuelName(c, f),
-                            style: TextStyle(color: f == _fuel ? gold : cream, fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                        Text(
-                          fmtMoney(e.prices[f]!, e.currency, lang),
-                          style: const TextStyle(color: cream, fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(width: 8),
-                        Icon(Icons.check, size: 18, color: f == _fuel ? gold : Colors.transparent),
-                      ],
-                    ),
+              onTap: () async {
+                final box = bc.findRenderObject()! as RenderBox;
+                final overlay = Overlay.of(bc).context.findRenderObject()! as RenderBox;
+                final r = box.localToGlobal(Offset.zero, ancestor: overlay) & box.size;
+                const w = 240.0;
+                final left = (r.center.dx - w / 2).clamp(12.0, overlay.size.width - w - 12);
+                final f = await showMenu<String>(
+                  context: bc,
+                  position: RelativeRect.fromLTRB(left, r.bottom + 6, overlay.size.width - left - w, 0),
+                  constraints: const BoxConstraints(minWidth: w, maxWidth: w),
+                  color: brandDark,
+                  elevation: 4,
+                  initialValue: _fuel,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(rElement),
+                    side: BorderSide(color: gold.withValues(alpha: 0.6)),
                   ),
+                  items: [
+                    for (final f in fuelOrder.where(e.prices.containsKey))
+                      PopupMenuItem(
+                        value: f,
+                        height: 52,
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 10,
+                              height: 10,
+                              decoration: BoxDecoration(shape: BoxShape.circle, color: _fuelDark[f]),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                fuelName(c, f),
+                                style: TextStyle(color: f == _fuel ? gold : cream, fontWeight: FontWeight.w700),
+                              ),
+                            ),
+                            Text(
+                              fmtMoney(e.prices[f]!, e.currency, lang),
+                              style: const TextStyle(color: cream, fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(width: 6),
+                            Icon(Icons.check, size: 18, color: f == _fuel ? gold : Colors.transparent),
+                          ],
+                        ),
+                      ),
+                  ],
+                );
+                if (f != null && mounted) {
+                  setState(() {
+                    _fuel = f;
+                    _touch = null;
+                    _pin = null;
+                  });
+                }
+              },
+              child: Container(
+                padding: const EdgeInsetsDirectional.fromSTEB(14, 4, 8, 4),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(rElement),
+                  color: Colors.black.withValues(alpha: 0.18),
+                  border: Border.all(color: gold.withValues(alpha: 0.55)),
                 ),
-            ],
-            child: Container(
-              padding: const EdgeInsetsDirectional.fromSTEB(14, 4, 8, 4),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(rElement),
-                color: Colors.black.withValues(alpha: 0.18),
-                border: Border.all(color: gold.withValues(alpha: 0.55)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    fuelName(c, _fuel).toUpperCase(),
-                    style: const TextStyle(color: gold, fontWeight: FontWeight.w800, fontSize: 15, letterSpacing: 1.6),
-                  ),
-                  const SizedBox(width: 2),
-                  const Icon(Icons.expand_more, color: gold, size: 20),
-                ],
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      fuelName(c, _fuel).toUpperCase(),
+                      style: const TextStyle(color: gold, fontWeight: FontWeight.w800, fontSize: 15, letterSpacing: 1.6),
+                    ),
+                    const SizedBox(width: 2),
+                    const Icon(Icons.expand_more, color: gold, size: 20),
+                  ],
+                ),
               ),
             ),
           ),
@@ -472,7 +484,7 @@ class _HomePageState extends State<HomePage> {
             height: 46,
             child: Row(
               children: [
-                Text(flag, style: const TextStyle(fontSize: 20)),
+                LangFlag(code: code, flag: flag, size: 20),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(

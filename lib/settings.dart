@@ -9,6 +9,7 @@ class Settings extends ChangeNotifier {
   String? get country => _p.getString('country');
   bool get onboarded => lang != null && country != null;
   bool get noteSeen => _p.getBool('noteSeen') ?? false;
+  String get fuel => _p.getString('fuel') ?? 'e95';
   ThemeMode get theme => ThemeMode.values.firstWhere((m) => m.name == _p.getString('theme'), orElse: () => ThemeMode.system);
 
   Future<void> setLang(String v) async {
@@ -18,6 +19,11 @@ class Settings extends ChangeNotifier {
 
   Future<void> setCountry(String v) async {
     await _p.setString('country', v);
+    notifyListeners();
+  }
+
+  Future<void> setFuel(String v) async {
+    await _p.setString('fuel', v);
     notifyListeners();
   }
 

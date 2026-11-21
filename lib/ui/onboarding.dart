@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 import '../countries.dart';
 import '../settings.dart';
 import '../strings.dart';
+import 'lang_flag.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key, required this.settings});
@@ -48,7 +49,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             for (final (code, name, flag) in languages)
               Card(
                 child: ListTile(
-                  leading: Text(flag, style: const TextStyle(fontSize: 28)),
+                  leading: LangFlag(code: code, flag: flag, size: 28),
                   title: Text(name),
                   onTap: () async {
                     await widget.settings.setLang(code);

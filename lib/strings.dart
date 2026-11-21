@@ -927,6 +927,7 @@ String tr(BuildContext c, String key) => trLang(Localizations.localeOf(c).langua
 /// Premium / feature strings. Missing languages fall back to English.
 const Map<String, Map<String, String>> _x = {
   'en': {
+    "defFuel": "Default fuel",
     "tripHow": "How it works: add the countries on your route in order, with the kilometres you drive in each. TankGo compares the average fuel price of every country and tells you where to fill the tank, where to take only a little, and what the drive costs – plus approximate vignette costs.",
     "cmpAll": "All 27 countries",
     "best": "Best value",
@@ -975,6 +976,7 @@ const Map<String, Map<String, String>> _x = {
     "legal": "Payment is charged to your Google Play account. Subscriptions renew automatically until cancelled in Google Play.",
   },
   'de': {
+    "defFuel": "Standard-Kraftstoff",
     "tripHow": "So funktioniert's: Fügen Sie die Länder Ihrer Route der Reihe nach hinzu, mit den Kilometern, die Sie jeweils fahren. TankGo vergleicht die Durchschnittspreise und sagt Ihnen, wo Sie volltanken, wo Sie nur wenig tanken und was die Fahrt kostet – inklusive ungefährer Vignettenkosten.",
     "cmpAll": "Alle 27 Länder",
     "best": "Bester Wert",
@@ -1023,6 +1025,7 @@ const Map<String, Map<String, String>> _x = {
     "legal": "Die Zahlung erfolgt über Ihr Google-Play-Konto. Abos verlängern sich automatisch, bis Sie in Google Play kündigen.",
   },
   'ar': {
+    "defFuel": "الوقود الافتراضي",
     "tripHow": "طريقة العمل: أضف دول مسارك بالترتيب، مع عدد الكيلومترات التي ستقطعها في كل دولة. يقارن TankGo متوسط سعر الوقود في كل دولة، ويخبرك أين تملأ خزانك كاملًا وأين تأخذ القليل فقط، وكم تكلّف الرحلة، مع تقدير كلفة ملصقات الطرق.",
     "cmpAll": "كل الدول الـ27",
     "best": "الأفضل قيمة",

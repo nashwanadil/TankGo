@@ -4,6 +4,8 @@ import '../countries.dart';
 import '../settings.dart';
 import '../strings.dart';
 import 'country_sheet.dart';
+import 'home.dart' show fuelName, fuelOrder;
+import 'lang_flag.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key, required this.settings});
@@ -20,19 +22,13 @@ class SettingsPage extends StatelessWidget {
           body: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Text(tr(context, 'language'), style: Theme.of(context).textTheme.titleSmall),
+              Text(tx(context, 'defFuel'), style: Theme.of(context).textTheme.titleSmall),
               const SizedBox(height: 6),
-              GridView.count(
-                crossAxisCount: 2,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                childAspectRatio: 3.4,
-                children: [
-                  for (final (code, name, flag) in languages.where((l) => !l.$2.startsWith('English (')))
-                    _LangTile(flag: flag, name: name, selected: settings.lang == code, onTap: () => settings.setLang(code)),
-                ],
+              SegmentedButton<String>(
+                showSelectedIcon: false,
+                segments: [for (final f in fuelOrder) ButtonSegment(value: f, label: Text(fuelName(context, f)))],
+                selected: {settings.fuel},
+                onSelectionChanged: (v) => settings.setFuel(v.first),
               ),
               const SizedBox(height: 20),
               Text(tr(context, 'country'), style: Theme.of(context).textTheme.titleSmall),
@@ -46,6 +42,21 @@ class SettingsPage extends StatelessWidget {
                     if (v != null) settings.setCountry(v);
                   },
                 ),
+              ),
+              const SizedBox(height: 20),
+              Text(tr(context, 'language'), style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: 6),
+              GridView.count(
+                crossAxisCount: 2,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                childAspectRatio: 3.4,
+                children: [
+                  for (final (code, name, flag) in languages.where((l) => !l.$2.startsWith('English (')))
+                    _LangTile(code: code, flag: flag, name: name, selected: settings.lang == code, onTap: () => settings.setLang(code)),
+                ],
               ),
               const SizedBox(height: 20),
               Text(tr(context, 'theme'), style: Theme.of(context).textTheme.titleSmall),
@@ -70,8 +81,8 @@ class SettingsPage extends StatelessWidget {
 }
 
 class _LangTile extends StatelessWidget {
-  const _LangTile({required this.flag, required this.name, required this.selected, required this.onTap});
-  final String flag, name;
+  const _LangTile({required this.code, required this.flag, required this.name, required this.selected, required this.onTap});
+  final String code, flag, name;
   final bool selected;
   final VoidCallback onTap;
 
@@ -91,7 +102,7 @@ class _LangTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Row(
             children: [
-              Text(flag, style: const TextStyle(fontSize: 20)),
+              LangFlag(code: code, flag: flag, size: 20),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
