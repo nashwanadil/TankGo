@@ -35,6 +35,19 @@ class _TripPageState extends State<TripPage> {
 
   List<Country> get _eu => countries.where((c) => widget.entries[c.code]?.currency == 'EUR').toList();
 
+  /// Each tap on "add" proposes the next neighbour of the starting country not yet on the route,
+  /// then neighbours of the last stop, then any other EU country.
+  String _nextCountry() {
+    final used = {for (final l in _legs) l.cc};
+    final eu = {for (final c in _eu) c.code};
+    final order = [
+      if (_legs.isNotEmpty) ...?neighbours[_legs.first.cc],
+      if (_legs.isNotEmpty) ...?neighbours[_legs.last.cc],
+      ..._eu.map((c) => c.code),
+    ];
+    return order.firstWhere((c) => eu.contains(c) && !used.contains(c), orElse: () => _eu.first.code);
+  }
+
   double _n(TextEditingController c) => double.tryParse(c.text.replaceAll(',', '.')) ?? 0;
 
   @override
@@ -228,7 +241,7 @@ class _TripPageState extends State<TripPage> {
                   ),
                   icon: const Icon(Icons.add_location_alt_outlined),
                   label: Text(tx(context, 'tripAdd'), style: const TextStyle(fontWeight: FontWeight.w700)),
-                  onPressed: () => setState(() => _legs.add(_LegRow(_eu.first.code, '200'))),
+                  onPressed: () => setState(() => _legs.add(_LegRow(_nextCountry(), '200'))),
                 ),
               ],
               const SizedBox(height: 8),
