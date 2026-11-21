@@ -47,6 +47,23 @@ class _TripPageState extends State<TripPage> {
     super.dispose();
   }
 
+  Future<String?> _pickEu(BuildContext context) => showModalBottomSheet<String>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    showDragHandle: true,
+    builder: (c) => ListView(
+      children: [
+        for (final x in _eu)
+          ListTile(
+            leading: Text(x.flag, style: const TextStyle(fontSize: 26)),
+            title: Text(x.name),
+            onTap: () => Navigator.pop(c, x.code),
+          ),
+      ],
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     final lang = Localizations.localeOf(context).languageCode;
@@ -125,70 +142,93 @@ class _TripPageState extends State<TripPage> {
                   children: [for (final f in fuels) ChoiceChip(label: Text(fuelName(context, f)), selected: _fuel == f, onSelected: (_) => setState(() => _fuel = f))],
                 ),
                 const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _tank,
-                        onTap: () => selectAll(_tank),
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        decoration: InputDecoration(labelText: tx(context, 'tripTank'), border: const OutlineInputBorder()),
-                        onChanged: (_) => setState(() {}),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: TextField(
-                        controller: _cons,
-                        onTap: () => selectAll(_cons),
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        decoration: InputDecoration(labelText: tx(context, 'tripCons'), border: const OutlineInputBorder()),
-                        onChanged: (_) => setState(() {}),
-                      ),
-                    ),
-                  ],
+                NumberRow(icon: Icons.local_gas_station, label: tx(context, 'tripTank'), controller: _tank, suffix: ' L', onChanged: (_) => setState(() {})),
+                NumberRow(icon: Icons.speed, label: tx(context, 'tripCons'), controller: _cons, onChanged: (_) => setState(() {})),
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(rCard),
+                    side: BorderSide(color: t.colorScheme.primary, width: 2),
+                  ),
+                  child: SwitchListTile(
+                    secondary: Icon(Icons.battery_full, color: t.colorScheme.primary, size: 28),
+                    title: Text(tx(context, 'tripFull'), style: const TextStyle(fontWeight: FontWeight.w600)),
+                    value: _full,
+                    onChanged: (v) => setState(() => _full = v),
+                  ),
                 ),
-                SwitchListTile(contentPadding: EdgeInsets.zero, title: Text(tx(context, 'tripFull')), value: _full, onChanged: (v) => setState(() => _full = v)),
-                if (_legs.isEmpty) Text(tx(context, 'tripEmpty')),
+                const SizedBox(height: 8),
+                if (_legs.isEmpty) Padding(padding: const EdgeInsets.all(8), child: Text(tx(context, 'tripEmpty'))),
                 for (final (i, l) in _legs.indexed)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: DropdownButtonFormField<String>(
-                            initialValue: _eu.any((c) => c.code == l.cc) ? l.cc : null,
-                            isExpanded: true,
-                            decoration: const InputDecoration(border: OutlineInputBorder(), contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8)),
-                            items: [
-                              for (final c in _eu)
-                                DropdownMenuItem(
-                                  value: c.code,
-                                  child: Text('${c.flag} ${c.name}', overflow: TextOverflow.ellipsis),
+                  Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(rCard),
+                      side: BorderSide(color: t.dividerColor),
+                    ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsetsDirectional.only(start: 12, end: 4),
+                      leading: CircleAvatar(
+                        radius: 14,
+                        backgroundColor: t.colorScheme.primary,
+                        child: Text(
+                          '${i + 1}',
+                          style: TextStyle(color: t.colorScheme.onPrimary, fontWeight: FontWeight.w800, fontSize: 13),
+                        ),
+                      ),
+                      title: InkWell(
+                        borderRadius: BorderRadius.circular(rElement),
+                        onTap: () async {
+                          final v = await _pickEu(context);
+                          if (v != null) setState(() => l.cc = v);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          child: Row(
+                            children: [
+                              Text(countryByCode(l.cc)?.flag ?? '', style: const TextStyle(fontSize: 22)),
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: Text(
+                                  countryByCode(l.cc)?.name ?? l.cc,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(fontWeight: FontWeight.w600),
                                 ),
+                              ),
+                              const Icon(Icons.arrow_drop_down),
                             ],
-                            onChanged: (v) => setState(() => l.cc = v ?? l.cc),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          flex: 2,
-                          child: TextField(
-                            controller: l.km,
-                            onTap: () => selectAll(l.km),
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            decoration: const InputDecoration(suffixText: 'km', border: OutlineInputBorder(), contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8)),
-                            onChanged: (_) => setState(() {}),
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: 84,
+                            child: TextField(
+                              controller: l.km,
+                              onTap: () => selectAll(l.km),
+                              textAlign: TextAlign.end,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17),
+                              decoration: const InputDecoration(isDense: true, border: InputBorder.none, suffixText: ' km'),
+                              onChanged: (_) => setState(() {}),
+                            ),
                           ),
-                        ),
-                        IconButton(icon: const Icon(Icons.close), onPressed: () => setState(() => _legs.removeAt(i).km.dispose())),
-                      ],
+                          IconButton(icon: const Icon(Icons.close, size: 20), onPressed: () => setState(() => _legs.removeAt(i).km.dispose())),
+                        ],
+                      ),
                     ),
                   ),
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: TextButton.icon(icon: const Icon(Icons.add), label: Text(tx(context, 'tripAdd')), onPressed: () => setState(() => _legs.add(_LegRow(_eu.first.code, '200')))),
+                const SizedBox(height: 4),
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(48),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(rCard)),
+                    side: BorderSide(color: t.colorScheme.primary, width: 1.5),
+                  ),
+                  icon: const Icon(Icons.add_location_alt_outlined),
+                  label: Text(tx(context, 'tripAdd'), style: const TextStyle(fontWeight: FontWeight.w700)),
+                  onPressed: () => setState(() => _legs.add(_LegRow(_eu.first.code, '200'))),
                 ),
               ],
               const SizedBox(height: 8),

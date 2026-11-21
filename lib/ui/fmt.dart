@@ -25,7 +25,7 @@ String fmtMoney(double v, String cur, String lang, [int d = 3]) => '\u2066${mone
 
 String moneyRaw(double v, String cur, String lang, [int d = 3]) {
   final n = fmtNum(v, lang, d);
-  return cur == 'USD' ? '\$$n' : '$n €';
+  return cur == 'USD' ? '\$$n' : '$n\u00A0€';
 }
 
 String fmtShortDate(DateTime d, String lang) {

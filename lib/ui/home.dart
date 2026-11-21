@@ -221,7 +221,35 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-            CalendarDatePicker(initialDate: init, firstDate: first, lastDate: last, onDateChanged: (v) => Navigator.pop(c, v)),
+            Builder(
+              builder: (c) {
+                final th = Theme.of(c);
+                final dark = th.brightness == Brightness.dark;
+                final dayInk = dark ? cream : darkBrown;
+                return Stack(
+                  children: [
+                    Positioned(top: 0, left: 0, right: 0, height: 52, child: Container(color: brandDark)),
+                    Theme(
+                      data: th.copyWith(
+                        colorScheme: th.colorScheme.copyWith(onSurface: cream, onSurfaceVariant: cream),
+                        datePickerTheme: th.datePickerTheme.copyWith(
+                          weekdayStyle: TextStyle(color: dayInk.withValues(alpha: 0.7), fontWeight: FontWeight.w600),
+                          dayForegroundColor: WidgetStateProperty.resolveWith(
+                            (s) => s.contains(WidgetState.selected)
+                                ? th.colorScheme.onPrimary
+                                : s.contains(WidgetState.disabled)
+                                ? dayInk.withValues(alpha: 0.3)
+                                : dayInk,
+                          ),
+                          yearForegroundColor: WidgetStateProperty.resolveWith((s) => s.contains(WidgetState.selected) ? th.colorScheme.onPrimary : dayInk),
+                        ),
+                      ),
+                      child: CalendarDatePicker(initialDate: init, firstDate: first, lastDate: last, onDateChanged: (v) => Navigator.pop(c, v)),
+                    ),
+                  ],
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -292,9 +320,53 @@ class _HomePageState extends State<HomePage> {
               _touch = null;
               _pin = null;
             }),
-            itemBuilder: (_) => [for (final f in fuelOrder.where(e.prices.containsKey)) PopupMenuItem(value: f, child: Text(fuelName(c, f)))],
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            color: brandDark,
+            elevation: 4,
+            position: PopupMenuPosition.under,
+            offset: const Offset(0, 6),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(rElement),
+              side: BorderSide(color: gold.withValues(alpha: 0.6)),
+            ),
+            itemBuilder: (_) => [
+              for (final f in fuelOrder.where(e.prices.containsKey))
+                PopupMenuItem(
+                  value: f,
+                  height: 52,
+                  child: SizedBox(
+                    width: 220,
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(shape: BoxShape.circle, color: _fuelDark[f]),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            fuelName(c, f),
+                            style: TextStyle(color: f == _fuel ? gold : cream, fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                        Text(
+                          fmtMoney(e.prices[f]!, e.currency, lang),
+                          style: const TextStyle(color: cream, fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(Icons.check, size: 18, color: f == _fuel ? gold : Colors.transparent),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+            child: Container(
+              padding: const EdgeInsetsDirectional.fromSTEB(14, 4, 8, 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(rElement),
+                color: Colors.black.withValues(alpha: 0.18),
+                border: Border.all(color: gold.withValues(alpha: 0.55)),
+              ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -302,7 +374,8 @@ class _HomePageState extends State<HomePage> {
                     fuelName(c, _fuel).toUpperCase(),
                     style: const TextStyle(color: gold, fontWeight: FontWeight.w800, fontSize: 15, letterSpacing: 1.6),
                   ),
-                  const Icon(Icons.arrow_drop_down, color: gold),
+                  const SizedBox(width: 2),
+                  const Icon(Icons.expand_more, color: gold, size: 20),
                 ],
               ),
             ),
