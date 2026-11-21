@@ -34,7 +34,7 @@ class _CompareListState extends State<CompareList> {
   }
 
   ShapeBorder _shape(BuildContext c, {Color? accent}) => RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(16),
+    borderRadius: BorderRadius.circular(rCard),
     side: BorderSide(color: accent ?? Theme.of(c).dividerColor.withValues(alpha: 0.4), width: accent != null ? 2 : 1),
   );
 
@@ -88,7 +88,7 @@ class _CompareListState extends State<CompareList> {
                       title: Text(c.name, maxLines: 1, overflow: TextOverflow.ellipsis),
                       subtitle: Text(
                         isHome ? tx(context, 'yourCountry') : (diff == null ? '' : '${tx(context, 'cmpSave')}: ${diff >= 0 ? '+' : ''}${fmtMoney(diff, 'EUR', lang, 2)}'),
-                        style: TextStyle(color: isHome || diff == null ? null : (diff >= 0 ? const Color(0xFF2E8B6A) : Theme.of(context).colorScheme.error), fontWeight: FontWeight.w600),
+                        style: TextStyle(color: isHome || diff == null ? null : (diff >= 0 ? positive : Theme.of(context).colorScheme.error), fontWeight: FontWeight.w600),
                       ),
                       trailing: Text(fmtMoney(r.$2, 'EUR', lang), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
                     ),

@@ -5,6 +5,7 @@ import '../strings.dart';
 import 'fmt.dart';
 import 'number_row.dart';
 import 'home.dart' show fuelColor, fuelName, fuelOrder;
+import 'brand.dart';
 
 class CalcPage extends StatefulWidget {
   const CalcPage({super.key, required this.entry});
@@ -41,7 +42,7 @@ class _CalcPageState extends State<CalcPage> {
           for (final f in fuelOrder.where(e.prices.containsKey))
             Card(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(rCard),
                 side: BorderSide(color: fuelColor(context, f), width: 1.5),
               ),
               child: ListTile(

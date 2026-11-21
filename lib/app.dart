@@ -29,16 +29,18 @@ ThemeData _theme(Brightness b) {
   final dark = b == Brightness.dark;
   final scheme = ColorScheme.fromSeed(seedColor: brand, brightness: b).copyWith(
     primary: dark ? gold : brand,
-    onPrimary: dark ? const Color(0xFF2A1D17) : Colors.white,
-    primaryContainer: dark ? const Color(0xFF4A3226) : const Color(0xFFF3D9DC),
-    onPrimaryContainer: dark ? const Color(0xFFF5ECE0) : const Color(0xFF3B0C15),
-    surface: dark ? const Color(0xFF2A1D17) : const Color(0xFFF5F1F0),
-    surfaceContainerHighest: dark ? const Color(0xFF43312A) : const Color(0xFFEADFDB),
-    onSurface: dark ? const Color(0xFFF5ECE0) : const Color(0xFF2A1D17),
-    error: dark ? const Color(0xFFFF8A80) : const Color(0xFFB3261E),
-    errorContainer: dark ? const Color(0xFF5A2A2A) : const Color(0xFFF9DEDC),
+    onPrimary: dark ? darkBrown : Colors.white,
+    primaryContainer: dark ? primaryContainerDark : primaryContainerLight,
+    onPrimaryContainer: dark ? cream : brandDeep,
+    surface: dark ? darkBrown : ivory,
+    surfaceContainerHighest: dark ? surfaceHighDark : surfaceHighLight,
+    onSurface: dark ? cream : darkBrown,
+    error: dark ? errorDark : errorLight,
+    errorContainer: dark ? errorContainerDark : errorContainerLight,
   );
   return ThemeData(
+    fontFamily: 'NotoSans',
+    fontFamilyFallback: const ['NotoKufiArabic'],
     colorScheme: scheme,
     useMaterial3: true,
     scaffoldBackgroundColor: scheme.surface,
@@ -49,16 +51,16 @@ ThemeData _theme(Brightness b) {
     cardTheme: CardThemeData(
       elevation: 0,
       margin: const EdgeInsets.symmetric(vertical: 4),
-      color: dark ? const Color(0xFF362720) : Colors.white,
+      color: dark ? cardDark : Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18),
-        side: BorderSide(color: dark ? const Color(0xFF4F3B2F) : const Color(0xFFE8DCD6)),
+        side: BorderSide(color: dark ? borderDark : borderLight),
       ),
     ),
     datePickerTheme: DatePickerThemeData(
-      backgroundColor: dark ? const Color(0xFF362720) : Colors.white,
+      backgroundColor: dark ? cardDark : Colors.white,
       surfaceTintColor: Colors.transparent,
-      headerBackgroundColor: dark ? const Color(0xFF6B1A2E) : brand,
+      headerBackgroundColor: dark ? brandDark : brand,
       headerForegroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       todayBorder: const BorderSide(color: gold, width: 1.5),
@@ -66,7 +68,7 @@ ThemeData _theme(Brightness b) {
     ),
     chipTheme: ChipThemeData(
       selectedColor: scheme.primaryContainer,
-      side: BorderSide(color: dark ? const Color(0xFF4F3B2F) : const Color(0xFFE0D2CC)),
+      side: BorderSide(color: dark ? borderDark : chipBorderLight),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
   );

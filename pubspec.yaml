@@ -27,6 +27,27 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: NotoSans
+      fonts:
+        - asset: assets/fonts/NotoSans-400.ttf
+          weight: 400
+        - asset: assets/fonts/NotoSans-500.ttf
+          weight: 500
+        - asset: assets/fonts/NotoSans-700.ttf
+          weight: 700
+        - asset: assets/fonts/NotoSans-800.ttf
+          weight: 800
+    - family: NotoKufiArabic
+      fonts:
+        - asset: assets/fonts/NotoKufiArabic-400.ttf
+          weight: 400
+        - asset: assets/fonts/NotoKufiArabic-500.ttf
+          weight: 500
+        - asset: assets/fonts/NotoKufiArabic-700.ttf
+          weight: 700
+        - asset: assets/fonts/NotoKufiArabic-800.ttf
+          weight: 800
 
 flutter_launcher_icons:
   android: true

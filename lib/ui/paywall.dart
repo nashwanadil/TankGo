@@ -11,8 +11,6 @@ class _Paywall extends StatelessWidget {
   const _Paywall(this.premium);
   final Premium premium;
 
-  static const _cream = Color(0xFFF5ECE0);
-
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -24,13 +22,13 @@ class _Paywall extends StatelessWidget {
         return Container(
           decoration: const BoxDecoration(
             borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-            gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF9E2F42), Color(0xFF6B1A2E), Color(0xFF3B0C15)]),
+            gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [brandLight, brandDark, brandDeep]),
             border: Border(top: BorderSide(color: gold, width: 2)),
           ),
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
             child: DefaultTextStyle.merge(
-              style: const TextStyle(color: _cream),
+              style: const TextStyle(color: cream),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -90,14 +88,14 @@ class _Paywall extends StatelessWidget {
                         child: Text(
                           tx(context, premium.storeReady ? 'noPlans' : 'storeOff'),
                           textAlign: TextAlign.center,
-                          style: const TextStyle(color: Color(0xFFFFB4AB)),
+                          style: const TextStyle(color: riseSoft),
                         ),
                       ),
                     if (premium.error != null && premium.storeReady)
                       Text(
                         premium.error!,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: Color(0xFFFFB4AB), fontSize: 12),
+                        style: const TextStyle(color: riseSoft, fontSize: 12),
                       ),
                     TextButton(
                       style: TextButton.styleFrom(foregroundColor: gold),
@@ -111,13 +109,13 @@ class _Paywall extends StatelessWidget {
                       ),
                     Text(
                       tx(context, 'legal'),
-                      style: t.textTheme.bodySmall?.copyWith(color: _cream.withValues(alpha: 0.7)),
+                      style: t.textTheme.bodySmall?.copyWith(color: cream.withValues(alpha: 0.7)),
                       textAlign: TextAlign.center,
                     ),
                   ] else ...[
                     const SizedBox(height: 16),
                     FilledButton(
-                      style: FilledButton.styleFrom(backgroundColor: gold, foregroundColor: const Color(0xFF2A1D17)),
+                      style: FilledButton.styleFrom(backgroundColor: gold, foregroundColor: darkBrown),
                       onPressed: () => Navigator.pop(context),
                       child: Text(tr(context, 'ok')),
                     ),
@@ -143,7 +141,7 @@ class _Paywall extends StatelessWidget {
             color: best ? gold.withValues(alpha: 0.16) : Colors.black.withValues(alpha: 0.22),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18),
-              side: BorderSide(color: best ? gold : _cream.withValues(alpha: 0.25), width: best ? 2 : 1),
+              side: BorderSide(color: best ? gold : cream.withValues(alpha: 0.25), width: best ? 2 : 1),
             ),
             child: InkWell(
               borderRadius: BorderRadius.circular(18),
@@ -161,7 +159,7 @@ class _Paywall extends StatelessWidget {
                             style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 17),
                           ),
                           const SizedBox(height: 2),
-                          Text(tx(context, sub), style: TextStyle(color: _cream.withValues(alpha: 0.8), fontSize: 12.5)),
+                          Text(tx(context, sub), style: TextStyle(color: cream.withValues(alpha: 0.8), fontSize: 12.5)),
                         ],
                       ),
                     ),
@@ -184,7 +182,7 @@ class _Paywall extends StatelessWidget {
                 decoration: BoxDecoration(color: gold, borderRadius: BorderRadius.circular(10)),
                 child: Text(
                   tx(context, 'best'),
-                  style: const TextStyle(color: Color(0xFF2A1D17), fontWeight: FontWeight.w800, fontSize: 11),
+                  style: const TextStyle(color: darkBrown, fontWeight: FontWeight.w800, fontSize: 11),
                 ),
               ),
             ),

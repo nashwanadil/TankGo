@@ -20,9 +20,21 @@ String fmtDate(DateTime d, String lang) {
   }
 }
 
-String fmtMoney(double v, String cur, String lang, [int d = 3]) {
+/// Wrapped in a left-to-right isolate so prices read correctly inside RTL text.
+String fmtMoney(double v, String cur, String lang, [int d = 3]) => '\u2066${moneyRaw(v, cur, lang, d)}\u2069';
+
+String moneyRaw(double v, String cur, String lang, [int d = 3]) {
   final n = fmtNum(v, lang, d);
   return cur == 'USD' ? '\$$n' : '$n €';
+}
+
+String fmtShortDate(DateTime d, String lang) {
+  if (lang == 'ku') lang = 'ar';
+  try {
+    return DateFormat.MMMd(lang).format(d);
+  } catch (_) {
+    return d.toIso8601String().substring(5, 10);
+  }
 }
 
 String unitLabel(Entry e) => e.unit == 'gal' ? '/gal' : '/L';

@@ -15,8 +15,8 @@ import 'trip_page.dart';
 import 'fmt.dart';
 import 'settings_page.dart';
 
-const _fuelDark = {'e95': Color(0xFFE0B860), 'diesel': Color(0xFFE8808F), 'lpg': Color(0xFF7FC4A5)};
-const _fuelLight = {'e95': Color(0xFFB98A24), 'diesel': Color(0xFF9F2B3E), 'lpg': Color(0xFF2E8B6A)};
+const _fuelDark = {'e95': gold, 'diesel': fuelDieselDark, 'lpg': fuelLpgDark};
+const _fuelLight = {'e95': fuelE95Light, 'diesel': fuelDieselLight, 'lpg': positive};
 Color fuelColor(BuildContext c, String f) => (Theme.of(c).brightness == Brightness.dark ? _fuelDark : _fuelLight)[f]!;
 const fuelOrder = ['e95', 'diesel', 'lpg'];
 
@@ -233,7 +233,7 @@ class _HomePageState extends State<HomePage> {
     if (shown == null && p != null) {
       final d = e.prices[_fuel]! - p;
       final flat = d.abs() < 0.0005;
-      final cc = flat ? const Color(0xFFF5ECE0) : (d > 0 ? const Color(0xFFFFB4AB) : const Color(0xFFA5E8C0));
+      final cc = flat ? cream : (d > 0 ? riseSoft : fallSoft);
       chg = Text(
         '${flat
             ? '→'
@@ -243,19 +243,18 @@ class _HomePageState extends State<HomePage> {
         style: TextStyle(color: cc, fontWeight: FontWeight.w700, fontSize: 16),
       );
     }
-    const cream = Color(0xFFF5ECE0);
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF9E2F42), Color(0xFF6B1A2E)]),
+        gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [brandLight, brandDark]),
         borderRadius: BorderRadius.circular(28),
         border: Border.all(color: shown != null ? gold : gold.withValues(alpha: 0.35), width: shown != null ? 3 : 1.5),
         boxShadow: _pulse
             ? [BoxShadow(color: gold.withValues(alpha: 0.75), blurRadius: 40, spreadRadius: 6)]
             : [
                 BoxShadow(
-                  color: const Color(0xFF8F2A39).withValues(alpha: touching ? 0.55 : 0.3),
+                  color: brand.withValues(alpha: touching ? 0.55 : 0.3),
                   blurRadius: 28,
                   offset: const Offset(0, 10),
                 ),
@@ -290,7 +289,7 @@ class _HomePageState extends State<HomePage> {
           FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
-              '${fmtMoney(v, e.currency, lang)} ${unitLabel(e)}',
+              '\u2066${moneyRaw(v, e.currency, lang)} ${unitLabel(e)}\u2069',
               style: const TextStyle(color: Colors.white, fontSize: 48, fontWeight: FontWeight.w800),
             ),
           ),
@@ -298,7 +297,7 @@ class _HomePageState extends State<HomePage> {
           if (chg != null) Padding(padding: const EdgeInsets.only(top: 4), child: chg),
           const SizedBox(height: 16),
           Material(
-            color: stale ? const Color(0xFFFFB4AB) : gold,
+            color: stale ? riseSoft : gold,
             borderRadius: BorderRadius.circular(14),
             child: InkWell(
               borderRadius: BorderRadius.circular(14),
@@ -308,13 +307,13 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(stale ? Icons.warning_amber_rounded : Icons.event, size: 22, color: const Color(0xFF2A1D17)),
+                    Icon(stale ? Icons.warning_amber_rounded : Icons.event, size: 22, color: darkBrown),
                     const SizedBox(width: 8),
                     Text(
                       fmtDate(date, lang),
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF2A1D17)),
+                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: darkBrown),
                     ),
-                    const Icon(Icons.arrow_drop_down, color: Color(0xFF2A1D17)),
+                    const Icon(Icons.arrow_drop_down, color: darkBrown),
                   ],
                 ),
               ),
@@ -354,8 +353,8 @@ class _HomePageState extends State<HomePage> {
         if (sig == null) return const SizedBox();
         final premium = widget.premium.isPremium;
         final (icon, col, key) = switch (sig.direction) {
-          'up' => (Icons.trending_up, const Color(0xFFD9534F), 'outUp'),
-          'down' => (Icons.trending_down, const Color(0xFF2E8B6A), 'outDown'),
+          'up' => (Icons.trending_up, negative, 'outUp'),
+          'down' => (Icons.trending_down, positive, 'outDown'),
           _ => (Icons.trending_flat, Theme.of(c).colorScheme.onSurface, 'outFlat'),
         };
         return Card(
@@ -380,7 +379,7 @@ class _HomePageState extends State<HomePage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 3),
               child: InkWell(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(rCard),
                 onTap: () => setState(() {
                   _fuel = f;
                   _touch = null;
@@ -388,7 +387,7 @@ class _HomePageState extends State<HomePage> {
                 }),
                 child: Card(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(rCard),
                     side: BorderSide(color: _fuel == f ? fuelColor(c, f) : Theme.of(c).dividerColor.withValues(alpha: 0.4), width: _fuel == f ? 2 : 1),
                   ),
                   child: Padding(
@@ -534,10 +533,10 @@ class _HomePageState extends State<HomePage> {
                                     interval: (pts.length / 4).ceilToDouble(),
                                     getTitlesWidget: (v, m) {
                                       final i = v.toInt();
-                                      if (i < 0 || i >= pts.length) return const SizedBox();
+                                      if (i < 0 || i >= pts.length || (i != pts.length - 1 && pts.length - 1 - i < (pts.length / 4).ceil() * 0.6)) return const SizedBox();
                                       return Padding(
                                         padding: const EdgeInsets.only(top: 4),
-                                        child: Text(fmtDate(pts[i].$1, lang), style: const TextStyle(fontSize: 9)),
+                                        child: Text(fmtShortDate(pts[i].$1, lang), style: const TextStyle(fontSize: 10)),
                                       );
                                     },
                                   ),
@@ -571,7 +570,7 @@ class _HomePageState extends State<HomePage> {
                                     for (final sp in spots)
                                       LineTooltipItem(
                                         '${fmtMoney(sp.y, ser.currency, lang)}\n',
-                                        TextStyle(color: Theme.of(c).brightness == Brightness.dark ? const Color(0xFF2A1D17) : Colors.white, fontWeight: FontWeight.w800, fontSize: 13),
+                                        TextStyle(color: Theme.of(c).brightness == Brightness.dark ? darkBrown : Colors.white, fontWeight: FontWeight.w800, fontSize: 13),
                                         children: [
                                           TextSpan(
                                             text: fmtDate(pts[sp.spotIndex].$1, lang),

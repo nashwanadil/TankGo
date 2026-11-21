@@ -1,5 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
+import 'brand.dart';
+
 /// Selects the whole field content on tap so the user can type a new value directly.
 void selectAll(TextEditingController c) => c.selection = TextSelection(baseOffset: 0, extentOffset: c.text.length);
 
@@ -18,7 +20,7 @@ class NumberRow extends StatelessWidget {
     final col = color ?? Theme.of(context).colorScheme.primary;
     return Card(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(rCard),
         side: BorderSide(color: col, width: 2),
       ),
       child: ListTile(

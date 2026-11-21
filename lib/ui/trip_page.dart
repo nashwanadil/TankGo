@@ -9,6 +9,7 @@ import 'fmt.dart';
 import 'number_row.dart';
 import 'home.dart' show fuelName, fuelOrder;
 import 'paywall.dart';
+import 'brand.dart';
 
 class TripPage extends StatefulWidget {
   const TripPage({super.key, required this.entries, required this.home, required this.premium});
@@ -82,7 +83,7 @@ class _TripPageState extends State<TripPage> {
               ),
               if (demo)
                 Card(
-                  color: const Color(0xFF6B1A2E),
+                  color: brandDark,
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
@@ -90,7 +91,7 @@ class _TripPageState extends State<TripPage> {
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.workspace_premium, color: Color(0xFFE0B860)),
+                            const Icon(Icons.workspace_premium, color: gold),
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
@@ -102,7 +103,7 @@ class _TripPageState extends State<TripPage> {
                         ),
                         const SizedBox(height: 12),
                         FilledButton(
-                          style: FilledButton.styleFrom(backgroundColor: const Color(0xFFE0B860), foregroundColor: const Color(0xFF2A1D17)),
+                          style: FilledButton.styleFrom(backgroundColor: gold, foregroundColor: darkBrown),
                           onPressed: () => showPaywall(context, widget.premium),
                           child: Text(tx(context, 'unlock')),
                         ),
@@ -226,7 +227,7 @@ class _TripPageState extends State<TripPage> {
                             padding: const EdgeInsets.only(top: 4),
                             child: Text(
                               '${tx(context, 'tripSaved')}: ${fmtMoney(plan.saved, 'EUR', lang, 2)}',
-                              style: const TextStyle(color: Color(0xFF2E8B6A), fontWeight: FontWeight.w600),
+                              style: const TextStyle(color: positive, fontWeight: FontWeight.w600),
                             ),
                           ),
                         if (vig > 0) Padding(padding: const EdgeInsets.only(top: 8), child: Text('${tx(context, 'tripVig')}: ≈ ${fmtMoney(vig, 'EUR', lang, 2)}')),
