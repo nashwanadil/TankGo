@@ -731,7 +731,9 @@ class _HomePageState extends State<HomePage> {
                   final lo = vals.reduce((a, b) => a < b ? a : b), hi = vals.reduce((a, b) => a > b ? a : b);
                   final pad = ((hi - lo) * 0.15).clamp(0.01, 10.0);
                   final col = fuelColor(c, _fuel);
-                  final ti = _touchIdx != null && _touchIdx! < pts.length ? _touchIdx : null;
+                  // The tooltip follows the finger; after release it stays on the picked day (the pin).
+                  final pinIdx = _pin == null ? -1 : pts.indexWhere((p) => p.$1 == _pin!.$1);
+                  final ti = _touchIdx != null && _touchIdx! < pts.length ? _touchIdx : (pinIdx >= 0 ? pinIdx : null);
                   final bar = LineChartBarData(
                     spots: [for (var i = 0; i < pts.length; i++) FlSpot(i.toDouble(), pts[i].$2)],
                     isCurved: false,
@@ -752,12 +754,17 @@ class _HomePageState extends State<HomePage> {
                     }
                   }
 
+                  // Lifting the finger keeps the picked day in the hero (like the calendar); the hero glows
+                  // so the change is noticed, and the "latest" button there returns to today.
                   void end() {
-                    if (_touchIdx != null || _touch != null) {
+                    final t = _touch;
+                    if (_touchIdx != null || t != null) {
                       setState(() {
                         _touchIdx = null;
                         _touch = null;
+                        if (t != null) _pin = t.$1 == ser.points.last.$1 ? null : t;
                       });
+                      if (t != null && _pin != null) _glow();
                     }
                   }
 

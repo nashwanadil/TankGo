@@ -92,6 +92,30 @@ void main() {
     expect(find.textContaining('\$3.000 /gal'), findsOneWidget);
   });
 
+  testWidgets('chart: lifting the finger keeps the picked day in the hero until "Latest"', (t) async {
+    SharedPreferences.setMockInitialValues({'lang': 'en', 'country': 'US', 'noteSeen': true, 'p_life': true});
+    final api = Api(MockClient((r) async => http.Response(r.url.path.contains('history') ? _hist : _latest, 200)));
+    final s = Settings(await SharedPreferences.getInstance());
+    await t.pumpWidget(TankGoApp(settings: s, api: api, premium: Premium(await SharedPreferences.getInstance(), billing: false)));
+    await t.pumpAndSettle();
+    expect(find.text('Latest'), findsNothing);
+    final box = t.getRect(find.byWidgetPredicate((w) => w.runtimeType.toString() == 'LineChart'));
+    await t.ensureVisible(find.byWidgetPredicate((w) => w.runtimeType.toString() == 'LineChart'));
+    await t.pumpAndSettle();
+    final r = t.getRect(find.byWidgetPredicate((w) => w.runtimeType.toString() == 'LineChart'));
+    expect(box.width, r.width);
+    await t.tapAt(Offset(r.left + 50, r.center.dy)); // an early day, not the latest
+    await t.pumpAndSettle();
+    expect(find.text('Latest'), findsOneWidget); // still shown after lifting the finger
+    expect(find.textContaining('\$2.000 /gal'), findsOneWidget); // hero stays on the picked day
+    await t.ensureVisible(find.text('Latest'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Latest'));
+    await t.pumpAndSettle();
+    expect(find.text('Latest'), findsNothing);
+    expect(find.textContaining('\$3.000 /gal'), findsOneWidget);
+  });
+
   testWidgets('calendar: free user is sent to the paywall for dates older than 30 days', (t) async {
     SharedPreferences.setMockInitialValues({'lang': 'en', 'country': 'US', 'noteSeen': true});
     final api = Api(MockClient((r) async => http.Response(r.url.path.contains('history') ? _hist : _latest, 200)));
