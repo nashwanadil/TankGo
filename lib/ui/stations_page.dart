@@ -244,9 +244,9 @@ class _StationsPageState extends State<StationsPage> {
               showSelectedIcon: false,
               style: segStyle,
               segments: [
-                ButtonSegment(value: StationSort.price, icon: const Icon(Icons.sell_outlined, size: 16), label: Text(tx(c, 'stSortPrice'), key: const ValueKey('sort_price'), maxLines: 1)),
-                ButtonSegment(value: StationSort.distance, icon: const Icon(Icons.near_me_outlined, size: 16), label: Text(tx(c, 'stSortDist'), key: const ValueKey('sort_dist'), maxLines: 1)),
-                ButtonSegment(value: StationSort.newest, icon: const Icon(Icons.update, size: 16), label: Text(tx(c, 'stSortNew'), key: const ValueKey('sort_new'), maxLines: 1)),
+                ButtonSegment(value: StationSort.price, icon: const Icon(Icons.sell_outlined, size: 16), label: FittedBox(fit: BoxFit.scaleDown, child: Text(tx(c, 'stSortPrice'), key: const ValueKey('sort_price'), maxLines: 1))),
+                ButtonSegment(value: StationSort.distance, icon: const Icon(Icons.near_me_outlined, size: 16), label: FittedBox(fit: BoxFit.scaleDown, child: Text(tx(c, 'stSortDist'), key: const ValueKey('sort_dist'), maxLines: 1))),
+                ButtonSegment(value: StationSort.newest, icon: const Icon(Icons.update, size: 16), label: FittedBox(fit: BoxFit.scaleDown, child: Text(tx(c, 'stSortNew'), key: const ValueKey('sort_new'), maxLines: 1))),
               ],
               selected: {_sort},
               onSelectionChanged: (v) => setState(() => _sort = v.first),
