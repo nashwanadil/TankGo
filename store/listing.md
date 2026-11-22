@@ -50,7 +50,7 @@ TankGo zeigt offizielle Durchschnittspreise für Kraftstoff in allen 27 EU-Länd
 KOSTENLOS
 • Preise für Benzin 95, Diesel und LPG je Land, mit Datum zu jedem Preis
 • Preisverlauf des letzten Monats – Diagramm berühren und den Preis jedes Tages sehen
-• Ihr Land mit den Nachbarländern vergleichen: was eine Tankfüllung nebenan kostet
+• Vergleiche dein Land mit seinen Nachbarn: Was kostet eine Tankfüllung nebenan?
 • Günstigste Tankstellen in deiner Nähe mit echten Stationspreisen – Frankreich und Spanien (weitere Länder folgen)
 • Kostenrechner für jede Strecke
 • 27 Sprachen, auch Arabisch, Persisch und Kurdisch
