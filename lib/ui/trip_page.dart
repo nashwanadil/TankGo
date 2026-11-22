@@ -12,10 +12,13 @@ import 'paywall.dart';
 import 'brand.dart';
 
 class TripPage extends StatefulWidget {
-  const TripPage({super.key, required this.entries, required this.home, required this.premium});
+  const TripPage({super.key, required this.entries, required this.home, required this.premium, this.fuel = 'e95'});
   final Map<String, Entry> entries;
   final String home;
   final Premium premium;
+
+  /// Fuel selected on the home screen (follows the default fuel from settings).
+  final String fuel;
   @override
   State<TripPage> createState() => _TripPageState();
 }
@@ -30,7 +33,7 @@ class _TripPageState extends State<TripPage> {
   final _tank = TextEditingController(text: '50');
   final _cons = TextEditingController(text: '6.5');
   late final List<_LegRow> _legs = [_LegRow(widget.home == 'US' ? 'DE' : widget.home, '200')];
-  String _fuel = 'e95';
+  late String _fuel = widget.fuel;
   bool _full = true;
 
   List<Country> get _eu => countries.where((c) => widget.entries[c.code]?.currency == 'EUR').toList();
@@ -85,6 +88,8 @@ class _TripPageState extends State<TripPage> {
       builder: (context, _) {
         final t = Theme.of(context);
         final demo = !widget.premium.isPremium;
+        final fuels = fuelOrder.where((f) => _eu.any((c) => widget.entries[c.code]!.prices.containsKey(f))).toList();
+        if (fuels.isNotEmpty && !fuels.contains(_fuel)) _fuel = fuels.first;
         final prices = {
           for (final c in _eu)
             if (widget.entries[c.code]!.prices[_fuel] != null) c.code: widget.entries[c.code]!.prices[_fuel]!,
@@ -92,7 +97,6 @@ class _TripPageState extends State<TripPage> {
         final legs = demo ? demoRoute : [for (final l in _legs) Leg(l.cc, _n(l.km))];
         final plan = planTrip(legs, prices, tank: demo ? 50 : _n(_tank), consumption: demo ? 6.5 : _n(_cons), startFull: demo || _full);
         final vig = legs.where((l) => l.km > 0).map((l) => l.cc).toSet().fold(0.0, (a, cc) => a + (vignetteEur[cc] ?? 0));
-        final fuels = fuelOrder.where((f) => _eu.any((c) => widget.entries[c.code]!.prices.containsKey(f))).toList();
         return Scaffold(
           appBar: AppBar(title: Text(tx(context, 'trip'))),
           body: ListView(
@@ -171,8 +175,28 @@ class _TripPageState extends State<TripPage> {
                 ),
                 const SizedBox(height: 8),
                 if (_legs.isEmpty) Padding(padding: const EdgeInsets.all(8), child: Text(tx(context, 'tripEmpty'))),
-                for (final (i, l) in _legs.indexed)
-                  Card(
+                if (_legs.length > 1)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Row(
+                      children: [
+                        Icon(Icons.drag_indicator, size: 18, color: t.hintColor),
+                        const SizedBox(width: 6),
+                        Expanded(child: Text(tx(context, 'tripReorder'), style: t.textTheme.bodySmall)),
+                      ],
+                    ),
+                  ),
+                ReorderableListView(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  buildDefaultDragHandles: false,
+                  onReorderItem: (from, to) => setState(() => _legs.insert(to, _legs.removeAt(from))),
+                  children: [
+                    for (final (i, l) in _legs.indexed)
+                      ReorderableDelayedDragStartListener(
+                        key: ObjectKey(l),
+                        index: i,
+                        child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(rCard),
                       side: BorderSide(color: t.dividerColor),
@@ -232,6 +256,9 @@ class _TripPageState extends State<TripPage> {
                       ),
                     ),
                   ),
+                      ),
+                  ],
+                ),
                 const SizedBox(height: 4),
                 OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(

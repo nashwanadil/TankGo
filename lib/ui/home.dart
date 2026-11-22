@@ -39,6 +39,7 @@ class _HomePageState extends State<HomePage> {
   Future<Map<String, Series>>? _hist;
   String? _histCc;
   late String _fuel = widget.settings.fuel;
+  late String _defFuel = widget.settings.fuel;
   int _days = 30;
   (DateTime, double)? _touch;
   int? _touchIdx;
@@ -49,6 +50,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     widget.premium.addListener(_onPremium);
+    widget.settings.addListener(_onSettings);
     if (widget.premium.isPremium) _days = 365;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!widget.settings.noteSeen && mounted) {
@@ -66,6 +68,17 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  /// A new default fuel from settings applies at once everywhere; picking a fuel on the home screen never changes the default.
+  void _onSettings() {
+    if (!mounted || widget.settings.fuel == _defFuel) return;
+    setState(() {
+      _defFuel = widget.settings.fuel;
+      _fuel = _defFuel;
+      _touch = null;
+      _pin = null;
+    });
+  }
+
   void _onPremium() {
     if (!mounted) return;
     setState(() {
@@ -76,6 +89,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     widget.premium.removeListener(_onPremium);
+    widget.settings.removeListener(_onSettings);
     super.dispose();
   }
 
@@ -138,7 +152,7 @@ class _HomePageState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute<void>(
-                  builder: (_) => TripPage(entries: all, home: cc, premium: widget.premium),
+                  builder: (_) => TripPage(entries: all, home: cc, premium: widget.premium, fuel: _fuel),
                 ),
               );
             },
