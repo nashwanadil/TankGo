@@ -7,7 +7,7 @@ Category: Auto & Vehicles · Contains ads: No · In-app purchases: Yes
 
 ## en-US
 
-**Title (27/30):** TankGo: Fuel Prices EU & US
+**Title (19/30):** TankGo: Fuel Prices
 
 **Short (76/80):** Petrol & diesel prices for all 27 EU countries and the USA. Compare borders.
 
@@ -39,7 +39,7 @@ No ads, no accounts, no tracking. Your approximate location is used only on your
 
 ## de-DE
 
-**Title (28/30):** TankGo: Spritpreise EU & USA
+**Title (19/30):** TankGo: Spritpreise
 
 **Short (80/80):** Benzin- und Dieselpreise für alle 27 EU-Länder und die USA. Grenzen vergleichen.
 
@@ -71,7 +71,7 @@ Keine Werbung, keine Konten, kein Tracking. Dein ungefährer Standort wird nur a
 
 ## ar
 
-**Title (30/30):** TankGo: أسعار الوقود في أوروبا
+**Title (20/30):** TankGo: أسعار الوقود
 
 **Short (76/80):** أسعار البنزين والديزل لدول الاتحاد الأوروبي الـ27 وأمريكا، وقارن عبر الحدود.
 
