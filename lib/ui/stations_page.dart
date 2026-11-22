@@ -12,6 +12,9 @@ import 'home.dart' show fuelColor, fuelName;
 
 typedef UrlOpener = Future<bool> Function(Uri url);
 
+/// Complaints office for wrong station prices (required by the MTS-K licence).
+const complaintsEmail = 'tankgo@nashwanadil.com';
+
 Future<bool> _openExternal(Uri u) => launchUrl(u, mode: LaunchMode.externalApplication);
 
 Uri navigationUri(Station s) => Uri.parse('https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lon}');
@@ -235,6 +238,17 @@ class _StationsPageState extends State<StationsPage> {
         ),
         const SizedBox(height: 4),
         Text(tx(c, 'stNote'), style: Theme.of(c).textTheme.bodySmall, textAlign: TextAlign.center),
+        Center(
+          child: TextButton.icon(
+            icon: const Icon(Icons.flag_outlined, size: 18),
+            label: Text(tx(c, 'stReport')),
+            onPressed: () => _openExternal(Uri(
+              scheme: 'mailto',
+              path: complaintsEmail,
+              query: 'subject=${Uri.encodeComponent('TankGo – ${tx(c, 'stReport')}')}',
+            )),
+          ),
+        ),
       ],
     );
   }
