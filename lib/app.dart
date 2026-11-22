@@ -32,7 +32,7 @@ ThemeData appTheme(Brightness b) {
     onPrimary: dark ? darkBrown : Colors.white,
     primaryContainer: dark ? primaryContainerDark : primaryContainerLight,
     onPrimaryContainer: dark ? cream : brandDeep,
-    surface: dark ? darkBrown : ivory,
+    surface: dark ? bgDark : ivory,
     surfaceContainerHighest: dark ? surfaceHighDark : surfaceHighLight,
     secondaryContainer: dark ? primaryContainerDark : primaryContainerLight,
     onSecondaryContainer: dark ? cream : brandDeep,
@@ -42,8 +42,16 @@ ThemeData appTheme(Brightness b) {
     errorContainer: dark ? errorContainerDark : errorContainerLight,
   );
   // Light mode: neutral milky surfaces instead of the pink tints derived from the brand seed.
+  // Dark mode: neutral near-black surfaces (no brown, no burgundy tint).
   final light = dark
-      ? scheme
+      ? scheme.copyWith(
+          surfaceContainerLowest: Colors.black,
+          surfaceContainerLow: surfaceLowDark,
+          surfaceContainer: surfaceMidDark,
+          surfaceContainerHigh: surfaceHigherDark,
+          surfaceBright: surfaceHighDark,
+          surfaceDim: bgDark,
+        )
       : scheme.copyWith(
           surfaceContainerLowest: Colors.white,
           surfaceContainerLow: surfaceLowLight,
