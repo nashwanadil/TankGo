@@ -114,9 +114,40 @@ TripPlan? planTrip(List<Leg> legs, Map<String, double> prices, {required double 
     bought[i] = buy;
     fuel -= need[i];
   }
+  _avoidTinyFills(bought, need, tank, startFuel);
   final stops = [for (var i = 0; i < legs.length; i++) Stop(legs[i].cc, bought[i], prices[legs[i].cc]!, legs[i].km)];
   final total = stops.fold(0.0, (a, s) => a + s.cost);
   final totalNeed = need.fold(0.0, (a, b) => a + b);
   final baseline = (totalNeed - startFuel).clamp(0.0, double.infinity) * prices[legs.first.cc]!;
   return TripPlan(stops, total, baseline);
+}
+
+/// Nobody refuels 2 litres: purchases below a sensible minimum are merged into the previous stop
+/// (if the tank has room there), otherwise raised to the minimum (never above the tank).
+void _avoidTinyFills(List<double> bought, List<double> need, double tank, double startFuel) {
+  final minBuy = tank * 0.25 < 10 ? tank * 0.25 : 10.0;
+  List<double> afterFill() {
+    final out = <double>[];
+    var f = startFuel;
+    for (var i = 0; i < bought.length; i++) {
+      f += bought[i];
+      out.add(f);
+      f -= need[i];
+    }
+    return out;
+  }
+
+  // Last to first, so an amount merged backwards is checked again at its new stop.
+  for (var i = bought.length - 1; i >= 0; i--) {
+    if (bought[i] <= 1e-6) bought[i] = 0;
+    if (bought[i] == 0 || bought[i] >= minBuy) continue;
+    final after = afterFill();
+    if (i > 0 && after[i - 1] + bought[i] <= tank + 1e-9) {
+      bought[i - 1] += bought[i];
+      bought[i] = 0;
+    } else {
+      final room = tank - after[i];
+      bought[i] += (minBuy - bought[i]) < room ? (minBuy - bought[i]) : (room > 0 ? room : 0);
+    }
+  }
 }

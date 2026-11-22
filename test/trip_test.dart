@@ -32,4 +32,20 @@ void main() {
       }
     }
   });
+
+  test('no tiny fills: every purchase is at least 10 L (or zero)', () {
+    final routes = [
+      [const Leg('DE', 300), const Leg('AT', 350), const Leg('SI', 150), const Leg('HR', 400)],
+      [const Leg('FR', 520), const Leg('ES', 80), const Leg('PT', 33)],
+    ];
+    final prices = {'DE': 1.8, 'AT': 1.7, 'SI': 1.55, 'HR': 1.5, 'FR': 1.9, 'ES': 1.5, 'PT': 1.7};
+    for (final r in routes) {
+      for (final km in [0.0, 5.0, 17.0]) {
+        final plan = planTrip([...r, Leg('DE', km)], prices, tank: 50, consumption: 6.5)!;
+        for (final st in plan.stops) {
+          expect(st.litres == 0 || st.litres >= 10 - 1e-6, true, reason: '${st.cc} ${st.litres}');
+        }
+      }
+    }
+  });
 }
