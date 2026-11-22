@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../countries.dart';
 import '../data.dart';
 import '../premium.dart';
+import '../settings.dart';
 import '../strings.dart';
 import '../trip.dart';
 import 'fmt.dart';
@@ -12,10 +13,13 @@ import 'paywall.dart';
 import 'brand.dart';
 
 class TripPage extends StatefulWidget {
-  const TripPage({super.key, required this.entries, required this.home, required this.premium, this.fuel = 'e95'});
+  const TripPage({super.key, required this.entries, required this.home, required this.premium, this.fuel = 'e95', this.settings});
   final Map<String, Entry> entries;
   final String home;
   final Premium premium;
+
+  /// Remembers whether the how-it-works card was closed.
+  final Settings? settings;
 
   /// Fuel selected on the home screen (follows the default fuel from settings).
   final String fuel;
@@ -35,6 +39,7 @@ class _TripPageState extends State<TripPage> {
   late final List<_LegRow> _legs = [_LegRow(widget.home == 'US' ? 'DE' : widget.home, '200')];
   late String _fuel = widget.fuel;
   bool _full = true;
+  late bool _helpHidden = widget.settings?.tripHelpHidden ?? false;
 
   List<Country> get _eu => countries.where((c) => widget.entries[c.code]?.currency == 'EUR').toList();
 
@@ -98,23 +103,51 @@ class _TripPageState extends State<TripPage> {
         final plan = planTrip(legs, prices, tank: demo ? 50 : _n(_tank), consumption: demo ? 6.5 : _n(_cons), startFull: demo || _full);
         final vig = legs.where((l) => l.km > 0).map((l) => l.cc).toSet().fold(0.0, (a, cc) => a + (vignetteEur[cc] ?? 0));
         return Scaffold(
-          appBar: AppBar(title: Text(tx(context, 'trip'))),
+          appBar: AppBar(
+            title: Text(tx(context, 'trip')),
+            actions: [
+              if (_helpHidden)
+                IconButton(
+                  key: const ValueKey('tripHelp'),
+                  tooltip: tx(context, 'tripHowTitle'),
+                  icon: const Icon(Icons.info_outline),
+                  onPressed: () => showDialog<void>(
+                    context: context,
+                    builder: (c) => AlertDialog(
+                      icon: const Icon(Icons.info_outline),
+                      title: Text(tx(c, 'tripHowTitle')),
+                      content: Text(tx(c, 'tripHow')),
+                      actions: [FilledButton(onPressed: () => Navigator.pop(c), child: Text(tr(c, 'ok')))],
+                    ),
+                  ),
+                ),
+            ],
+          ),
           body: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(Icons.info_outline, color: t.colorScheme.primary),
-                      const SizedBox(width: 10),
-                      Expanded(child: Text(tx(context, 'tripHow'))),
-                    ],
+              if (!_helpHidden)
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(14, 6, 4, 14),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(padding: const EdgeInsets.only(top: 8), child: Icon(Icons.info_outline, color: t.colorScheme.primary)),
+                        const SizedBox(width: 10),
+                        Expanded(child: Padding(padding: const EdgeInsets.only(top: 8), child: Text(tx(context, 'tripHow')))),
+                        IconButton(
+                          key: const ValueKey('tripHelpClose'),
+                          icon: const Icon(Icons.close, size: 20),
+                          onPressed: () {
+                            setState(() => _helpHidden = true);
+                            widget.settings?.setTripHelpHidden(true);
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
               if (demo)
                 Card(
                   color: brandDark,

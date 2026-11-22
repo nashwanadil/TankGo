@@ -11,6 +11,8 @@ class Settings extends ChangeNotifier {
   bool get noteSeen => _p.getBool('noteSeen') ?? false;
   /// Page opened at every launch: 'home', 'stations' or 'trip'.
   String get startPage => _p.getString('startPage') ?? 'home';
+  /// The how-it-works card of the trip planner was closed by the user.
+  bool get tripHelpHidden => _p.getBool('tripHelpHidden') ?? false;
   String get fuel => _p.getString('fuel') ?? 'e95';
   ThemeMode get theme => ThemeMode.values.firstWhere((m) => m.name == _p.getString('theme'), orElse: () => ThemeMode.system);
 
@@ -31,6 +33,11 @@ class Settings extends ChangeNotifier {
 
   Future<void> setStartPage(String v) async {
     await _p.setString('startPage', v);
+    notifyListeners();
+  }
+
+  Future<void> setTripHelpHidden(bool v) async {
+    await _p.setBool('tripHelpHidden', v);
     notifyListeners();
   }
 

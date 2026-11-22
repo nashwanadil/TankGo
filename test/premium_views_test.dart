@@ -41,4 +41,22 @@ void main() {
     expect(find.text('Fuel total'), findsOneWidget);
     expect(find.textContaining('Vignettes'), findsOneWidget);
   });
+
+  testWidgets('trip help card: close mark hides it, info icon reopens it as a dialog', (t) async {
+    await t.pumpWidget(MaterialApp(home: TripPage(entries: _all, home: 'DE', premium: await _p(false))));
+    await t.pumpAndSettle();
+    expect(find.textContaining('How it works:'), findsOneWidget);
+    expect(find.byKey(const ValueKey('tripHelp')), findsNothing);
+    await t.tap(find.byKey(const ValueKey('tripHelpClose')));
+    await t.pumpAndSettle();
+    expect(find.textContaining('How it works:'), findsNothing);
+    await t.tap(find.byKey(const ValueKey('tripHelp')));
+    await t.pumpAndSettle();
+    expect(find.textContaining('How it works:'), findsOneWidget);
+    await t.tap(find.text('Got it'));
+    await t.pumpAndSettle();
+    await t.tap(find.byKey(const ValueKey('tripHelp'))); // can be opened again and again
+    await t.pumpAndSettle();
+    expect(find.textContaining('How it works:'), findsOneWidget);
+  });
 }

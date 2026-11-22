@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage> {
     if (all == null || !mounted) return;
     await Navigator.push(
       context,
-      MaterialPageRoute<void>(builder: (_) => TripPage(entries: all, home: widget.settings.country!, premium: widget.premium, fuel: _fuel)),
+      MaterialPageRoute<void>(builder: (_) => TripPage(entries: all, home: widget.settings.country!, premium: widget.premium, fuel: _fuel, settings: widget.settings)),
     );
   }
 
@@ -176,7 +176,18 @@ class _HomePageState extends State<HomePage> {
           ),
           IconButton(
             icon: const Icon(Icons.tune),
-            onPressed: () => Navigator.push(context, MaterialPageRoute<void>(builder: (_) => SettingsPage(settings: widget.settings))),
+            onPressed: () async {
+              final before = widget.settings.startPage;
+              await Navigator.push(context, MaterialPageRoute<void>(builder: (_) => SettingsPage(settings: widget.settings)));
+              // Having just chosen a start page, going back opens it right away.
+              if (!mounted || widget.settings.startPage == before) return;
+              switch (widget.settings.startPage) {
+                case 'stations':
+                  _openStations();
+                case 'trip':
+                  await _openTrip();
+              }
+            },
           ),
         ],
       ),
