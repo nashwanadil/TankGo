@@ -1,4 +1,4 @@
-package com.nashwanadil.fuelprices
+package com.yarnazlabs.tankgo
 
 import io.flutter.embedding.android.FlutterActivity
 
