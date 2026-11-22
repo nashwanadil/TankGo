@@ -246,11 +246,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _glow() {
-    setState(() => _pulse = true);
-    Future<void>.delayed(const Duration(milliseconds: 700), () {
-      if (mounted) setState(() => _pulse = false);
-    });
+  /// Two bright gold pulses on the hero, so a changed price is noticed.
+  Future<void> _glow() async {
+    for (final on in [true, false, true, false]) {
+      if (!mounted) return;
+      setState(() => _pulse = on);
+      await Future<void>.delayed(Duration(milliseconds: on ? 380 : 220));
+    }
   }
 
   Future<void> _pickDate(Entry e) async {
@@ -357,7 +359,11 @@ class _HomePageState extends State<HomePage> {
         style: TextStyle(color: cc, fontWeight: FontWeight.w700, fontSize: 16),
       );
     }
-    return AnimatedContainer(
+    return AnimatedScale(
+      scale: _pulse ? 1.03 : 1,
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOut,
+      child: AnimatedContainer(
       duration: const Duration(milliseconds: 250),
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
@@ -365,7 +371,10 @@ class _HomePageState extends State<HomePage> {
         borderRadius: BorderRadius.circular(28),
         border: Border.all(color: shown != null ? gold : gold.withValues(alpha: 0.35), width: shown != null ? 3 : 1.5),
         boxShadow: _pulse
-            ? [BoxShadow(color: gold.withValues(alpha: 0.75), blurRadius: 40, spreadRadius: 6)]
+            ? [
+                BoxShadow(color: gold, blurRadius: 36, spreadRadius: 8),
+                BoxShadow(color: gold.withValues(alpha: 0.6), blurRadius: 70, spreadRadius: 18),
+              ]
             : [
                 BoxShadow(
                   color: brand.withValues(alpha: touching ? 0.55 : 0.3),
@@ -512,6 +521,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+    ),
     );
   }
 
