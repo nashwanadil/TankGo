@@ -315,7 +315,7 @@ class _StationsPageState extends State<StationsPage> {
           : isNearest
           ? RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(rCard),
-              side: const BorderSide(color: brand, width: 2),
+              side: BorderSide(color: brand, width: 2),
             )
           : _shape(c),
       clipBehavior: Clip.antiAlias,

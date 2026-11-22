@@ -20,10 +20,10 @@ class _Paywall extends StatelessWidget {
         final active = premium.isPremium;
         final plans = [(idYear, 'planYear', 'planYearSub', true), (idLife, 'planLife', 'planLifeSub', false), (idTrip, 'planTrip', 'planTripSub', false)];
         return Container(
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
             gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [brandLight, brandDark, brandDeep]),
-            border: Border(top: BorderSide(color: gold, width: 2)),
+            border: const Border(top: BorderSide(color: gold, width: 2)),
           ),
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),

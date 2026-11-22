@@ -13,6 +13,8 @@ class Settings extends ChangeNotifier {
   String get startPage => _p.getString('startPage') ?? 'home';
   /// The how-it-works card of the trip planner was closed by the user.
   bool get tripHelpHidden => _p.getBool('tripHelpHidden') ?? false;
+  /// Colour theme id (see palettes in ui/brand.dart).
+  String get palette => _p.getString('palette') ?? 'burgundy';
   String get fuel => _p.getString('fuel') ?? 'e95';
   ThemeMode get theme => ThemeMode.values.firstWhere((m) => m.name == _p.getString('theme'), orElse: () => ThemeMode.system);
 
@@ -38,6 +40,11 @@ class Settings extends ChangeNotifier {
 
   Future<void> setTripHelpHidden(bool v) async {
     await _p.setBool('tripHelpHidden', v);
+    notifyListeners();
+  }
+
+  Future<void> setPalette(String v) async {
+    await _p.setString('palette', v);
     notifyListeners();
   }
 

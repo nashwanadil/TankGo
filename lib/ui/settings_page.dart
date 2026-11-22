@@ -5,6 +5,7 @@ import '../settings.dart';
 import '../strings.dart';
 import 'country_sheet.dart';
 import 'home.dart' show fuelName, fuelOrder;
+import 'brand.dart';
 import 'lang_flag.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -58,6 +59,26 @@ class SettingsPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
+              Text(tr(context, 'theme'), style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: 6),
+              SegmentedButton<ThemeMode>(
+                segments: [
+                  ButtonSegment(value: ThemeMode.system, label: Text(tr(context, 'system'))),
+                  ButtonSegment(value: ThemeMode.light, label: Text(tr(context, 'light'))),
+                  ButtonSegment(value: ThemeMode.dark, label: Text(tr(context, 'dark'))),
+                ],
+                selected: {settings.theme},
+                onSelectionChanged: (s) => settings.setTheme(s.first),
+              ),
+              const SizedBox(height: 14),
+              Text(tx(context, 'palColor'), style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [for (final p in palettes) _Swatch(p: p, selected: settings.palette == p.id, label: tx(context, 'pal_${p.id}'), onTap: () => settings.setPalette(p.id))],
+              ),
+              const SizedBox(height: 20),
               Text(tr(context, 'language'), style: Theme.of(context).textTheme.titleSmall),
               const SizedBox(height: 6),
               GridView.count(
@@ -71,18 +92,6 @@ class SettingsPage extends StatelessWidget {
                   for (final (code, name, flag) in languages.where((l) => !l.$2.startsWith('English (')))
                     _LangTile(code: code, flag: flag, name: name, selected: settings.lang == code, onTap: () => settings.setLang(code)),
                 ],
-              ),
-              const SizedBox(height: 20),
-              Text(tr(context, 'theme'), style: Theme.of(context).textTheme.titleSmall),
-              const SizedBox(height: 6),
-              SegmentedButton<ThemeMode>(
-                segments: [
-                  ButtonSegment(value: ThemeMode.system, label: Text(tr(context, 'system'))),
-                  ButtonSegment(value: ThemeMode.light, label: Text(tr(context, 'light'))),
-                  ButtonSegment(value: ThemeMode.dark, label: Text(tr(context, 'dark'))),
-                ],
-                selected: {settings.theme},
-                onSelectionChanged: (s) => settings.setTheme(s.first),
               ),
               const SizedBox(height: 24),
               Text('Data: EU Weekly Oil Bulletin (European Commission), CBS Netherlands (CC BY 4.0), U.S. EIA.', style: Theme.of(context).textTheme.bodySmall),
@@ -129,6 +138,43 @@ class _LangTile extends StatelessWidget {
               if (selected) Icon(Icons.check, size: 18, color: cs.primary),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A colour theme choice: a small hero-like gradient disc with the theme's name.
+class _Swatch extends StatelessWidget {
+  const _Swatch({required this.p, required this.selected, required this.label, required this.onTap});
+  final Palette p;
+  final bool selected;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      key: ValueKey('pal_${p.id}'),
+      borderRadius: BorderRadius.circular(rElement),
+      onTap: onTap,
+      child: SizedBox(
+        width: 64,
+        child: Column(
+          children: [
+            Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(colors: [p.light, p.dark]),
+                border: Border.all(color: selected ? gold : Colors.transparent, width: 3),
+              ),
+              child: selected ? const Icon(Icons.check, color: gold, size: 22) : null,
+            ),
+            const SizedBox(height: 4),
+            Text(label, textAlign: TextAlign.center, maxLines: 2, style: TextStyle(fontSize: 11, fontWeight: selected ? FontWeight.w700 : FontWeight.w500)),
+          ],
         ),
       ),
     );

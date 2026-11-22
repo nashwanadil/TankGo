@@ -113,6 +113,7 @@ class TankGoApp extends StatelessWidget {
       builder: (context, _) {
         final dev = PlatformDispatcher.instance.locale.languageCode;
         final lang = settings.lang ?? (supportedLangs.contains(dev) ? dev : 'en');
+        pal = paletteById(settings.palette);
         return MaterialApp(
           title: 'TankGo',
           debugShowCheckedModeBanner: false,

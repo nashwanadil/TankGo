@@ -185,6 +185,7 @@ class _HomePageState extends State<HomePage> {
             onPressed: () async {
               final before = widget.settings.startPage;
               await Navigator.push(context, MaterialPageRoute<void>(builder: (_) => SettingsPage(settings: widget.settings)));
+              if (mounted) setState(() {}); // colours may have changed
               // Having just chosen a start page, going back opens it right away.
               if (!mounted || widget.settings.startPage == before) return;
               switch (widget.settings.startPage) {
@@ -359,7 +360,7 @@ class _HomePageState extends State<HomePage> {
       duration: const Duration(milliseconds: 250),
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [brandLight, brandDark]),
+        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [brandLight, brandDark]),
         borderRadius: BorderRadius.circular(28),
         border: Border.all(color: shown != null ? gold : gold.withValues(alpha: 0.35), width: shown != null ? 3 : 1.5),
         boxShadow: _pulse
