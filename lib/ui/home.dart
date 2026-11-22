@@ -249,7 +249,7 @@ class _HomePageState extends State<HomePage> {
   /// One bright gold pulse on the hero, so a changed price is noticed.
   Future<void> _glow() async {
     setState(() => _pulse = true);
-    await Future<void>.delayed(const Duration(milliseconds: 600));
+    await Future<void>.delayed(const Duration(milliseconds: 900));
     if (mounted) setState(() => _pulse = false);
   }
 
@@ -359,20 +359,18 @@ class _HomePageState extends State<HomePage> {
     }
     return AnimatedScale(
       scale: _pulse ? 1.03 : 1,
-      duration: const Duration(milliseconds: 220),
-      curve: Curves.easeOut,
+      duration: const Duration(milliseconds: 650), // slow, like slow motion, both ways
+      curve: Curves.easeInOutCubic,
       child: AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 650),
+      curve: Curves.easeInOutCubic,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [brandLight, brandDark]),
         borderRadius: BorderRadius.circular(28),
         border: Border.all(color: shown != null ? gold : gold.withValues(alpha: 0.35), width: shown != null ? 3 : 1.5),
         boxShadow: _pulse
-            ? [
-                BoxShadow(color: gold, blurRadius: 36, spreadRadius: 8),
-                BoxShadow(color: gold.withValues(alpha: 0.6), blurRadius: 70, spreadRadius: 18),
-              ]
+            ? [BoxShadow(color: gold.withValues(alpha: 0.9), blurRadius: 18, spreadRadius: 2)]
             : [
                 BoxShadow(
                   color: brand.withValues(alpha: touching ? 0.55 : 0.3),
