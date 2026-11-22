@@ -11,18 +11,19 @@ Category: Auto & Vehicles · Contains ads: No · In-app purchases: Yes
 
 **Short (76/80):** Petrol & diesel prices for all 27 EU countries and the USA. Compare borders.
 
-**Full (1198/4000):**
+**Full (1614/4000):**
 
-TankGo shows official national average fuel prices for all 27 EU countries and the United States – updated twice a day.
+TankGo shows official national average fuel prices for all 27 EU countries and the United States – checked for new prices twice a day.
 
 FREE
 • Petrol 95, diesel and LPG prices for every country, with the date of every price
 • Price chart for the last month – touch it to see the price of any day
-• Compare your country with its neighbours: what a full tank costs next door
-• Cheapest fuel stations near you with real station prices – France and Spain only
+• Compare your country with its neighbours: what a full tank costs next door (some popular countries need Premium)
+• Cheapest fuel stations near you with real station prices – France and Spain (more countries to follow)
 • Cost calculator for any distance
 • 27 languages, including Arabic, Persian and Kurdish
-• Light and dark theme, works offline
+• Light and dark mode, 5 colour themes, choose the page that opens at launch
+• The last prices stay available offline
 
 PREMIUM
 • Full price history up to 2 years, with calendar
@@ -43,18 +44,19 @@ No ads, no accounts, no tracking. Your approximate location is used only on your
 
 **Short (80/80):** Benzin- und Dieselpreise für alle 27 EU-Länder und die USA. Grenzen vergleichen.
 
-**Full (1252/4000):**
+**Full (1686/4000):**
 
-TankGo zeigt offizielle Durchschnittspreise für Kraftstoff in allen 27 EU-Ländern und den USA – zweimal täglich aktualisiert.
+TankGo zeigt offizielle Durchschnittspreise für Kraftstoff in allen 27 EU-Ländern und den USA – zweimal täglich auf neue Preise geprüft.
 
 KOSTENLOS
 • Preise für Benzin 95, Diesel und LPG je Land, mit Datum zu jedem Preis
 • Preisverlauf des letzten Monats – Diagramm berühren und den Preis jedes Tages sehen
-• Vergleiche dein Land mit seinen Nachbarn: Was kostet eine Tankfüllung nebenan?
-• Günstigste Tankstellen in deiner Nähe mit echten Stationspreisen – nur in Frankreich und Spanien
+• Vergleiche dein Land mit seinen Nachbarn: Was kostet eine Tankfüllung nebenan? (einige beliebte Länder mit Premium)
+• Günstigste Tankstellen in deiner Nähe mit echten Stationspreisen – Frankreich und Spanien (weitere Länder folgen)
 • Kostenrechner für jede Strecke
 • 27 Sprachen, auch Arabisch, Persisch und Kurdisch
-• Helles und dunkles Design, funktioniert offline
+• Helles und dunkles Design, 5 Farbthemen, Startseite frei wählbar
+• Die letzten Preise bleiben auch offline verfügbar
 
 PREMIUM
 • Voller Preisverlauf bis zu 2 Jahre, mit Kalender
@@ -75,18 +77,19 @@ Keine Werbung, keine Konten, kein Tracking. Dein ungefährer Standort wird nur a
 
 **Short (76/80):** أسعار البنزين والديزل لدول الاتحاد الأوروبي الـ27 وأمريكا، وقارن عبر الحدود.
 
-**Full (1019/4000):**
+**Full (1397/4000):**
 
-يعرض TankGo متوسطات أسعار الوقود الرسمية في دول الاتحاد الأوروبي الـ27 والولايات المتحدة، وتُحدَّث مرتين يوميًا.
+يعرض TankGo متوسطات أسعار الوقود الرسمية في دول الاتحاد الأوروبي الـ27 والولايات المتحدة، ويبحث عن الأسعار الجديدة مرتين يوميًا.
 
 مجانًا
 • أسعار البنزين 95 والديزل وغاز LPG لكل دولة، مع تاريخ كل سعر
 • مخطط أسعار الشهر الأخير، المسه لترى سعر أي يوم
-• قارن بلدك بجيرانه: كم يكلّف الخزان الممتلئ في البلد المجاور
-• أرخص محطات الوقود القريبة منك بأسعار المحطات الفعلية – في فرنسا وإسبانيا فقط
+• قارن بلدك بجيرانه: كم يكلّف الخزان الممتلئ في البلد المجاور (بعض الدول الأكثر زيارة مع Premium)
+• أرخص محطات الوقود القريبة منك بأسعار المحطات الفعلية – في فرنسا وإسبانيا (ودول أخرى قريبًا)
 • حاسبة تكلفة لأي مسافة
 • 27 لغة، منها العربية والفارسية والكردية
-• مظهر فاتح وداكن، ويعمل دون إنترنت
+• مظهر فاتح وداكن، و5 ألوان، واختيار الصفحة التي تفتح عند التشغيل
+• آخر الأسعار متاحة دون إنترنت
 
 Premium
 • سجل الأسعار الكامل حتى سنتين، مع التقويم
