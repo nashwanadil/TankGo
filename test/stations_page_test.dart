@@ -175,9 +175,8 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     await t.pumpWidget(TankGoApp(settings: Settings(prefs), api: api, premium: Premium(prefs, billing: false)));
     await t.pumpAndSettle();
-    expect(find.byKey(const ValueKey('stNear')), findsOneWidget);
+    await t.scrollUntilVisible(find.byKey(const ValueKey('stNear')), 300, scrollable: find.byType(Scrollable).first); // below the comparison list
     expect(find.text('Günstige Tankstellen in der Nähe'), findsOneWidget);
-    await t.ensureVisible(find.byKey(const ValueKey('stNear')));
     await t.tap(find.text('Günstige Tankstellen in der Nähe'));
     await t.pump(const Duration(milliseconds: 500));
     expect(find.byType(StationsPage, skipOffstage: false), findsOneWidget);
