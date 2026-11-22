@@ -246,13 +246,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// Two bright gold pulses on the hero, so a changed price is noticed.
+  /// One bright gold pulse on the hero, so a changed price is noticed.
   Future<void> _glow() async {
-    for (final on in [true, false, true, false]) {
-      if (!mounted) return;
-      setState(() => _pulse = on);
-      await Future<void>.delayed(Duration(milliseconds: on ? 380 : 220));
-    }
+    setState(() => _pulse = true);
+    await Future<void>.delayed(const Duration(milliseconds: 600));
+    if (mounted) setState(() => _pulse = false);
   }
 
   Future<void> _pickDate(Entry e) async {
