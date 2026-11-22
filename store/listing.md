@@ -19,7 +19,7 @@ FREE
 • Petrol 95, diesel and LPG prices for every country, with the date of every price
 • Price chart for the last month – touch it to see the price of any day
 • Compare your country with its neighbours: what a full tank costs next door
-• Cheapest fuel stations near you with real station prices – France, Spain and Italy (more countries to follow)
+• Cheapest fuel stations near you with real station prices – France and Spain (more countries to follow)
 • Cost calculator for any distance
 • 27 languages, including Arabic, Persian and Kurdish
 • Light and dark theme, works offline
@@ -32,7 +32,7 @@ PREMIUM
 
 Premium is available as a yearly subscription, a one-time lifetime purchase, or a one-month trip pass that does not renew.
 
-Prices are national averages from official sources: the EU Weekly Oil Bulletin, CBS (Netherlands) and the U.S. EIA. The nearby-stations list shows individual station prices for France, Spain and Italy as reported by the stations. Prices can be several days old, so the update date is always shown next to each price. The price outlook is an indication, not a forecast.
+Prices are national averages from official sources: the EU Weekly Oil Bulletin, CBS (Netherlands) and the U.S. EIA. The nearby-stations list shows individual station prices for France and Spain as reported by the stations. Prices can be several days old, so the update date is always shown next to each price. The price outlook is an indication, not a forecast.
 
 No ads, no accounts, no tracking. Your approximate location is used only on your device to find nearby stations and is never sent or stored.
 
@@ -51,7 +51,7 @@ KOSTENLOS
 • Preise für Benzin 95, Diesel und LPG je Land, mit Datum zu jedem Preis
 • Preisverlauf des letzten Monats – Diagramm berühren und den Preis jedes Tages sehen
 • Ihr Land mit den Nachbarländern vergleichen: was eine Tankfüllung nebenan kostet
-• Günstigste Tankstellen in deiner Nähe mit echten Stationspreisen – Frankreich, Spanien und Italien (weitere Länder folgen)
+• Günstigste Tankstellen in deiner Nähe mit echten Stationspreisen – Frankreich und Spanien (weitere Länder folgen)
 • Kostenrechner für jede Strecke
 • 27 Sprachen, auch Arabisch, Persisch und Kurdisch
 • Helles und dunkles Design, funktioniert offline
@@ -64,7 +64,7 @@ PREMIUM
 
 Premium gibt es als Jahresabo, als einmaligen Kauf für immer oder als Reisepass für einen Monat ohne Verlängerung.
 
-Die Preise sind nationale Durchschnittswerte aus offiziellen Quellen: Weekly Oil Bulletin der EU, CBS (Niederlande) und U.S. EIA. Die Liste in deiner Nähe zeigt Preise einzelner Tankstellen in Frankreich, Spanien und Italien, wie von den Tankstellen gemeldet. Preise können mehrere Tage alt sein – daher steht das Datum immer neben jedem Preis. Der Preisausblick ist ein Richtwert, keine Prognose.
+Die Preise sind nationale Durchschnittswerte aus offiziellen Quellen: Weekly Oil Bulletin der EU, CBS (Niederlande) und U.S. EIA. Die Liste in deiner Nähe zeigt Preise einzelner Tankstellen in Frankreich und Spanien, wie von den Tankstellen gemeldet. Preise können mehrere Tage alt sein – daher steht das Datum immer neben jedem Preis. Der Preisausblick ist ein Richtwert, keine Prognose.
 
 Keine Werbung, keine Konten, kein Tracking. Dein ungefährer Standort wird nur auf deinem Gerät genutzt, um Tankstellen zu finden – er wird nie gesendet oder gespeichert.
 
@@ -83,7 +83,7 @@ Keine Werbung, keine Konten, kein Tracking. Dein ungefährer Standort wird nur a
 • أسعار البنزين 95 والديزل وغاز LPG لكل دولة، مع تاريخ كل سعر
 • مخطط أسعار الشهر الأخير، المسه لترى سعر أي يوم
 • قارن بلدك بجيرانه: كم يكلّف الخزان الممتلئ في البلد المجاور
-• أرخص محطات الوقود القريبة منك بأسعار المحطات الفعلية – فرنسا وإسبانيا وإيطاليا (ودول أخرى قريبًا)
+• أرخص محطات الوقود القريبة منك بأسعار المحطات الفعلية – فرنسا وإسبانيا (ودول أخرى قريبًا)
 • حاسبة تكلفة لأي مسافة
 • 27 لغة، منها العربية والفارسية والكردية
 • مظهر فاتح وداكن، ويعمل دون إنترنت
@@ -96,7 +96,7 @@ Premium
 
 يتوفر Premium باشتراك سنوي، أو بشراء واحد مدى الحياة، أو بتذكرة رحلة لشهر واحد لا تتجدد.
 
-الأسعار متوسطات وطنية من مصادر رسمية: النشرة الأسبوعية للنفط في الاتحاد الأوروبي، وCBS (هولندا)، وEIA الأمريكية. أما قائمة المحطات القريبة فتعرض أسعار محطات بعينها في فرنسا وإسبانيا وإيطاليا كما تبلّغ عنها المحطات. وقد تكون الأسعار قديمة بعدة أيام، لذلك يظهر تاريخ التحديث بجانب كل سعر دائمًا. توقع الأسعار مؤشر وليس تنبؤًا مؤكدًا.
+الأسعار متوسطات وطنية من مصادر رسمية: النشرة الأسبوعية للنفط في الاتحاد الأوروبي، وCBS (هولندا)، وEIA الأمريكية. أما قائمة المحطات القريبة فتعرض أسعار محطات بعينها في فرنسا وإسبانيا كما تبلّغ عنها المحطات. وقد تكون الأسعار قديمة بعدة أيام، لذلك يظهر تاريخ التحديث بجانب كل سعر دائمًا. توقع الأسعار مؤشر وليس تنبؤًا مؤكدًا.
 
 بلا إعلانات، وبلا حسابات، وبلا تتبّع. يُستخدم موقعك التقريبي على جهازك فقط للعثور على المحطات القريبة، ولا يُرسَل ولا يُخزَّن أبدًا.
 
