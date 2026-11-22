@@ -1,0 +1,26 @@
+{
+  "en": [
+    ["stations", "Cheap fuel nearby", "Real station prices · France & Spain"],
+    ["home", "Fuel prices across Europe", "27 EU countries + USA, from official sources"],
+    ["compare", "Save across the border", "See what a full tank costs next door"],
+    ["trip", "Plan where to fill up", "Your route, your tank – the cheapest stops"],
+    ["history", "Two years of prices", "Tap any day to see its price"],
+    ["settings", "Made for you", "27 languages · your fuel · your start page"]
+  ],
+  "de": [
+    ["stations", "Günstig tanken in der Nähe", "Echte Tankstellenpreise · Frankreich & Spanien"],
+    ["home", "Spritpreise in ganz Europa", "27 EU-Länder + USA, aus amtlichen Quellen"],
+    ["compare", "Sparen über die Grenze", "Sieh, was eine Tankfüllung nebenan kostet"],
+    ["trip", "Plane, wo du tankst", "Deine Route, dein Tank – die günstigsten Stopps"],
+    ["history", "Zwei Jahre Preisverlauf", "Tippe auf einen Tag und sieh seinen Preis"],
+    ["settings", "Ganz nach dir", "27 Sprachen · dein Kraftstoff · deine Startseite"]
+  ],
+  "ar": [
+    ["stations", "أرخص وقود بقربك", "أسعار المحطات الفعلية · فرنسا وإسبانيا"],
+    ["home", "أسعار الوقود في أوروبا كلها", "27 دولة أوروبية وأمريكا، من مصادر رسمية"],
+    ["compare", "وفّر عبر الحدود", "اعرف كم يكلّف خزانك في البلد المجاور"],
+    ["trip", "خطّط أين تملأ خزانك", "طريقك وخزانك، وأرخص نقاط التعبئة"],
+    ["history", "أسعار سنتين كاملتين", "اضغط أي يوم لترى سعره"],
+    ["settings", "على مقاسك", "27 لغة · وقودك · صفحتك عند التشغيل"]
+  ]
+}
