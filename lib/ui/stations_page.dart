@@ -38,8 +38,8 @@ class _StationsPageState extends State<StationsPage> {
   _Phase _phase = _Phase.locating;
   LocStatus _locStatus = LocStatus.denied;
   late String _fuel = stationFuels.contains(widget.fuel ?? widget.settings.fuel) ? (widget.fuel ?? widget.settings.fuel) : 'e95';
-  double _radius = 10;
-  StationSort _sort = StationSort.price;
+  double _radius = 5;
+  StationSort _sort = StationSort.newest;
   double _lat = 0, _lon = 0;
   List<Station> _stations = const [];
   String _source = '';
@@ -266,7 +266,6 @@ class _StationsPageState extends State<StationsPage> {
 
   Widget _row(BuildContext c, Hit h, bool isBest, bool isNearest, DateTime today, String lang) {
     final s = h.station;
-    final days = s.date == null ? null : today.difference(DateUtils.dateOnly(s.date!)).inDays;
     final addr = [s.address, s.city].where((e) => e.isNotEmpty).join(', ');
     final dark = Theme.of(c).brightness == Brightness.dark;
     return Card(
@@ -318,7 +317,7 @@ class _StationsPageState extends State<StationsPage> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(fmtMoney(h.price, 'EUR', lang), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20)),
-                  if (days != null) _age(c, s.date!, days, lang),
+                  if (s.date != null) _age(c, s, today, lang),
                 ],
               ),
             ],
@@ -334,17 +333,24 @@ class _StationsPageState extends State<StationsPage> {
     child: Text(text, style: TextStyle(color: fg, fontWeight: FontWeight.w800, fontSize: 11)),
   );
 
-  /// Age of the price report under the price: today in green, yesterday neutral, older in red.
-  Widget _age(BuildContext c, DateTime date, int days, String lang) {
+  /// Age of the price report under the price: under a day in green, yesterday neutral, older in red.
+  /// With a time of day: minutes/hours; sources that only give the day show today/yesterday/days.
+  Widget _age(BuildContext c, Station st, DateTime today, String lang) {
+    final date = st.date!;
     final String text;
     Color? color;
-    if (days <= 0) {
+    final diff = DateTime.now().difference(date);
+    final days = st.timed ? diff.inDays : today.difference(DateUtils.dateOnly(date)).inDays;
+    if (st.timed && diff.inHours < 24) {
+      text = diff.inMinutes < 60 ? tx(c, 'stMinAgo').replaceFirst('{n}', '${diff.inMinutes < 1 ? 1 : diff.inMinutes}') : tx(c, 'stHoursAgo').replaceFirst('{n}', '${diff.inHours}');
+      color = positive;
+    } else if (days <= 0) {
       text = tx(c, 'stToday');
       color = positive;
     } else if (days == 1) {
       text = tx(c, 'stYesterday');
     } else {
-      text = days < 14 ? tx(c, 'stDaysAgo').replaceFirst('{n}', '$days') : tx(c, 'stAsOf').replaceFirst('{d}', fmtShortDate(date, lang));
+      text = days < 14 ? tx(c, 'stDaysAgo').replaceFirst('{n}', '$days') : tx(c, 'stAsOf').replaceFirst('{d}', fmtShortDate(date.toLocal(), lang));
       color = Theme.of(c).colorScheme.error;
     }
     return Text(text, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: color));

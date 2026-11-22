@@ -72,6 +72,10 @@ void main() {
       ),
     );
     await t.pumpAndSettle();
+    // defaults: 5 km radius, newest first
+    await t.tap(find.byKey(const ValueKey('radius_10')));
+    await t.tap(find.byKey(const ValueKey('sort_price')));
+    await t.pumpAndSettle();
     // within 10 km: two Paris stations, not Melun
     expect(find.text('Total Rivoli'), findsOneWidget);
     expect(find.text('Esso Bastille'), findsOneWidget);

@@ -3,6 +3,7 @@
 Output: $OUT_DIR/stations/{CC}.json and index.json (never committed; deployed only)."""
 import csv, gzip, io, json, os, sys, time, zipfile, urllib.request
 import xml.etree.ElementTree as ET
+from zoneinfo import ZoneInfo
 from datetime import datetime, timezone
 
 OUT = os.path.join(os.environ.get("OUT_DIR", "site/v1"), "stations")
@@ -85,6 +86,23 @@ def coord(v, cc, kind):
     return round(v, 5)
 
 
+def stamp(s, tz):
+    """Price report time -> 'YYYY-MM-DDTHH:MMZ' (UTC) when the source gives a time, else 'YYYY-MM-DD'; '' if unparseable."""
+    s = (s or "").strip().replace("T", " ")
+    for f in ("%Y-%m-%d %H:%M:%S", "%d/%m/%Y %H:%M:%S", "%Y-%m-%d %H:%M", "%d/%m/%Y %H:%M"):
+        try:
+            d = datetime.strptime(s[:19] if "%S" in f else s[:16], f)
+            return d.replace(tzinfo=ZoneInfo(tz)).astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%MZ")
+        except Exception:
+            pass
+    for f in ("%Y-%m-%d", "%d/%m/%Y"):
+        try:
+            return datetime.strptime(s[:10], f).strftime("%Y-%m-%d")
+        except ValueError:
+            pass
+    return ""
+
+
 def row(i, name, addr, city, lat, lon, e95, dsl, lpg, date):
     if lat is None or lon is None or (e95 is None and dsl is None and lpg is None):
         return None
@@ -105,7 +123,7 @@ def fr():
                 continue
             p[pr.get("nom")] = v
             if pr.get("maj"):
-                dates.append(pr.get("maj")[:10])
+                dates.append(stamp(pr.get("maj"), "Europe/Paris"))
         if not p:
             continue
         addr = (pdv.findtext("adresse") or "").strip()
@@ -152,16 +170,6 @@ def it_rows(url, retries=2, timeout=60):
     return [dict(zip(header, r)) for r in rd if len(r) >= len(header) - 1]
 
 
-def it_date(s):
-    s = (s or "").strip()[:10]
-    for f in ("%d/%m/%Y", "%Y-%m-%d"):
-        try:
-            return datetime.strptime(s, f).strftime("%Y-%m-%d")
-        except ValueError:
-            pass
-    return ""
-
-
 def it():
     bases = ["https://www.mimit.gov.it/images/exportCSV/", "http://www.mimit.gov.it/images/exportCSV/",
              "https://www.mise.gov.it/images/exportCSV/", "http://www.mise.gov.it/images/exportCSV/"]
@@ -188,7 +196,7 @@ def it():
         s = (r.get("isSelf") or "").strip() == "1"
         slot = best.setdefault(i, {}).setdefault(f, {})
         slot[s] = min(v, slot.get(s, v))
-        d = it_date(r.get("dtComu"))
+        d = stamp(r.get("dtComu"), "Europe/Rome")
         if d:
             dates[i] = max(dates.get(i, ""), d)
     out = []

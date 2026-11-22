@@ -25,7 +25,11 @@ class NumberRow extends StatelessWidget {
       ),
       child: ListTile(
         leading: Icon(icon, color: col, size: 28),
-        title: Text(label, style: const TextStyle(fontWeight: FontWeight.w600), maxLines: 2),
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: AlignmentDirectional.centerStart,
+          child: Text(label, style: const TextStyle(fontWeight: FontWeight.w600), maxLines: 1),
+        ),
         trailing: SizedBox(
           width: 96,
           child: TextField(

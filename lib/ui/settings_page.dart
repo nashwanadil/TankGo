@@ -31,6 +31,20 @@ class SettingsPage extends StatelessWidget {
                 onSelectionChanged: (v) => settings.setFuel(v.first),
               ),
               const SizedBox(height: 20),
+              Text(tx(context, 'startPage'), style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: 6),
+              SegmentedButton<String>(
+                showSelectedIcon: false,
+                style: SegmentedButton.styleFrom(visualDensity: VisualDensity.compact, padding: const EdgeInsets.symmetric(horizontal: 6), textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                segments: [
+                  ButtonSegment(value: 'home', icon: const Icon(Icons.home_outlined, size: 16), label: Text(tx(context, 'startHome'), key: const ValueKey('start_home'), maxLines: 1)),
+                  ButtonSegment(value: 'stations', icon: const Icon(Icons.local_gas_station_outlined, size: 16), label: Text(tx(context, 'startStations'), key: const ValueKey('start_stations'), maxLines: 1)),
+                  ButtonSegment(value: 'trip', icon: const Icon(Icons.map_outlined, size: 16), label: Text(tx(context, 'trip'), key: const ValueKey('start_trip'), maxLines: 1)),
+                ],
+                selected: {settings.startPage},
+                onSelectionChanged: (v) => settings.setStartPage(v.first),
+              ),
+              const SizedBox(height: 20),
               Text(tr(context, 'country'), style: Theme.of(context).textTheme.titleSmall),
               Card(
                 child: ListTile(

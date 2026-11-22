@@ -23,9 +23,12 @@ class Station {
   final double lat, lon;
   final Map<String, double> prices; // fuel key -> EUR/L (missing = not sold)
   final DateTime? date;
-  const Station(this.id, this.name, this.address, this.city, this.lat, this.lon, this.prices, this.date);
 
-  /// Row layout: [id,name,address,city,lat,lon,e95,diesel,lpg,"YYYY-MM-DD"].
+  /// True when [date] carries a time of day (otherwise only the calendar day is known).
+  final bool timed;
+  const Station(this.id, this.name, this.address, this.city, this.lat, this.lon, this.prices, this.date, {this.timed = false});
+
+  /// Row layout: [id,name,address,city,lat,lon,e95,diesel,lpg,"YYYY-MM-DD" or "YYYY-MM-DDTHH:MMZ"].
   factory Station.fromRow(List r) {
     String s(int i) => r[i]?.toString() ?? '';
     double? d(int i) => i < r.length && r[i] is num ? (r[i] as num).toDouble() : null;
@@ -34,7 +37,7 @@ class Station {
       final v = d(6 + i);
       if (v != null && v > 0) prices[stationFuels[i]] = v;
     }
-    return Station(s(0), s(1), s(2), s(3), (r[4] as num).toDouble(), (r[5] as num).toDouble(), prices, r.length > 9 && r[9] != null ? DateTime.tryParse(r[9].toString()) : null);
+    return Station(s(0), s(1), s(2), s(3), (r[4] as num).toDouble(), (r[5] as num).toDouble(), prices, r.length > 9 && r[9] != null ? DateTime.tryParse(r[9].toString()) : null, timed: r.length > 9 && r[9].toString().length > 10);
   }
 }
 

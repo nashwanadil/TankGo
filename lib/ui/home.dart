@@ -33,6 +33,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+bool _startHandled = false;
+
 class _HomePageState extends State<HomePage> {
   late Future<Loaded<Map<String, Entry>>> _latest = widget.api.latest();
   late final Future<Signal?> _signal = widget.api.signal();
@@ -65,7 +67,31 @@ class _HomePageState extends State<HomePage> {
         );
         widget.settings.setNoteSeen();
       }
+      await _openStartPage();
     });
+  }
+
+  void _openStations() => Navigator.push(context, MaterialPageRoute<void>(builder: (_) => StationsPage(api: widget.api, settings: widget.settings, fuel: _fuel)));
+
+  Future<void> _openTrip() async {
+    final all = (await _latest).value;
+    if (all == null || !mounted) return;
+    await Navigator.push(
+      context,
+      MaterialPageRoute<void>(builder: (_) => TripPage(entries: all, home: widget.settings.country!, premium: widget.premium, fuel: _fuel)),
+    );
+  }
+
+  /// Opens the page chosen in settings once per app launch; back returns to the home screen.
+  Future<void> _openStartPage() async {
+    if (_startHandled || !mounted) return;
+    _startHandled = true;
+    switch (widget.settings.startPage) {
+      case 'stations':
+        _openStations();
+      case 'trip':
+        await _openTrip();
+    }
   }
 
   /// A new default fuel from settings applies at once everywhere; picking a fuel on the home screen never changes the default.
@@ -146,16 +172,7 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             tooltip: tx(context, 'trip'),
             icon: const Icon(Icons.map_outlined),
-            onPressed: () async {
-              final all = (await _latest).value;
-              if (all == null || !context.mounted) return;
-              Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (_) => TripPage(entries: all, home: cc, premium: widget.premium, fuel: _fuel),
-                ),
-              );
-            },
+            onPressed: _openTrip,
           ),
           IconButton(
             icon: const Icon(Icons.tune),
@@ -623,7 +640,7 @@ class _HomePageState extends State<HomePage> {
         title: Text(tx(c, 'stNear'), style: const TextStyle(fontWeight: FontWeight.w700)),
         subtitle: Text(tx(c, 'stCovered')),
         trailing: Icon(Icons.chevron_right, color: Theme.of(c).colorScheme.onSurface),
-        onTap: () => Navigator.push(c, MaterialPageRoute<void>(builder: (_) => StationsPage(api: widget.api, settings: widget.settings, fuel: _fuel))),
+        onTap: _openStations,
       ),
     );
   }
