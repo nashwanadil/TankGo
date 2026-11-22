@@ -35,7 +35,7 @@ class SettingsPage extends StatelessWidget {
               const SizedBox(height: 6),
               SegmentedButton<String>(
                 showSelectedIcon: false,
-                style: SegmentedButton.styleFrom(visualDensity: VisualDensity.compact, padding: const EdgeInsets.symmetric(horizontal: 6), textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                style: SegmentedButton.styleFrom(visualDensity: VisualDensity.compact, padding: const EdgeInsets.symmetric(horizontal: 6), textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(fontSize: 13, fontWeight: FontWeight.w700)),
                 segments: [
                   ButtonSegment(value: 'home', icon: const Icon(Icons.home_outlined, size: 16), label: FittedBox(fit: BoxFit.scaleDown, child: Text(tx(context, 'startHome'), key: const ValueKey('start_home'), maxLines: 1))),
                   ButtonSegment(value: 'stations', icon: const Icon(Icons.local_gas_station_outlined, size: 16), label: FittedBox(fit: BoxFit.scaleDown, child: Text(tx(context, 'startStations'), key: const ValueKey('start_stations'), maxLines: 1))),

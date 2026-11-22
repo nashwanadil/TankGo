@@ -25,7 +25,7 @@ class _Fb<T> extends LocalizationsDelegate<T> {
   bool shouldReload(covariant _Fb<T> old) => false;
 }
 
-ThemeData _theme(Brightness b) {
+ThemeData appTheme(Brightness b) {
   final dark = b == Brightness.dark;
   final scheme = ColorScheme.fromSeed(seedColor: brand, brightness: b).copyWith(
     primary: dark ? gold : brand,
@@ -34,10 +34,28 @@ ThemeData _theme(Brightness b) {
     onPrimaryContainer: dark ? cream : brandDeep,
     surface: dark ? darkBrown : ivory,
     surfaceContainerHighest: dark ? surfaceHighDark : surfaceHighLight,
+    secondaryContainer: dark ? primaryContainerDark : primaryContainerLight,
+    onSecondaryContainer: dark ? cream : brandDeep,
+    surfaceTint: Colors.transparent,
     onSurface: dark ? cream : darkBrown,
     error: dark ? errorDark : errorLight,
     errorContainer: dark ? errorContainerDark : errorContainerLight,
   );
+  // Light mode: neutral milky surfaces instead of the pink tints derived from the brand seed.
+  final light = dark
+      ? scheme
+      : scheme.copyWith(
+          surfaceContainerLowest: Colors.white,
+          surfaceContainerLow: surfaceLowLight,
+          surfaceContainer: surfaceMidLight,
+          surfaceContainerHigh: surfaceHigherLight,
+          surfaceBright: ivory,
+          surfaceDim: surfaceHighLight,
+        );
+  return _themeData(light, dark);
+}
+
+ThemeData _themeData(ColorScheme scheme, bool dark) {
   return ThemeData(
     fontFamily: 'NotoSans',
     fontFamilyFallback: const ['NotoKufiArabic'],
@@ -90,8 +108,8 @@ class TankGoApp extends StatelessWidget {
         return MaterialApp(
           title: 'TankGo',
           debugShowCheckedModeBanner: false,
-          theme: _theme(Brightness.light),
-          darkTheme: _theme(Brightness.dark),
+          theme: appTheme(Brightness.light),
+          darkTheme: appTheme(Brightness.dark),
           themeMode: settings.theme,
           locale: Locale(lang),
           supportedLocales: [for (final l in supportedLangs) Locale(l)],

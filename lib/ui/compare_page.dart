@@ -140,7 +140,7 @@ class _ComparePageState extends State<ComparePage> {
             spacing: 8,
             children: [
               for (final f in fuels)
-                ChoiceChip(label: Text(fuelName(context, f)), selected: _fuel == f, selectedColor: fuelColor(context, f).withValues(alpha: 0.3), onSelected: (_) => setState(() => _fuel = f)),
+                ChoiceChip(label: Text(fuelName(context, f)), selected: _fuel == f, onSelected: (_) => setState(() => _fuel = f)),
             ],
           ),
           const SizedBox(height: 12),

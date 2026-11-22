@@ -197,8 +197,8 @@ class _StationsPageState extends State<StationsPage> {
     final segStyle = SegmentedButton.styleFrom(
       visualDensity: VisualDensity.compact,
       padding: const EdgeInsets.symmetric(horizontal: 6),
-      textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-      selectedBackgroundColor: col.withValues(alpha: 0.28),
+      textStyle: Theme.of(c).textTheme.labelLarge?.copyWith(fontSize: 13, fontWeight: FontWeight.w700),
+      selectedBackgroundColor: Theme.of(c).colorScheme.primaryContainer,
     );
     return Card(
       shape: RoundedRectangleBorder(
@@ -218,7 +218,7 @@ class _StationsPageState extends State<StationsPage> {
                     key: ValueKey('fuel_$f'),
                     label: Text(fuelName(c, f)),
                     selected: _fuel == f,
-                    selectedColor: fuelColor(c, f).withValues(alpha: 0.3),
+                    
                     onSelected: (_) => setState(() => _fuel = f),
                   ),
               ],

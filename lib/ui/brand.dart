@@ -6,12 +6,12 @@ const brandDark = Color(0xFF6B1A2E);
 const brandLight = Color(0xFF9E2F42); // hero/icon gradient centre
 const brandDeep = Color(0xFF3B0C15);
 const gold = Color(0xFFE0B860);
-const ivory = Color(0xFFF5F1F0); // light background
+const ivory = Color(0xFFFAF7F0); // light background: milky white (TankGo; was the pinkish #F5F1F0)
 const darkBrown = Color(0xFF2A1D17); // dark background / text on gold
 const cardDark = Color(0xFF362720);
 const cream = Color(0xFFF5ECE0); // light text on dark
 const borderDark = Color(0xFF4F3B2F);
-const borderLight = Color(0xFFE8DCD6);
+const borderLight = Color(0xFFE6DDCC);
 const errorLight = Color(0xFFB3261E);
 const errorDark = Color(0xFFFF8A80);
 
@@ -28,11 +28,14 @@ const fuelLpgDark = Color(0xFF7FC4A5);
 // Theme surfaces.
 const errorContainerLight = Color(0xFFF9DEDC);
 const errorContainerDark = Color(0xFF5A2A2A);
-const primaryContainerLight = Color(0xFFF3D9DC);
+const primaryContainerLight = Color(0xFFF1E4C6); // selected chips/segments: milky gold, not pink
 const primaryContainerDark = Color(0xFF4A3226);
-const surfaceHighLight = Color(0xFFEADFDB);
+const surfaceHighLight = Color(0xFFE9E1D2);
+const surfaceLowLight = Color(0xFFF6F1E7);
+const surfaceMidLight = Color(0xFFF2ECE0);
+const surfaceHigherLight = Color(0xFFEEE7DA);
 const surfaceHighDark = Color(0xFF43312A);
-const chipBorderLight = Color(0xFFE0D2CC);
+const chipBorderLight = Color(0xFFDDD2BF);
 
 // Radii (BRAND.md): cards 18, elements 12–14, hero 28.
 const rCard = 18.0;
