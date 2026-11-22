@@ -42,6 +42,9 @@ class _HomePageState extends State<HomePage> {
   String? _histCc;
   late String _fuel = widget.settings.fuel;
   late String _defFuel = widget.settings.fuel;
+
+  /// Countries that have station price files; the stations card sits high only for those.
+  Set<String>? _stationCountries;
   int _days = 30;
   (DateTime, double)? _touch;
   int? _touchIdx;
@@ -53,6 +56,9 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     widget.premium.addListener(_onPremium);
     widget.settings.addListener(_onSettings);
+    widget.api.stationIndex().then((v) {
+      if (mounted && v != null) setState(() => _stationCountries = v);
+    });
     if (widget.premium.isPremium) _days = 365;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!widget.settings.noteSeen && mounted) {
@@ -211,6 +217,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               );
             }
+            final hasStations = _stationCountries?.contains(cc) ?? false;
             return ListView(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
               children: [
@@ -222,12 +229,12 @@ class _HomePageState extends State<HomePage> {
                 _hero(context, entry, lang),
                 const SizedBox(height: 8),
                 _tiles(context, entry, lang),
+                if (hasStations) ...[_stationsCard(context)],
                 const SizedBox(height: 8),
                 _chartCard(context, cc, entry, lang),
                 const SizedBox(height: 8),
                 _compareCard(context, snap.data!.value!, cc),
-                const SizedBox(height: 8),
-                _stationsCard(context),
+                if (!hasStations) ...[const SizedBox(height: 8), _stationsCard(context)],
                 _outlook(context, lang),
               ],
             );
