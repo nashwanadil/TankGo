@@ -1020,7 +1020,7 @@ const Map<String, Map<String, String>> _x = {
     "pal_burgundy": "Bordeaux",
     "pal_emerald": "Smaragd",
     "pal_night": "Nachtblau",
-    "pal_royal": "Königsviolett",
+    "pal_royal": "Violett",
     "pal_onyx": "Grau & Gold",
     "stNear": "Günstige Tankstellen in der Nähe",
     "stCovered": "Nur in Frankreich & Spanien",

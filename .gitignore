@@ -53,3 +53,4 @@ android/*.jks
 *.jks
 *.apk
 *.aab
+store/screenshots/.data/

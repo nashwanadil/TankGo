@@ -25,6 +25,9 @@ class _Fb<T> extends LocalizationsDelegate<T> {
   bool shouldReload(covariant _Fb<T> old) => false;
 }
 
+/// Extra fallback fonts; only the store-screenshot renderer sets this (for emoji flags).
+List<String> extraFontFallback = const [];
+
 ThemeData appTheme(Brightness b) {
   final dark = b == Brightness.dark;
   final scheme = ColorScheme.fromSeed(seedColor: brand, brightness: b).copyWith(
@@ -66,7 +69,7 @@ ThemeData appTheme(Brightness b) {
 ThemeData _themeData(ColorScheme scheme, bool dark) {
   return ThemeData(
     fontFamily: 'NotoSans',
-    fontFamilyFallback: const ['NotoKufiArabic'],
+    fontFamilyFallback: ['NotoKufiArabic', ...extraFontFallback],
     colorScheme: scheme,
     useMaterial3: true,
     scaffoldBackgroundColor: scheme.surface,
