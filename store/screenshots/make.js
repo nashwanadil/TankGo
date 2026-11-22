@@ -20,9 +20,9 @@ h1{color:#fff;font-weight:800;font-size:${lang === "ar" ? 88 : 84}px;line-height
 .div i:last-child{transform:scaleX(-1)}
 .div b{width:14px;height:14px;background:#E0B860;transform:rotate(45deg)}
 p{color:#E0B860;font-weight:500;font-size:${lang === "ar" ? 44 : 42}px;line-height:1.35}
-.phone{margin:56px auto 0;width:780px;height:1600px;flex:none;border-radius:84px;background:#1d1311;padding:20px;
+.phone{margin:56px auto 0;width:780px;flex:none;border-radius:84px;background:#1d1311;padding:20px;
  box-shadow:0 0 0 4px #c9a24f,0 30px 80px rgba(0,0,0,.45)}
-.screen{width:100%;height:100%;border-radius:66px;overflow:hidden;background:#F5F1F0}
+.screen{width:100%;border-radius:66px;overflow:hidden;background:#F5F1F0}
 .screen img{width:100%;display:block}
 </style></head><body><div class="head"><h1>${title}</h1><div class="div"><i></i><b></b><i></i></div><p>${sub}</p></div>
 <div class="phone"><div class="screen"><img src="file://${path.join(dir, 'src', img + '.png')}"></div></div></body></html>`;
