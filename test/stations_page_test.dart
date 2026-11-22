@@ -183,4 +183,13 @@ void main() {
     expect(find.byType(StationsPage, skipOffstage: false), findsOneWidget);
     await t.pumpWidget(const SizedBox()); // dispose before the (unmocked) location plugin call settles
   });
+
+  test('extra strings exist for all translated languages', () {
+    for (final l in ['fr', 'es', 'it', 'nl', 'pt', 'pl', 'fa', 'ku']) {
+      for (final k in ['stNear', 'pwTitle', 'tripHow', 'tripReorder', 'legal', 'tripBuy']) {
+        expect(txLang(l, k), isNot(txLang('en', k)), reason: '$l $k');
+      }
+      expect(txLang(l, 'tripBuy'), contains('{l}'));
+    }
+  });
 }
