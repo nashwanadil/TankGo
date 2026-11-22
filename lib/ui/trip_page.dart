@@ -312,7 +312,7 @@ class _TripPageState extends State<TripPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        for (final s in plan.stops)
+                        for (final s in plan.stops.where((s) => s.litres >= 0.5))
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4),
                             child: Row(

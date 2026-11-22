@@ -48,4 +48,11 @@ void main() {
       }
     }
   });
+
+  test('a country longer than one tank: refuel there and carry cheap fuel on (no 2 L stop)', () {
+    // 800 km DE (52 L) with a 50 L tank, then 300 km NL (19.5 L), NL dearer: buy all extra fuel in DE.
+    final plan = planTrip([const Leg('DE', 800), const Leg('NL', 300)], {'DE': 2.215, 'NL': 2.294}, tank: 50, consumption: 6.5)!;
+    expect(plan.stops[0].litres, closeTo(21.5, 1e-6));
+    expect(plan.stops[1].litres, 0);
+  });
 }

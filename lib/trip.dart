@@ -81,19 +81,30 @@ TripPlan? planTrip(List<Leg> legs, Map<String, double> prices, {required double 
   for (final l in legs) {
     if (prices[l.cc] == null) return null;
   }
-  final need = [for (final l in legs) l.km * consumption / 100];
+  // A country driven longer than one tank is split into pieces of at most one tank each, so the
+  // refuel inside that country is planned like any other stop (and can carry cheap fuel onwards).
+  final origin = <int>[], need = <double>[], pieceCc = <String>[];
+  for (final (i, l) in legs.indexed) {
+    final n = l.km * consumption / 100;
+    final k = n <= tank ? 1 : (n / tank).ceil();
+    for (var j = 0; j < k; j++) {
+      origin.add(i);
+      need.add(n / k);
+      pieceCc.add(l.cc);
+    }
+  }
   var fuel = startFull ? tank : 0.0;
-  final bought = List<double>.filled(legs.length, 0);
+  final bought = List<double>.filled(need.length, 0);
   // Fuel in tank is "free" (bought before the trip); remaining needs are priced at the leg's country.
   final startFuel = fuel;
-  for (var i = 0; i < legs.length; i++) {
-    final p = prices[legs[i].cc]!;
+  for (var i = 0; i < need.length; i++) {
+    final p = prices[pieceCc[i]]!;
     var reach = 0.0; // litres needed to arrive at the entrance of country j
     var target = -1;
-    for (var j = i + 1; j < legs.length; j++) {
+    for (var j = i + 1; j < need.length; j++) {
       reach += need[j - 1];
       if (reach > tank) break;
-      if (prices[legs[j].cc]! < p) {
+      if (prices[pieceCc[j]]! < p) {
         target = j;
         break;
       }
@@ -115,7 +126,11 @@ TripPlan? planTrip(List<Leg> legs, Map<String, double> prices, {required double 
     fuel -= need[i];
   }
   _avoidTinyFills(bought, need, tank, startFuel);
-  final stops = [for (var i = 0; i < legs.length; i++) Stop(legs[i].cc, bought[i], prices[legs[i].cc]!, legs[i].km)];
+  final perLeg = List<double>.filled(legs.length, 0);
+  for (var i = 0; i < bought.length; i++) {
+    perLeg[origin[i]] += bought[i];
+  }
+  final stops = [for (var i = 0; i < legs.length; i++) Stop(legs[i].cc, perLeg[i], prices[legs[i].cc]!, legs[i].km)];
   final total = stops.fold(0.0, (a, s) => a + s.cost);
   final totalNeed = need.fold(0.0, (a, b) => a + b);
   final baseline = (totalNeed - startFuel).clamp(0.0, double.infinity) * prices[legs.first.cc]!;
