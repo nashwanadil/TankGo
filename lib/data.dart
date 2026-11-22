@@ -68,6 +68,9 @@ class Api {
     }
   }
 
+  /// Remote switches (`v1/config.json`); the value is null when nothing could be read (then nothing changes).
+  Future<Loaded<Map<String, dynamic>>> config() => _get('v1/config.json', 'config');
+
   Future<Loaded<Map<String, Entry>>> latest() async {
     final r = await _get('v1/latest.json', 'latest');
     final c = r.value?['countries'] as Map?;

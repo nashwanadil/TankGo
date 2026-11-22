@@ -41,7 +41,17 @@ class Premium extends ChangeNotifier {
     return v == null ? null : DateTime.fromMillisecondsSinceEpoch(v);
   }
 
-  bool get isPremium => lifetime || (until?.isAfter(_now()) ?? false);
+  /// Remote switch (`v1/config.json` → `premiumFree`): everything unlocked, e.g. during the closed test.
+  /// It is not a purchase: switching it off on the server takes the unlock away again.
+  bool get remoteFree => _p.getBool('p_free') ?? false;
+
+  Future<void> setRemoteFree(bool v) async {
+    if (v == remoteFree) return;
+    await _p.setBool('p_free', v);
+    notifyListeners();
+  }
+
+  bool get isPremium => lifetime || remoteFree || (until?.isAfter(_now()) ?? false);
 
   Future<void> grant(String id, DateTime when) async {
     final d = entitlementFor(id);

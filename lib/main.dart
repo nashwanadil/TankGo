@@ -14,6 +14,11 @@ Future<void> main() async {
   final prefs = await SharedPreferences.getInstance();
   final settings = Settings(prefs);
   final premium = Premium(prefs)..start();
+  final api = Api();
+  api.config().then((c) {
+    final v = c.value;
+    if (v != null) premium.setRemoteFree(v['premiumFree'] == true);
+  });
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-  runApp(TankGoApp(settings: settings, api: Api(), premium: premium));
+  runApp(TankGoApp(settings: settings, api: api, premium: premium));
 }
