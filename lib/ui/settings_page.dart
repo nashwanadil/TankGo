@@ -24,16 +24,16 @@ class SettingsPage extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             children: [
               Text(tx(context, 'defFuel'), style: Theme.of(context).textTheme.titleSmall),
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
               SegmentedButton<String>(
                 showSelectedIcon: false,
                 segments: [for (final f in fuelOrder) ButtonSegment(value: f, label: Text(fuelName(context, f)))],
                 selected: {settings.fuel},
                 onSelectionChanged: (v) => settings.setFuel(v.first),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
               Text(tx(context, 'startPage'), style: Theme.of(context).textTheme.titleSmall),
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
               SegmentedButton<String>(
                 showSelectedIcon: false,
                 style: SegmentedButton.styleFrom(visualDensity: VisualDensity.compact, padding: const EdgeInsets.symmetric(horizontal: 6), textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(fontSize: 13, fontWeight: FontWeight.w700)),
@@ -45,7 +45,7 @@ class SettingsPage extends StatelessWidget {
                 selected: {settings.startPage},
                 onSelectionChanged: (v) => settings.setStartPage(v.first),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
               Text(tr(context, 'country'), style: Theme.of(context).textTheme.titleSmall),
               Card(
                 child: ListTile(
@@ -58,9 +58,9 @@ class SettingsPage extends StatelessWidget {
                   },
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
               Text(tr(context, 'theme'), style: Theme.of(context).textTheme.titleSmall),
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
               SegmentedButton<ThemeMode>(
                 segments: [
                   ButtonSegment(value: ThemeMode.system, label: Text(tr(context, 'system'))),
@@ -70,17 +70,16 @@ class SettingsPage extends StatelessWidget {
                 selected: {settings.theme},
                 onSelectionChanged: (s) => settings.setTheme(s.first),
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 12),
               Text(tx(context, 'palColor'), style: Theme.of(context).textTheme.titleSmall),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: [for (final p in palettes) _Swatch(p: p, selected: settings.palette == p.id, label: tx(context, 'pal_${p.id}'), onTap: () => settings.setPalette(p.id))],
+              const SizedBox(height: 4),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [for (final p in palettes) Expanded(child: _Swatch(p: p, selected: settings.palette == p.id, label: tx(context, 'pal_${p.id}'), onTap: () => settings.setPalette(p.id)))],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
               Text(tr(context, 'language'), style: Theme.of(context).textTheme.titleSmall),
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
               GridView.count(
                 crossAxisCount: 2,
                 shrinkWrap: true,
@@ -158,19 +157,19 @@ class _Swatch extends StatelessWidget {
       key: ValueKey('pal_${p.id}'),
       borderRadius: BorderRadius.circular(rElement),
       onTap: onTap,
-      child: SizedBox(
-        width: 64,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: Column(
           children: [
             Container(
-              width: 46,
-              height: 46,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(colors: [p.light, p.dark]),
                 border: Border.all(color: selected ? gold : Colors.transparent, width: 3),
               ),
-              child: selected ? const Icon(Icons.check, color: gold, size: 22) : null,
+              child: selected ? const Icon(Icons.check, color: gold, size: 18) : null,
             ),
             const SizedBox(height: 4),
             Text(label, textAlign: TextAlign.center, maxLines: 2, style: TextStyle(fontSize: 11, fontWeight: selected ? FontWeight.w700 : FontWeight.w500)),

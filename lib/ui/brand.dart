@@ -41,9 +41,9 @@ const fallSoft = Color(0xFFA5E8C0);
 const positive = Color(0xFF2E8B6A);
 const negative = Color(0xFFD9534F);
 const fuelE95Light = Color(0xFFB98A24);
-const fuelDieselLight = Color(0xFF9F2B3E);
-const fuelDieselDark = Color(0xFFE8808F);
 const fuelLpgDark = Color(0xFF7FC4A5);
+const lpgAltLight = Color(0xFF2F6F9F); // LPG under the emerald theme
+const lpgAltDark = Color(0xFF8DB5E0);
 
 // Theme surfaces.
 const errorContainerLight = Color(0xFFF9DEDC);

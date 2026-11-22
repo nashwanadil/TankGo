@@ -17,8 +17,9 @@ import 'fmt.dart';
 import 'settings_page.dart';
 import 'stations_page.dart';
 
-const _fuelDark = {'e95': gold, 'diesel': fuelDieselDark, 'lpg': fuelLpgDark};
-const _fuelLight = {'e95': fuelE95Light, 'diesel': fuelDieselLight, 'lpg': positive};
+// Diesel takes the chosen colour theme, so it matches the hero card; LPG avoids clashing with the emerald theme.
+Map<String, Color> get _fuelDark => {'e95': gold, 'diesel': Color.lerp(brand, Colors.white, 0.45)!, 'lpg': pal.id == 'emerald' ? lpgAltDark : fuelLpgDark};
+Map<String, Color> get _fuelLight => {'e95': fuelE95Light, 'diesel': brand, 'lpg': pal.id == 'emerald' ? lpgAltLight : positive};
 Color fuelColor(BuildContext c, String f) => (Theme.of(c).brightness == Brightness.dark ? _fuelDark : _fuelLight)[f]!;
 const fuelOrder = ['e95', 'diesel', 'lpg'];
 

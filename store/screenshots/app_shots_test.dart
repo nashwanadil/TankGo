@@ -22,6 +22,10 @@ import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const data = 'store/screenshots/.data';
+// Optional: SHOT_PALETTE=emerald SHOT_OUT=preview to look at another colour theme without touching src/.
+final palette = Platform.environment['SHOT_PALETTE'] ?? 'burgundy';
+final out = Platform.environment['SHOT_OUT'] ?? 'src';
+final langs = (Platform.environment['SHOT_LANGS'] ?? 'en,de,ar').split(',');
 
 class _Paris implements LocationSource {
   @override
@@ -53,13 +57,13 @@ void main() {
     extraFontFallback = const ['NotoColorEmoji', 'DejaVuSans'];
   });
 
-  for (final lang in ['en', 'de', 'ar']) {
+  for (final lang in langs) {
     testWidgets('store shots $lang', (t) async {
       t.view.physicalSize = const Size(1080, 2110);
       t.view.devicePixelRatio = 2.75;
       addTearDown(t.view.reset);
       // ignore: invalid_use_of_visible_for_testing_member
-      SharedPreferences.setMockInitialValues({'lang': lang, 'country': 'DE', 'fuel': 'diesel', 'noteSeen': true, 'tripHelpHidden': true, 'p_life': true});
+      SharedPreferences.setMockInitialValues({'lang': lang, 'country': 'DE', 'fuel': 'diesel', 'noteSeen': true, 'tripHelpHidden': true, 'p_life': true, 'palette': palette});
       final prefs = await SharedPreferences.getInstance();
       final settings = Settings(prefs);
       final premium = Premium(prefs, billing: false);
@@ -77,7 +81,7 @@ void main() {
       // A finger held on the chart: tooltip plus that day's price in the hero (as on the phone).
       final finger = await t.startGesture(Offset(box.left + box.width * (lang == 'ar' ? 0.66 : 0.34), box.top + box.height * 0.5));
       await t.pump();
-      await expectLater(shot, matchesGoldenFile('src/$lang/home.png'));
+      await expectLater(shot, matchesGoldenFile('$out/$lang/home.png'));
       await finger.up();
       await t.pumpAndSettle();
 
@@ -88,7 +92,7 @@ void main() {
         await t.runAsync(() => Future<void>.delayed(const Duration(seconds: 3))); // isolates (station file parsing)
         await t.pumpAndSettle();
         if (setup != null) await setup();
-        await expectLater(shot, matchesGoldenFile('src/$lang/$name.png'));
+        await expectLater(shot, matchesGoldenFile('$out/$lang/$name.png'));
         nav.pop();
         await t.pumpAndSettle();
       }
