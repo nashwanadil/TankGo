@@ -120,6 +120,7 @@ void main() {
       // 25 km sits on the same line as 5 and 10 km
       expect(t.getTopLeft(find.byKey(const ValueKey('radius_25'))).dy, t.getTopLeft(find.byKey(const ValueKey('radius_5'))).dy);
       expect(find.text(txLang(lang, 'stNearest')), findsOneWidget);
+      expect(find.byKey(const ValueKey('stStamp')), findsOneWidget);
       expect(find.text(txLang(lang, 'stToday')), findsOneWidget);
       await t.tap(find.byKey(const ValueKey('sort_new')));
       await t.pumpAndSettle();
@@ -132,7 +133,9 @@ void main() {
     await t.pumpWidget(_app(StationsPage(api: Api(_client(log)), settings: await _settings(), location: FakeLoc([const LocResult(LocStatus.ok, 52.52, 13.40)]))));
     await t.pumpAndSettle();
     expect(find.byKey(const ValueKey('stNotCovered')), findsOneWidget);
-    expect(find.text('Tankstellenpreise sind in deinem Land noch nicht verfügbar. Weitere Länder folgen.'), findsOneWidget);
+    expect(find.text('Tankstellenpreise gibt es nur in Frankreich und Spanien.'), findsOneWidget);
+    expect(find.byKey(const ValueKey('stStamp')), findsOneWidget);
+    expect(find.text('Nur in Frankreich & Spanien'), findsOneWidget);
     expect(log, isEmpty);
   });
 

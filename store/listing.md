@@ -19,7 +19,7 @@ FREE
 • Petrol 95, diesel and LPG prices for every country, with the date of every price
 • Price chart for the last month – touch it to see the price of any day
 • Compare your country with its neighbours: what a full tank costs next door
-• Cheapest fuel stations near you with real station prices – France and Spain (more countries to follow)
+• Cheapest fuel stations near you with real station prices – France and Spain only
 • Cost calculator for any distance
 • 27 languages, including Arabic, Persian and Kurdish
 • Light and dark theme, works offline
@@ -51,7 +51,7 @@ KOSTENLOS
 • Preise für Benzin 95, Diesel und LPG je Land, mit Datum zu jedem Preis
 • Preisverlauf des letzten Monats – Diagramm berühren und den Preis jedes Tages sehen
 • Vergleiche dein Land mit seinen Nachbarn: Was kostet eine Tankfüllung nebenan?
-• Günstigste Tankstellen in deiner Nähe mit echten Stationspreisen – Frankreich und Spanien (weitere Länder folgen)
+• Günstigste Tankstellen in deiner Nähe mit echten Stationspreisen – nur in Frankreich und Spanien
 • Kostenrechner für jede Strecke
 • 27 Sprachen, auch Arabisch, Persisch und Kurdisch
 • Helles und dunkles Design, funktioniert offline
@@ -83,7 +83,7 @@ Keine Werbung, keine Konten, kein Tracking. Dein ungefährer Standort wird nur a
 • أسعار البنزين 95 والديزل وغاز LPG لكل دولة، مع تاريخ كل سعر
 • مخطط أسعار الشهر الأخير، المسه لترى سعر أي يوم
 • قارن بلدك بجيرانه: كم يكلّف الخزان الممتلئ في البلد المجاور
-• أرخص محطات الوقود القريبة منك بأسعار المحطات الفعلية – فرنسا وإسبانيا (ودول أخرى قريبًا)
+• أرخص محطات الوقود القريبة منك بأسعار المحطات الفعلية – في فرنسا وإسبانيا فقط
 • حاسبة تكلفة لأي مسافة
 • 27 لغة، منها العربية والفارسية والكردية
 • مظهر فاتح وداكن، ويعمل دون إنترنت

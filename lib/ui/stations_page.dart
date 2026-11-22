@@ -95,14 +95,50 @@ class _StationsPageState extends State<StationsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(tx(context, 'stNear'))),
-      body: switch (_phase) {
-        _Phase.locating => _busy(tx(context, 'stLocating')),
-        _Phase.loading => _busy(tx(context, 'stLoading')),
-        _Phase.needLocation => _locationHelp(context),
-        _Phase.notCovered => _message(context, Icons.public_off, tx(context, 'stNotCovered'), key: const ValueKey('stNotCovered')),
-        _Phase.error => _message(context, Icons.cloud_off, tx(context, 'stErr'), action: FilledButton(onPressed: _load, child: Text(tr(context, 'retry')))),
-        _Phase.ready => _list(context),
-      },
+      body: Column(
+        children: [
+          _stamp(context),
+          Expanded(
+            child: switch (_phase) {
+              _Phase.locating => _busy(tx(context, 'stLocating')),
+              _Phase.loading => _busy(tx(context, 'stLoading')),
+              _Phase.needLocation => _locationHelp(context),
+              _Phase.notCovered => _message(context, Icons.public_off, tx(context, 'stNotCovered'), key: const ValueKey('stNotCovered')),
+              _Phase.error => _message(context, Icons.cloud_off, tx(context, 'stErr'), action: FilledButton(onPressed: _load, child: Text(tr(context, 'retry')))),
+              _Phase.ready => _list(context),
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Stamp that states, on every state of this page, where the feature works (France and Spain only).
+  Widget _stamp(BuildContext c) {
+    final col = Theme.of(c).brightness == Brightness.dark ? gold : brand;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 2),
+      child: Center(
+        child: Transform.rotate(
+          angle: -0.035,
+          child: Container(
+            key: const ValueKey('stStamp'),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            decoration: BoxDecoration(
+              border: Border.all(color: col, width: 2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.place_outlined, size: 18, color: col),
+                const SizedBox(width: 6),
+                Flexible(child: Text(tx(c, 'stCovered'), style: TextStyle(color: col, fontWeight: FontWeight.w800, fontSize: 14, letterSpacing: 0.4))),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
