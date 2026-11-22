@@ -39,7 +39,7 @@ class _StationsPageState extends State<StationsPage> {
   LocStatus _locStatus = LocStatus.denied;
   late String _fuel = stationFuels.contains(widget.fuel ?? widget.settings.fuel) ? (widget.fuel ?? widget.settings.fuel) : 'e95';
   double _radius = 10;
-  bool _byPrice = true;
+  StationSort _sort = StationSort.price;
   double _lat = 0, _lon = 0;
   List<Station> _stations = const [];
   String _source = '';
@@ -158,9 +158,11 @@ class _StationsPageState extends State<StationsPage> {
 
   Widget _controls(BuildContext c) {
     final col = fuelColor(c, _fuel);
-    Widget label(String t) => Padding(
-      padding: const EdgeInsetsDirectional.only(end: 12),
-      child: Text(t, style: const TextStyle(fontWeight: FontWeight.w600)),
+    final segStyle = SegmentedButton.styleFrom(
+      visualDensity: VisualDensity.compact,
+      padding: const EdgeInsets.symmetric(horizontal: 6),
+      textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+      selectedBackgroundColor: col.withValues(alpha: 0.28),
     );
     return Card(
       shape: RoundedRectangleBorder(
@@ -185,25 +187,33 @@ class _StationsPageState extends State<StationsPage> {
                   ),
               ],
             ),
-            const SizedBox(height: 8),
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 8,
+            const SizedBox(height: 10),
+            Row(
               children: [
-                label(tx(c, 'stRadius')),
-                for (final r in const [5.0, 10.0, 25.0])
-                  ChoiceChip(key: ValueKey('radius_${r.toInt()}'), label: Text('${r.toInt()} km'), selected: _radius == r, onSelected: (_) => setState(() => _radius = r)),
+                Icon(Icons.radar, size: 20, color: col),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: SegmentedButton<double>(
+                    showSelectedIcon: false,
+                    style: segStyle,
+                    segments: [for (final r in const [5.0, 10.0, 25.0]) ButtonSegment(value: r, label: Text('${r.toInt()} km', key: ValueKey('radius_${r.toInt()}'), maxLines: 1))],
+                    selected: {_radius},
+                    onSelectionChanged: (v) => setState(() => _radius = v.first),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 8),
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 8,
-              children: [
-                label('↕'),
-                ChoiceChip(key: const ValueKey('sort_price'), avatar: const Icon(Icons.euro, size: 16), label: Text(tx(c, 'stSortPrice')), selected: _byPrice, onSelected: (_) => setState(() => _byPrice = true)),
-                ChoiceChip(key: const ValueKey('sort_dist'), avatar: const Icon(Icons.near_me, size: 16), label: Text(tx(c, 'stSortDist')), selected: !_byPrice, onSelected: (_) => setState(() => _byPrice = false)),
+            SegmentedButton<StationSort>(
+              showSelectedIcon: false,
+              style: segStyle,
+              segments: [
+                ButtonSegment(value: StationSort.price, icon: const Icon(Icons.sell_outlined, size: 16), label: Text(tx(c, 'stSortPrice'), key: const ValueKey('sort_price'), maxLines: 1)),
+                ButtonSegment(value: StationSort.distance, icon: const Icon(Icons.near_me_outlined, size: 16), label: Text(tx(c, 'stSortDist'), key: const ValueKey('sort_dist'), maxLines: 1)),
+                ButtonSegment(value: StationSort.newest, icon: const Icon(Icons.update, size: 16), label: Text(tx(c, 'stSortNew'), key: const ValueKey('sort_new'), maxLines: 1)),
               ],
+              selected: {_sort},
+              onSelectionChanged: (v) => setState(() => _sort = v.first),
             ),
           ],
         ),
@@ -213,8 +223,9 @@ class _StationsPageState extends State<StationsPage> {
 
   Widget _list(BuildContext c) {
     final lang = Localizations.localeOf(c).languageCode;
-    final hits = nearbyStations(_stations, lat: _lat, lon: _lon, fuel: _fuel, radiusKm: _radius, byPrice: _byPrice);
+    final hits = nearbyStations(_stations, lat: _lat, lon: _lon, fuel: _fuel, radiusKm: _radius, sort: _sort);
     final best = cheapest(hits);
+    final near = nearest(hits);
     final today = DateUtils.dateOnly(DateTime.now());
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
@@ -226,7 +237,7 @@ class _StationsPageState extends State<StationsPage> {
             padding: const EdgeInsets.symmetric(vertical: 32),
             child: Text(tx(c, 'stNone'), textAlign: TextAlign.center),
           ),
-        for (final h in hits) _row(c, h, identical(h, best), today, lang),
+        for (final h in hits) _row(c, h, identical(h, best), identical(h, near), today, lang),
         const SizedBox(height: 12),
         Text(
           [
@@ -253,30 +264,48 @@ class _StationsPageState extends State<StationsPage> {
     );
   }
 
-  Widget _row(BuildContext c, Hit h, bool isBest, DateTime today, String lang) {
+  Widget _row(BuildContext c, Hit h, bool isBest, bool isNearest, DateTime today, String lang) {
     final s = h.station;
-    final old = s.date != null && DateUtils.dateOnly(s.date!).isBefore(today);
+    final days = s.date == null ? null : today.difference(DateUtils.dateOnly(s.date!)).inDays;
     final addr = [s.address, s.city].where((e) => e.isNotEmpty).join(', ');
     final dark = Theme.of(c).brightness == Brightness.dark;
     return Card(
       key: ValueKey('st_${s.id}'),
+      margin: const EdgeInsets.symmetric(vertical: 2),
       shape: isBest
           ? RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(rCard),
               side: const BorderSide(color: positive, width: 2),
+            )
+          : isNearest
+          ? RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(rCard),
+              side: const BorderSide(color: brand, width: 2),
             )
           : _shape(c),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => widget.openUrl(navigationUri(s)),
         child: Padding(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
           child: Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (isBest || isNearest)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 3),
+                        child: Wrap(
+                          spacing: 6,
+                          runSpacing: 4,
+                          children: [
+                            if (isBest) _badge(tx(c, 'stCheapest'), dark ? gold : positive, dark ? darkBrown : Colors.white),
+                            if (isNearest) _badge(tx(c, 'stNearest'), brand, Colors.white),
+                          ],
+                        ),
+                      ),
                     Text(s.name.isEmpty ? s.city : s.name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16), maxLines: 2, overflow: TextOverflow.ellipsis),
                     if (addr.isNotEmpty) Text(addr, style: Theme.of(c).textTheme.bodySmall, maxLines: 2, overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 2),
@@ -288,15 +317,8 @@ class _StationsPageState extends State<StationsPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  if (isBest)
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 4),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(color: dark ? gold : positive, borderRadius: BorderRadius.circular(rElement)),
-                      child: Text(tx(c, 'stCheapest'), style: TextStyle(color: dark ? darkBrown : Colors.white, fontWeight: FontWeight.w800, fontSize: 12)),
-                    ),
                   Text(fmtMoney(h.price, 'EUR', lang), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20)),
-                  if (old) Text(tx(c, 'stAsOf').replaceFirst('{d}', fmtShortDate(s.date!, lang)), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Theme.of(c).colorScheme.error)),
+                  if (days != null) _age(c, s.date!, days, lang),
                 ],
               ),
             ],
@@ -304,5 +326,27 @@ class _StationsPageState extends State<StationsPage> {
         ),
       ),
     );
+  }
+
+  Widget _badge(String text, Color bg, Color fg) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+    decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(rElement)),
+    child: Text(text, style: TextStyle(color: fg, fontWeight: FontWeight.w800, fontSize: 11)),
+  );
+
+  /// Age of the price report under the price: today in green, yesterday neutral, older in red.
+  Widget _age(BuildContext c, DateTime date, int days, String lang) {
+    final String text;
+    Color? color;
+    if (days <= 0) {
+      text = tx(c, 'stToday');
+      color = positive;
+    } else if (days == 1) {
+      text = tx(c, 'stYesterday');
+    } else {
+      text = days < 14 ? tx(c, 'stDaysAgo').replaceFirst('{n}', '$days') : tx(c, 'stAsOf').replaceFirst('{d}', fmtShortDate(date, lang));
+      color = Theme.of(c).colorScheme.error;
+    }
+    return Text(text, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: color));
   }
 }

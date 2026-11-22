@@ -36,8 +36,8 @@ class _CalcPageState extends State<CalcPage> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          NumberRow(icon: Icons.straighten, label: tr(context, 'distance'), controller: _km, onChanged: (_) => setState(() {})),
-          NumberRow(icon: Icons.speed, label: tr(context, 'consumption'), controller: _cons, onChanged: (_) => setState(() {})),
+          NumberRow(icon: Icons.route_outlined, label: tr(context, 'distance'), controller: _km, onChanged: (_) => setState(() {})),
+          NumberRow(icon: Icons.water_drop_outlined, label: tr(context, 'consumption'), controller: _cons, onChanged: (_) => setState(() {})),
           const SizedBox(height: 8),
           for (final f in fuelOrder.where(e.prices.containsKey))
             Card(

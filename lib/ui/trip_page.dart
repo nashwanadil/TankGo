@@ -160,7 +160,7 @@ class _TripPageState extends State<TripPage> {
                 ),
                 const SizedBox(height: 12),
                 NumberRow(icon: Icons.local_gas_station, label: tx(context, 'tripTank'), controller: _tank, suffix: ' L', onChanged: (_) => setState(() {})),
-                NumberRow(icon: Icons.speed, label: tx(context, 'tripCons'), controller: _cons, onChanged: (_) => setState(() {})),
+                NumberRow(icon: Icons.water_drop_outlined, label: tx(context, 'tripCons'), controller: _cons, onChanged: (_) => setState(() {})),
                 Card(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(rCard),

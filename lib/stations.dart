@@ -72,8 +72,10 @@ double haversineKm(double lat1, double lon1, double lat2, double lon2) {
   return 12742 * math.asin(math.min(1.0, math.sqrt(a)));
 }
 
-/// Stations within [radiusKm] that sell [fuel], sorted by price (then distance) or by distance (then price).
-List<Hit> nearbyStations(List<Station> all, {required double lat, required double lon, required String fuel, required double radiusKm, bool byPrice = true}) {
+enum StationSort { price, distance, newest }
+
+/// Stations within [radiusKm] that sell [fuel], sorted by price, distance or last update (newest first).
+List<Hit> nearbyStations(List<Station> all, {required double lat, required double lon, required String fuel, required double radiusKm, StationSort sort = StationSort.price}) {
   final out = <Hit>[];
   for (final s in all) {
     final p = s.prices[fuel];
@@ -81,9 +83,20 @@ List<Hit> nearbyStations(List<Station> all, {required double lat, required doubl
     final km = haversineKm(lat, lon, s.lat, s.lon);
     if (km <= radiusKm) out.add(Hit(s, km, p));
   }
+  int byDate(Hit a, Hit b) {
+    final x = a.station.date, y = b.station.date;
+    if (x == null || y == null) return x == null && y == null ? 0 : (x == null ? 1 : -1);
+    return y.compareTo(x); // newest first
+  }
+
   out.sort((a, b) {
-    final c = byPrice ? a.price.compareTo(b.price) : a.km.compareTo(b.km);
-    return c != 0 ? c : (byPrice ? a.km.compareTo(b.km) : a.price.compareTo(b.price));
+    final c = switch (sort) {
+      StationSort.price => a.price.compareTo(b.price),
+      StationSort.distance => a.km.compareTo(b.km),
+      StationSort.newest => byDate(a, b),
+    };
+    if (c != 0) return c;
+    return sort == StationSort.price ? a.km.compareTo(b.km) : a.price.compareTo(b.price);
   });
   return out;
 }
@@ -93,6 +106,15 @@ Hit? cheapest(List<Hit> hits) {
   Hit? best;
   for (final h in hits) {
     if (best == null || h.price < best.price || (h.price == best.price && h.km < best.km)) best = h;
+  }
+  return best;
+}
+
+/// The nearest hit (cheapest on ties), or null when empty.
+Hit? nearest(List<Hit> hits) {
+  Hit? best;
+  for (final h in hits) {
+    if (best == null || h.km < best.km || (h.km == best.km && h.price < best.price)) best = h;
   }
   return best;
 }

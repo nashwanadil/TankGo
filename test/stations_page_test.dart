@@ -103,12 +103,32 @@ void main() {
     expect(opened.single.toString(), 'https://www.google.com/maps/dir/?api=1&destination=48.853,2.369');
   });
 
+  testWidgets('narrow phone: controls fit, badges, age under price, newest sort', (t) async {
+    t.view.physicalSize = const Size(720, 1600);
+    t.view.devicePixelRatio = 2;
+    addTearDown(t.view.reset);
+    for (final lang in ['de', 'ar']) {
+      SharedPreferences.setMockInitialValues({'lang': lang, 'country': 'FR'});
+      final st = Settings(await SharedPreferences.getInstance());
+      await t.pumpWidget(MaterialApp(locale: Locale(lang), supportedLocales: const [Locale('de'), Locale('ar')], localizationsDelegates: GlobalMaterialLocalizations.delegates, home: StationsPage(api: Api(_client([])), settings: st, location: FakeLoc([const LocResult(LocStatus.ok, 48.8566, 2.3522)]))));
+      await t.pumpAndSettle();
+      expect(t.takeException(), isNull);
+      // 25 km sits on the same line as 5 and 10 km
+      expect(t.getTopLeft(find.byKey(const ValueKey('radius_25'))).dy, t.getTopLeft(find.byKey(const ValueKey('radius_5'))).dy);
+      expect(find.text(txLang(lang, 'stNearest')), findsOneWidget);
+      expect(find.text(txLang(lang, 'stToday')), findsOneWidget);
+      await t.tap(find.byKey(const ValueKey('sort_new')));
+      await t.pumpAndSettle();
+      expect(t.takeException(), isNull);
+    }
+  });
+
   testWidgets('outside FR/ES/IT shows not covered message', (t) async {
     final log = <Uri>[];
     await t.pumpWidget(_app(StationsPage(api: Api(_client(log)), settings: await _settings(), location: FakeLoc([const LocResult(LocStatus.ok, 52.52, 13.40)]))));
     await t.pumpAndSettle();
     expect(find.byKey(const ValueKey('stNotCovered')), findsOneWidget);
-    expect(find.text('Tankstellenpreise gibt es derzeit für Frankreich, Spanien und Italien. Deutschland folgt.'), findsOneWidget);
+    expect(find.text('Tankstellenpreise sind in deinem Land noch nicht verfügbar. Weitere Länder folgen.'), findsOneWidget);
     expect(log, isEmpty);
   });
 
@@ -134,7 +154,7 @@ void main() {
   });
 
   test('station strings exist in en, de and ar', () {
-    for (final k in ['stNear', 'stCovered', 'stNotCovered', 'stPermBody', 'stAllow', 'stSettings', 'stErr', 'stCheapest', 'stAsOf', 'stSource', 'stRadius', 'stSortPrice', 'stSortDist', 'stNone', 'stNote']) {
+    for (final k in ['stNear', 'stCovered', 'stNotCovered', 'stPermBody', 'stAllow', 'stSettings', 'stErr', 'stCheapest', 'stAsOf', 'stSource', 'stRadius', 'stSortPrice', 'stSortDist', 'stSortNew', 'stNearest', 'stToday', 'stYesterday', 'stDaysAgo', 'stNone', 'stNote']) {
       expect(txLang('de', k), isNot(txLang('en', k)), reason: 'de $k');
       expect(txLang('ar', k), isNot(txLang('en', k)), reason: 'ar $k');
     }

@@ -33,7 +33,7 @@ void main() {
     expect(r10.map((h) => h.station.id), ['tie', 'mid', 'near']); // price asc, tie -> nearer first
     expect(nearbyStations(all, lat: lat, lon: lon, fuel: 'e95', radiusKm: 5).map((h) => h.station.id), ['tie', 'near']);
     expect(nearbyStations(all, lat: lat, lon: lon, fuel: 'e95', radiusKm: 25).map((h) => h.station.id).first, 'far');
-    expect(nearbyStations(all, lat: lat, lon: lon, fuel: 'e95', radiusKm: 10, byPrice: false).map((h) => h.station.id), ['near', 'tie', 'mid']);
+    expect(nearbyStations(all, lat: lat, lon: lon, fuel: 'e95', radiusKm: 10, sort: StationSort.distance).map((h) => h.station.id), ['near', 'tie', 'mid']);
     expect(nearbyStations(all, lat: lat, lon: lon, fuel: 'diesel', radiusKm: 10).map((h) => h.station.id), ['nofuel']);
     expect(nearbyStations(all, lat: lat, lon: lon, fuel: 'lpg', radiusKm: 25), isEmpty);
     expect(cheapest(r10)!.station.id, 'tie');
