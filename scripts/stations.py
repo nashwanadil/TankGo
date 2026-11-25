@@ -176,7 +176,7 @@ def it():
     base = None
     for b in bases:
         try:
-            reg_rows = it_rows(b + "anagrafica_impianti_attivi.csv", retries=1, timeout=30)
+            reg_rows = it_rows(b + "anagrafica_impianti_attivi.csv", retries=1, timeout=10)
             base = b
             break
         except Exception as e:
