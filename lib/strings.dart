@@ -929,7 +929,7 @@ const Map<String, Map<String, String>> _x = {
   'en': {
     "estNow": "Estimated today",
     "estTitle": "Estimated price",
-    "estBody": "The official price is published once a week. Pump prices follow crude oil with a delay of one to two weeks, so this estimate adds the change in crude oil (Brent) since the period that shaped the official price. It is a guide, not a measured price; prices at the pump can differ.",
+    "estBody": "The official price is published once a week. This estimate carries it forward to today using the average price change of the last 4 weeks. It is a guide, not a measured price; prices at the pump can differ.",
     "palColor": "Colour",
     "pal_burgundy": "Burgundy",
     "pal_emerald": "Emerald",
@@ -1021,7 +1021,7 @@ const Map<String, Map<String, String>> _x = {
   'de': {
     "estNow": "Heute geschätzt",
     "estTitle": "Geschätzter Preis",
-    "estBody": "Der offizielle Preis erscheint einmal pro Woche. Spritpreise folgen dem Rohöl mit ein bis zwei Wochen Verzögerung. Die Schätzung rechnet daher die Veränderung des Rohölpreises (Brent) seit dem Zeitraum hinzu, der den offiziellen Preis bestimmt hat. Das ist eine Orientierung, kein gemessener Preis; an der Zapfsäule kann er abweichen.",
+    "estBody": "Der offizielle Preis erscheint einmal pro Woche. Die Schätzung schreibt ihn mit der durchschnittlichen Preisänderung der letzten 4 Wochen bis heute fort. Sie ist ein Richtwert, kein gemessener Preis; an der Zapfsäule kann er abweichen.",
     "palColor": "Farbe",
     "pal_burgundy": "Bordeaux",
     "pal_emerald": "Smaragd",
@@ -1113,7 +1113,7 @@ const Map<String, Map<String, String>> _x = {
   'ar': {
     "estNow": "تقدير اليوم",
     "estTitle": "سعر تقديري",
-    "estBody": "يُنشر السعر الرسمي مرة في الأسبوع. وأسعار الوقود تتبع النفط الخام بتأخر أسبوع إلى أسبوعين، لذا يضيف هذا التقدير تغيّر سعر النفط الخام (برنت) منذ الفترة التي حدّدت السعر الرسمي. هو استرشادي وليس سعرًا مقيسًا، وقد يختلف عن سعر المحطة.",
+    "estBody": "يُنشر السعر الرسمي مرة في الأسبوع. يمدّ هذا التقدير السعرَ الرسمي حتى اليوم بحسب متوسط تغيّر الأسعار في آخر 4 أسابيع. هو سعر تخميني استرشادي وليس سعرًا مقيسًا، وقد يختلف عن سعر المحطة.",
     "palColor": "اللون",
     "pal_burgundy": "العنابي",
     "pal_emerald": "الزمردي",
@@ -1205,7 +1205,7 @@ const Map<String, Map<String, String>> _x = {
   'fr': {
     "estNow": "Estimation du jour",
     "estTitle": "Prix estimé",
-    "estBody": "Le prix officiel est publié une fois par semaine. Les prix à la pompe suivent le pétrole brut avec un retard d'une à deux semaines ; cette estimation ajoute donc la variation du brut (Brent) depuis la période qui a déterminé le prix officiel. C'est une indication, pas un prix mesuré ; le prix à la pompe peut différer.",
+    "estBody": "Le prix officiel est publié une fois par semaine. Cette estimation le prolonge jusqu'à aujourd'hui selon la variation moyenne des prix des 4 dernières semaines. C'est une indication, pas un prix mesuré ; le prix à la pompe peut différer.",
     "palColor": "Couleur",
     "pal_burgundy": "Bordeaux",
     "pal_emerald": "Émeraude",
@@ -1297,7 +1297,7 @@ const Map<String, Map<String, String>> _x = {
   'es': {
     "estNow": "Estimación de hoy",
     "estTitle": "Precio estimado",
-    "estBody": "El precio oficial se publica una vez por semana. Los precios en surtidor siguen al crudo con un retraso de una a dos semanas, por lo que esta estimación suma la variación del crudo (Brent) desde el periodo que determinó el precio oficial. Es orientativa, no un precio medido; el precio en la gasolinera puede variar.",
+    "estBody": "El precio oficial se publica una vez por semana. Esta estimación lo proyecta hasta hoy según la variación media de los precios de las últimas 4 semanas. Es orientativa, no un precio medido; el precio en la gasolinera puede variar.",
     "palColor": "Color",
     "pal_burgundy": "Burdeos",
     "pal_emerald": "Esmeralda",
@@ -1389,7 +1389,7 @@ const Map<String, Map<String, String>> _x = {
   'it': {
     "estNow": "Stima di oggi",
     "estTitle": "Prezzo stimato",
-    "estBody": "Il prezzo ufficiale viene pubblicato una volta alla settimana. I prezzi alla pompa seguono il greggio con un ritardo di una o due settimane, quindi questa stima aggiunge la variazione del greggio (Brent) dal periodo che ha determinato il prezzo ufficiale. È indicativa, non un prezzo rilevato; alla pompa può essere diverso.",
+    "estBody": "Il prezzo ufficiale viene pubblicato una volta alla settimana. Questa stima lo proietta fino a oggi in base alla variazione media dei prezzi delle ultime 4 settimane. È indicativa, non un prezzo rilevato; alla pompa può essere diverso.",
     "palColor": "Colore",
     "pal_burgundy": "Bordeaux",
     "pal_emerald": "Smeraldo",
@@ -1481,7 +1481,7 @@ const Map<String, Map<String, String>> _x = {
   'nl': {
     "estNow": "Schatting vandaag",
     "estTitle": "Geschatte prijs",
-    "estBody": "De officiële prijs verschijnt één keer per week. Pompprijzen volgen ruwe olie met een vertraging van één tot twee weken; deze schatting telt daarom de verandering van ruwe olie (Brent) op sinds de periode die de officiële prijs bepaalde. Het is een richtwaarde, geen gemeten prijs; aan de pomp kan de prijs afwijken.",
+    "estBody": "De officiële prijs verschijnt één keer per week. Deze schatting trekt hem door tot vandaag met de gemiddelde prijsverandering van de afgelopen 4 weken. Het is een richtwaarde, geen gemeten prijs; aan de pomp kan de prijs afwijken.",
     "palColor": "Kleur",
     "pal_burgundy": "Bordeaux",
     "pal_emerald": "Smaragd",
@@ -1573,7 +1573,7 @@ const Map<String, Map<String, String>> _x = {
   'pt': {
     "estNow": "Estimativa de hoje",
     "estTitle": "Preço estimado",
-    "estBody": "O preço oficial é publicado uma vez por semana. Os preços na bomba seguem o petróleo bruto com um atraso de uma a duas semanas, por isso esta estimativa soma a variação do bruto (Brent) desde o período que determinou o preço oficial. É indicativa, não um preço medido; na bomba pode ser diferente.",
+    "estBody": "O preço oficial é publicado uma vez por semana. Esta estimativa projeta-o até hoje com base na variação média dos preços das últimas 4 semanas. É indicativa, não um preço medido; na bomba pode ser diferente.",
     "palColor": "Cor",
     "pal_burgundy": "Bordô",
     "pal_emerald": "Esmeralda",
@@ -1665,7 +1665,7 @@ const Map<String, Map<String, String>> _x = {
   'pl': {
     "estNow": "Szacunek na dziś",
     "estTitle": "Cena szacunkowa",
-    "estBody": "Oficjalna cena jest publikowana raz w tygodniu. Ceny na stacjach podążają za ropą z opóźnieniem jednego–dwóch tygodni, dlatego ten szacunek dodaje zmianę ceny ropy (Brent) od okresu, który ukształtował cenę oficjalną. To orientacja, a nie zmierzona cena; na stacji może się różnić.",
+    "estBody": "Oficjalna cena jest publikowana raz w tygodniu. Ten szacunek przenosi ją na dziś według średniej zmiany cen z ostatnich 4 tygodni. To orientacja, a nie zmierzona cena; na stacji może się różnić.",
     "palColor": "Kolor",
     "pal_burgundy": "Bordo",
     "pal_emerald": "Szmaragd",
@@ -1757,7 +1757,7 @@ const Map<String, Map<String, String>> _x = {
   'fa': {
     "estNow": "برآورد امروز",
     "estTitle": "قیمت برآوردی",
-    "estBody": "قیمت رسمی هفته‌ای یک بار منتشر می‌شود. قیمت سوخت با یک تا دو هفته تأخیر از نفت خام پیروی می‌کند، بنابراین این برآورد تغییر قیمت نفت خام (برنت) را از دوره‌ای که قیمت رسمی را شکل داد اضافه می‌کند. این یک راهنما است، نه قیمت اندازه‌گیری‌شده؛ قیمت جایگاه ممکن است متفاوت باشد.",
+    "estBody": "قیمت رسمی هفته‌ای یک بار منتشر می‌شود. این برآورد آن را بر پایهٔ میانگین تغییر قیمت در ۴ هفتهٔ گذشته تا امروز ادامه می‌دهد. این یک راهنما است، نه قیمت اندازه‌گیری‌شده؛ قیمت جایگاه ممکن است متفاوت باشد.",
     "palColor": "رنگ",
     "pal_burgundy": "زرشکی",
     "pal_emerald": "زمردی",
@@ -1849,7 +1849,7 @@ const Map<String, Map<String, String>> _x = {
   'ku': {
     "estNow": "Texmîna îro",
     "estTitle": "Bihayê texmînî",
-    "estBody": "Bihayê fermî heftê carekê tê weşandin. Bihayê sotemeniyê bi derengiya yek-du hefteyan li pey petrola xav tê, ji ber vê yekê ev texmîn guherîna petrola xav (Brent) ji wê demê ve lê zêde dike ku bihayê fermî diyar kir. Ev rêber e, ne bihayekî pîvandî ye; li îstasyonê dikare cuda be.",
+    "estBody": "Bihayê fermî heftê carekê tê weşandin. Ev texmîn wî li gorî navgîniya guherîna bihayan a 4 hefteyên dawî heta îro dirêj dike. Ev rêber e, ne bihayekî pîvandî ye; li îstasyonê dikare cuda be.",
     "palColor": "ڕەنگ",
     "pal_burgundy": "عەنابی",
     "pal_emerald": "زومرودی",

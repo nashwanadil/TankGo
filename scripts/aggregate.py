@@ -124,9 +124,7 @@ def crude_signal():
     ref = sum(eur_l(d) for d in days[10:15]) / 5
     delta = round((now - ref) * 100, 2)
     direction = "up" if delta >= 1.0 else "down" if delta <= -1.0 else "flat"
-    # Daily crude cost per pump unit, used by the app to estimate today's price from the weekly one.
-    crude = {d: {"eur_l": round(eur_l(d), 4), "usd_gal": round(brent[d] / 42, 4)} for d in sorted(days)}
-    return {"direction": direction, "delta_ct_l": delta, "brent_date": days[0], "crude": crude,
+    return {"direction": direction, "delta_ct_l": delta, "brent_date": days[0],
             "generated": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
 
 

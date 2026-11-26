@@ -228,7 +228,7 @@ class _HomePageState extends State<HomePage> {
                     color: Theme.of(context).colorScheme.errorContainer,
                     child: Padding(padding: const EdgeInsets.all(12), child: Text(tr(context, 'offline'))),
                   ),
-                _hero(context, entry, lang),
+                _hero(context, cc, entry, lang),
                 const SizedBox(height: 8),
                 _tiles(context, entry, lang),
                 if (hasStations) ...[_stationsCard(context)],
@@ -335,43 +335,57 @@ class _HomePageState extends State<HomePage> {
     _glow();
   }
 
+  Future<Map<String, Series>> _histOf(String cc) {
+    if (_histCc != cc || _hist == null) {
+      _histCc = cc;
+      _hist = widget.api.historyAll(cc);
+    }
+    return _hist!;
+  }
+
   /// "Estimated today" line under the official weekly price, with an info button.
-  Widget _estimate(BuildContext c, Entry e, String lang) => FutureBuilder<Signal?>(
-    future: _signal,
+  Widget _estimate(BuildContext c, String cc, Entry e, String lang) => FutureBuilder<Map<String, Series>>(
+    future: _histOf(cc),
     builder: (c, s) {
-      final est = s.data == null ? null : estimateNow(e, _fuel, s.data!, DateTime.now());
+      final est = estimateNow(e, _fuel, s.data?[_fuel], DateTime.now());
       if (est == null) return const SizedBox.shrink();
-      return InkWell(
-        borderRadius: BorderRadius.circular(rElement),
-        onTap: () => showDialog<void>(
-          context: c,
-          builder: (d) => AlertDialog(
-            title: Text(tx(d, 'estTitle')),
-            content: Text(tx(d, 'estBody')),
-            actions: [TextButton(onPressed: () => Navigator.pop(d), child: Text(tr(d, 'ok')))],
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: Text(
-                  '${tx(c, 'estNow')} ≈ ${fmtMoney(est, e.currency, lang)}',
-                  style: const TextStyle(color: cream, fontWeight: FontWeight.w600, fontSize: 15),
-                ),
+      return Padding(
+        padding: const EdgeInsets.only(top: 6),
+        child: Material(
+          color: Colors.black.withValues(alpha: 0.18),
+          borderRadius: BorderRadius.circular(rElement),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(rElement),
+            onTap: () => showDialog<void>(
+              context: c,
+              builder: (d) => AlertDialog(
+                title: Text(tx(d, 'estTitle')),
+                content: Text(tx(d, 'estBody')),
+                actions: [TextButton(onPressed: () => Navigator.pop(d), child: Text(tr(d, 'ok')))],
               ),
-              const SizedBox(width: 6),
-              const Icon(Icons.info_outline, color: gold, size: 18),
-            ],
+            ),
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(12, 6, 8, 6),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('${tx(c, 'estNow')}: ', style: const TextStyle(color: cream, fontSize: 16, fontWeight: FontWeight.w600)),
+                  Text(
+                    '\u2066${moneyRaw(est, e.currency, lang)} ${unitLabel(e)}\u2069',
+                    style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w900),
+                  ),
+                  const SizedBox(width: 8),
+                  const Icon(Icons.info_outline, color: gold, size: 22),
+                ],
+              ),
+            ),
           ),
         ),
       );
     },
   );
 
-  Widget _hero(BuildContext c, Entry e, String lang) {
+  Widget _hero(BuildContext c, String cc, Entry e, String lang) {
     if (!e.prices.containsKey(_fuel)) _fuel = fuelOrder.firstWhere(e.prices.containsKey);
     final touching = _touch != null;
     final shown = _touch ?? _pin;
@@ -501,13 +515,13 @@ class _HomePageState extends State<HomePage> {
             fit: BoxFit.scaleDown,
             child: Text(
               '\u2066${moneyRaw(v, e.currency, lang)} ${unitLabel(e)}\u2069',
-              style: const TextStyle(color: Colors.white, fontSize: 48, fontWeight: FontWeight.w800),
+              style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.w800),
             ),
           ),
           if (e.unit == 'gal') Text('≈ ${fmtMoney(e.perLitre(v), e.currency, lang)} /L', style: const TextStyle(color: cream)),
-          if (shown == null) _estimate(c, e, lang),
+          if (shown == null) _estimate(c, cc, e, lang),
           if (chg != null) Padding(padding: const EdgeInsets.only(top: 4), child: chg),
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
           Material(
             color: stale ? riseSoft : gold,
             borderRadius: BorderRadius.circular(14),
@@ -515,17 +529,17 @@ class _HomePageState extends State<HomePage> {
               borderRadius: BorderRadius.circular(14),
               onTap: () => _pickDate(e),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 9, 10, 9),
+                padding: const EdgeInsets.fromLTRB(12, 5, 6, 5),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(stale ? Icons.warning_amber_rounded : Icons.event, size: 22, color: darkBrown),
-                    const SizedBox(width: 8),
+                    Icon(stale ? Icons.warning_amber_rounded : Icons.event, size: 16, color: darkBrown),
+                    const SizedBox(width: 6),
                     Text(
                       fmtDate(date, lang),
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: darkBrown),
+                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: darkBrown),
                     ),
-                    const Icon(Icons.arrow_drop_down, color: darkBrown),
+                    const Icon(Icons.arrow_drop_down, color: darkBrown, size: 20),
                   ],
                 ),
               ),
@@ -710,10 +724,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _chartCard(BuildContext c, String cc, Entry e, String lang) {
-    if (_histCc != cc || _hist == null) {
-      _histCc = cc;
-      _hist = widget.api.historyAll(cc);
-    }
+    _histOf(cc);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(14),

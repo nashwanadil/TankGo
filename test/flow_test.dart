@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:material_ui/material_ui.dart' show TextField, Icons, CalendarDatePicker;
+import 'package:material_ui/material_ui.dart' show TextField, Icons, CalendarDatePicker, Scrollable, ScrollableState;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -105,6 +105,8 @@ void main() {
     final r = t.getRect(find.byWidgetPredicate((w) => w.runtimeType.toString() == 'LineChart'));
     expect(box.width, r.width);
     await t.tapAt(Offset(r.left + 50, r.center.dy)); // an early day, not the latest
+    await t.pumpAndSettle();
+    t.state<ScrollableState>(find.byType(Scrollable).first).position.jumpTo(0); // hero is above the chart
     await t.pumpAndSettle();
     expect(find.text('Latest'), findsOneWidget); // still shown after lifting the finger
     expect(find.textContaining('\$2.000 /gal'), findsOneWidget); // hero stays on the picked day
