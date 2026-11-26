@@ -63,7 +63,7 @@ double? estimateNow(Entry e, String fuel, Signal s, DateTime now) {
   final from = e.date.subtract(const Duration(days: 14)), to = e.date.subtract(const Duration(days: 7));
   final ref = [for (final p in pts) if (!p.$1.isBefore(from) && !p.$1.isAfter(to)) p.$2];
   final fresh = [for (final p in pts) if (p.$1.isAfter(to)) p.$2];
-  if (ref.isEmpty || fresh.isEmpty) return null;
+  if (ref.length < 3 || fresh.length < 3) return null; // one or two days are noise
   double avg(List<double> v) => v.reduce((a, b) => a + b) / v.length;
   var delta = avg(fresh) - avg(ref);
   final cap = price * 0.08;
