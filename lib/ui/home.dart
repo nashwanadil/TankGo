@@ -335,6 +335,42 @@ class _HomePageState extends State<HomePage> {
     _glow();
   }
 
+  /// "Estimated today" line under the official weekly price, with an info button.
+  Widget _estimate(BuildContext c, Entry e, String lang) => FutureBuilder<Signal?>(
+    future: _signal,
+    builder: (c, s) {
+      final est = s.data == null ? null : estimateNow(e, _fuel, s.data!, DateTime.now());
+      if (est == null) return const SizedBox.shrink();
+      return InkWell(
+        borderRadius: BorderRadius.circular(rElement),
+        onTap: () => showDialog<void>(
+          context: c,
+          builder: (d) => AlertDialog(
+            title: Text(tx(d, 'estTitle')),
+            content: Text(tx(d, 'estBody')),
+            actions: [TextButton(onPressed: () => Navigator.pop(d), child: Text(tr(d, 'ok')))],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Text(
+                  '${tx(c, 'estNow')} ≈ ${fmtMoney(est, e.currency, lang)}',
+                  style: const TextStyle(color: cream, fontWeight: FontWeight.w600, fontSize: 15),
+                ),
+              ),
+              const SizedBox(width: 6),
+              const Icon(Icons.info_outline, color: gold, size: 18),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+
   Widget _hero(BuildContext c, Entry e, String lang) {
     if (!e.prices.containsKey(_fuel)) _fuel = fuelOrder.firstWhere(e.prices.containsKey);
     final touching = _touch != null;
@@ -469,6 +505,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           if (e.unit == 'gal') Text('≈ ${fmtMoney(e.perLitre(v), e.currency, lang)} /L', style: const TextStyle(color: cream)),
+          if (shown == null) _estimate(c, e, lang),
           if (chg != null) Padding(padding: const EdgeInsets.only(top: 4), child: chg),
           const SizedBox(height: 16),
           Material(

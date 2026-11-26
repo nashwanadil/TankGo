@@ -36,8 +36,44 @@ class Series {
 class Signal {
   final String direction; // up | down | flat
   final double deltaCt; // crude cost change in ct/L over ~2 weeks
-  Signal(this.direction, this.deltaCt);
+  /// Daily crude cost per pump unit: date -> {'eur_l': .., 'usd_gal': ..}.
+  final Map<DateTime, Map<String, double>> crude;
+  Signal(this.direction, this.deltaCt, [this.crude = const {}]);
 }
+
+/// Estimated pump price for today, from the latest weekly price plus the change in crude cost
+/// between the window that shaped that price and the crude days after it.
+/// Pump prices follow crude with a lag of about one to two weeks, so the weekly price dated D
+/// reflects crude around D-14..D-7. Returns null when the estimate adds nothing or cannot be made.
+double? estimateNow(Entry e, String fuel, Signal s, DateTime now) {
+  final price = e.prices[fuel];
+  if (price == null || e.frequency != 'weekly') return null;
+  final age = _dayDiff(e.date, now);
+  if (age < 2 || age > 14) return null;
+  final key = e.currency == 'USD' && e.unit == 'gal'
+      ? 'usd_gal'
+      : e.currency == 'EUR' && e.unit == 'L'
+      ? 'eur_l'
+      : null;
+  if (key == null) return null;
+  final pts = [
+    for (final c in s.crude.entries)
+      if (c.value[key] != null) (c.key, c.value[key]!),
+  ]..sort((a, b) => a.$1.compareTo(b.$1));
+  final from = e.date.subtract(const Duration(days: 14)), to = e.date.subtract(const Duration(days: 7));
+  final ref = [for (final p in pts) if (!p.$1.isBefore(from) && !p.$1.isAfter(to)) p.$2];
+  final fresh = [for (final p in pts) if (p.$1.isAfter(to)) p.$2];
+  if (ref.isEmpty || fresh.isEmpty) return null;
+  double avg(List<double> v) => v.reduce((a, b) => a + b) / v.length;
+  var delta = avg(fresh) - avg(ref);
+  final cap = price * 0.08;
+  delta = delta.clamp(-cap, cap);
+  final perL = e.unit == 'gal' ? delta / galToL : delta;
+  if (perL.abs() < 0.005) return null;
+  return price + delta;
+}
+
+int _dayDiff(DateTime a, DateTime b) => DateTime.utc(b.year, b.month, b.day).difference(DateTime.utc(a.year, a.month, a.day)).inDays;
 
 class Loaded<T> {
   final T? value;
@@ -81,7 +117,11 @@ class Api {
   Future<Signal?> signal() async {
     final j = (await _get('v1/signal.json', 'signal')).value;
     if (j == null || j['direction'] == null) return null;
-    return Signal(j['direction'] as String, (j['delta_ct_l'] as num).toDouble());
+    final crude = <DateTime, Map<String, double>>{};
+    for (final c in ((j['crude'] as Map?) ?? const {}).entries) {
+      crude[DateTime.parse(c.key as String)] = {for (final f in (c.value as Map).entries) f.key as String: (f.value as num).toDouble()};
+    }
+    return Signal(j['direction'] as String, (j['delta_ct_l'] as num).toDouble(), crude);
   }
 
   /// History per fuel key for one country.
